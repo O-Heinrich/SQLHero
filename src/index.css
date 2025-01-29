@@ -23,7 +23,7 @@ body {
 }
 
 body {
-    @apply text-base dark:bg-gray-900 bg-gray-100;
+    @apply text-base dark:bg-gray-900 bg-gray-100 dark:to-slate-900 dark:from-slate-700 from-slate-50 to-slate-200 bg-radial;
 }
 
 a {
