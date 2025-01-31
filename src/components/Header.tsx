@@ -1,18 +1,18 @@
 import React from "react";
-import { Link } from "@tanstack/react-router";
 import clsx from "clsx";
-import { Wrapper } from "@/components/Wrapper";
+import { Link } from "@tanstack/react-router";
 import { APP_NAME } from "@/constants";
-import Logo from "./Logo";
+import { Wrapper } from "@/components/Wrapper";
+import { Logo } from "@/components/Logo";
+import { ToggleThemeButton } from "./buttons/ToggleTheme";
 import { useTheme } from "@/hooks/useTheme";
-import { Button } from "@headlessui/react";
 
 interface HeaderProps {
     ref?: React.Ref<HTMLHeadingElement>;
 }
 
 export const Header: React.FC<HeaderProps> = ({ ref }) => {
-    const { theme, toggleTheme } = useTheme();
+    const { theme } = useTheme();
     const isDarkMode = React.useMemo(() => theme === 'dark', [theme]);
 
     return (
@@ -29,9 +29,7 @@ export const Header: React.FC<HeaderProps> = ({ ref }) => {
                     <Link to="/about" className={clsx('[&.active]:font-bold')}>
                         About
                     </Link>
-                    <Button onClick={toggleTheme} className={clsx('p-2', 'rounded-md', 'bg-gray-800/50', 'dark:bg-gray-200/50')}>
-                        {isDarkMode ? 'Light' : 'Dark'} Mode
-                    </Button>
+                    <ToggleThemeButton />
                 </div>
             </Wrapper>
         </header>
