@@ -11,7 +11,32 @@ interface HeaderProps {
     ref?: React.Ref<HTMLHeadingElement>;
 }
 
+/**
+ * Header component with navigation and theme-responsive design
+ * 
+ * @component
+ * @param {HeaderProps} props - Component properties
+ * @param {React.Ref<HTMLHeadingElement>} [props.ref] - Optional ref for header element
+ * 
+ * @description
+ * Renders a sticky header with:
+ * - Logo and application name
+ * - Navigation links
+ * - Theme toggle button
+ * - Dynamic styling based on current theme
+ * 
+ * @example
+ * ```tsx
+ * <Header />
+ * ```
+ * 
+ * @returns {React.ReactElement} Themed and responsive header
+ */
 export const Header: React.FC<HeaderProps> = ({ ref }) => {
+    /**
+     * Determines if current theme is dark mode
+     * @type {boolean}
+     */
     const { theme } = useTheme();
     const isDarkMode = React.useMemo(() => theme === 'dark', [theme]);
 
