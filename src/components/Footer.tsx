@@ -20,7 +20,7 @@ import { useTheme } from "@/hooks/useTheme";
  * <Footer />
  * ```
  */
-export const Footer: React.FC = () => {
+export const Footer: React.FC = (): React.ReactElement => {
     /**
      * Determines if current theme is dark mode
      * @type {boolean}

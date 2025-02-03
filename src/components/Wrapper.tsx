@@ -29,7 +29,7 @@ interface WrapperProps extends React.PropsWithChildren {
  * 
  * @returns {React.ReactElement} Responsive container with children
  */
-export const Wrapper: React.FC<WrapperProps> = ({ children, className }) => {
+export const Wrapper: React.FC<WrapperProps> = ({ children, className }: WrapperProps): React.ReactElement => {
     /**
      * Memoizes additional classes for performance optimization
      * @type {string[]}

@@ -19,7 +19,7 @@ import { Sun, Moon } from "@/components/icons";
  * <ToggleThemeButton />
  * ```
  */
-export const ToggleThemeButton: React.FC = () => {
+export const ToggleThemeButton: React.FC = (): React.ReactElement => {
     /**
      * Destructures theme context to access current theme and toggle function
      * @type {Object}

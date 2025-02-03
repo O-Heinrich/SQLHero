@@ -32,7 +32,7 @@ interface HeaderProps {
  * 
  * @returns {React.ReactElement} Themed and responsive header
  */
-export const Header: React.FC<HeaderProps> = ({ ref }) => {
+export const Header: React.FC<HeaderProps> = ({ ref }: HeaderProps): React.ReactElement => {
     /**
      * Determines if current theme is dark mode
      * @type {boolean}
