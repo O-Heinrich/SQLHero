@@ -29,7 +29,7 @@ body {
 }
 
 h2 {
-    @apply text-4xl font-semibold pb-4 pt-2;
+    @apply text-4xl pb-4 pt-2 text-transparent bg-clip-text font-bold bg-gradient-to-l from-red-600 to-green-600 dark:from-red-300 dark:to-green-300 inline-block;
 }
 
 p {
