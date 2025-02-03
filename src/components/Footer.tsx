@@ -29,7 +29,7 @@ export const Footer: React.FC = (): React.ReactElement => {
     const isDarkMode = React.useMemo(() => theme === 'dark', [theme]);
 
     return (
-        <footer className="flex justify-center items-center min-h-16 bg-gray-200 dark:bg-[#44475a] dark:text-white border-t border-gray-300 dark:border-gray-700">
+        <footer className="flex justify-center items-center min-h-16 bg-slate-200 dark:bg-slate-900 dark:text-white border-t border-gray-300 dark:border-slate-700">
             <Wrapper className="text-center">
                 <p>loving</p>
                 <img 
