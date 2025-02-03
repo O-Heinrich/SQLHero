@@ -28,6 +28,14 @@ body {
     @apply dark:text-white/85 text-black/85 dark:bg-gray-900 bg-gray-100 dark:to-slate-900 dark:from-slate-700 from-slate-50 to-slate-200 bg-radial;
 }
 
+h2 {
+    @apply text-4xl font-semibold pb-4 pt-2;
+}
+
+p {
+    @apply text-lg py-2;
+}
+
 a {
     font-weight: 500;
     color: #646cff;
