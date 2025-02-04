@@ -47,13 +47,8 @@ export const Header: React.FC<HeaderProps> = ({ ref }: HeaderProps): React.React
                     <Logo fill={isDarkMode ? '#efefef' : '#343434'} />
                     <h1 className={clsx('text-3xl', 'dark:text-white/85', 'text-black/85')}>{APP_NAME}</h1>
                 </span>
-                <div className="p-2 flex gap-2">
-                    <Link to="/" className={clsx('[&.active]:font-bold')}>
-                        Home
-                    </Link>{' '}
-                    <Link to="/about" className={clsx('[&.active]:font-bold')}>
-                        About
-                    </Link>
+                <div className="px-2 flex gap-2">
+                    
                     <ToggleThemeButton />
                 </div>
             </Wrapper>
