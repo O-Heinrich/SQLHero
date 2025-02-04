@@ -11,9 +11,11 @@ function Index() {
         <Wrapper>
             <title>SQL Hero - Startseite</title>
             <h2>Teste dein SQL Wissen!</h2>
-            <p>Teste dein SQL Wissen mit SQL Hero, dem SQL Tool mit interaktiven Übungen.</p>
-            <p>Auf jeder Seite findest du eine Aufgabe. Beantworte die Aufgabe direkt auf der Seite. Starte den Test und du siehst, ob deine Lösung richtig ist.</p>
-            <Button>Start</Button>
+            <div className="max-w-2xl">
+                <p>Teste dein SQL Wissen mit SQL Hero, dem SQL Tool mit interaktiven Übungen.</p>
+                <p>Auf jeder Seite findest du eine Aufgabe. Beantworte die Aufgabe direkt auf der Seite. Starte den Test und du siehst, ob deine Lösung richtig ist.</p>
+                <Button className="mt-6 w-32 text-2xl">Start</Button>
+            </div>
         </Wrapper>
     )
 }
