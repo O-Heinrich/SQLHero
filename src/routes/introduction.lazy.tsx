@@ -31,7 +31,6 @@ function introduction() {
         <p>
             SQL Hero funktioniert mit den gängigsten Browsern (Firefox, Chrome, Edge). Gestestet wurde es mit Firefox und Chromium.
         </p>
-
     </Wrapper>
   )
 }
