@@ -1,6 +1,5 @@
 import React from "react";
 import clsx from "clsx";
-import { Link } from "@tanstack/react-router";
 import { APP_NAME } from "@/constants";
 import { Wrapper } from "@/components/Wrapper";
 import { Logo } from "@/components/Logo";
