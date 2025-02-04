@@ -12,7 +12,7 @@ const Root: React.FC = () => {
         <ThemeProvider>
             <div className="flex flex-col min-h-screen">
                 <Header ref={headerRef} />
-                <main className="flex-1">
+                <main className="flex-1 pt-10 pb-6">
                     <Outlet />
                 </main>
                 <Footer />
