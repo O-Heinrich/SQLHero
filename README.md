@@ -1,50 +1,55 @@
-# React + TypeScript + Vite
+# SQL Hero
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An interactive web application for learning SQL through practical exercises. SQL Hero guides users through fundamental SQL concepts including SELECT statements, WHERE clauses, and GROUP BY operations.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Step-by-step SQL tutorials
+- Interactive exercises with varying difficulty levels
+- Immediate feedback on solutions
+- Comprehensive coverage of SQL concepts:
+  - Data Definition Language (DDL)
+  - Data Manipulation Language (DML) 
+  - Data Control Language (DCL)
+  - Transaction Control Language (TCL)
 
-## Expanding the ESLint configuration
+## Exercise Structure
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Each exercise is self-contained and provides:
+- Clear task description
+- Solution validation
+- Detailed error messages for debugging
+- Comparison against sample solutions
 
-- Configure the top-level `parserOptions` property like this:
+## Error Handling
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+The application provides two types of error feedback:
+1. Logical errors: When results don't match expected output
+2. Technical errors: When SQL execution fails (e.g., syntax errors, missing tables)
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+All error messages are displayed in English, directly from the SQL executor.
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+## Getting Started
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+To get started with SQLHero, follow these steps:
+
+1. Clone the repository:
+    ```sh
+    git clone https://gitea.it.bbwi/michaelis.m/SQLHero.git
+    ```
+2. Navigate to the project directory:
+    ```sh
+    cd SQLHero
+    ```
+3. Install the dependencies:
+    ```sh
+    npm install
+    ```
+
+## Build SQL Hero
+
+_Just run:_
+
+```sh
+npm run build
 ```
