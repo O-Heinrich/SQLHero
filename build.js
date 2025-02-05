@@ -10,7 +10,7 @@
  * @requires fs/promises
  * @requires ./src/assets/challenges
  */
-import { challenges } from "./src/assets/challenges.tsx";
+import { challenges } from "./migration/challenges.tsx";
 import { writeFile, mkdir, stat } from "node:fs/promises";
 
 /**
