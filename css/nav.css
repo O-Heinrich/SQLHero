@@ -1,0 +1,28 @@
+#nav {
+  top: 60px;
+  text-align: center;
+  position: sticky;
+  display: none;
+  z-index: 5;
+  font-size: 15px;
+  background: var(--element-bg-color);
+}
+
+#nav a {
+  width: 8em;
+  display: block;
+  margin: 1.2em auto;
+  font-size: 1.2em;
+  text-decoration: none;
+  color: var(--main-text-color);
+}
+
+#nav a:hover {
+  text-decoration: underline;
+}
+
+/* Separates the language-link from the normal navigation links. */
+#nav a:last-child {
+  margin-top: 2.5em;
+  font-style: italic;
+}

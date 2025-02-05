@@ -1,0 +1,81 @@
+@keyframes toRedDark {
+    0% {
+      background: darkslategrey;
+    }
+    100% {
+      background: #bb221a;
+    }
+  }
+  
+  @keyframes toGreenDark {
+    0% {
+      background: darkslategrey;
+    }
+    100% {
+      background: #0d7e20;
+    }
+  }
+
+@keyframes toRedLight {
+    0% {
+      background: lightslategrey;
+    }
+    100% {
+      background: #e33027;
+    }
+  }
+  
+  @keyframes toGreenLight {
+    0% {
+      background: lightslategrey;
+    }
+    100% {
+      background: #14A62C;
+    }
+  }
+
+[color-scheme=dark-theme] {
+  --main-bg-color: #34323F;
+  --main-text-color: #d6d6d6;
+  --main-text-hover-color: #d6d6d6;
+  --header-green-bg-color: #0d7e20;
+  --green-inverted-bg-color: #14A62C;
+  --header-green-animation: toGreenDark 1s linear;
+  --header-grey-bg-color: darkslategrey;
+  --header-red-bg-color: #bb221a;
+  --red-inverted-bg-color: #e33027;
+  --header-red-animation: toRedDark 1s linear;
+  --control-hover-bg-color: #34323F;
+  --element-bg-color: #44475a;
+  --a-link-button-hover-border-color: #d6d6d6;
+  --a-link-button-hover-bg-color: #424242;
+  --a-link-button-hover-border-style: solid;
+  --footer-text-color: #d6d6d6;
+  --content-pre-bg-color: #3A3845;
+  --image-dark-display: unset;
+  --image-light-display: none;
+  --code-text-color: #2b9eff;
+}
+
+[color-scheme=light-theme] {
+  --main-bg-color: #f9f9f9;
+  --main-text-color: black;
+  --main-text-hover-color: #d6d6d6;
+  --header-green-bg-color: #14A62C;
+  --green-inverted-bg-color: #0d7e20;
+  --header-green-animation: toGreenLight 1s linear;
+  --header-grey-bg-color: lightslategrey;
+  --header-red-bg-color: #e33027;
+  --red-inverted-bg-color: #bb221a;
+  --header-red-animation: toRedLight 1s linear;
+  --control-hover-bg-color: #424242;
+  --element-bg-color: #eeeeee;
+  --a-link-button-hover-border-color: #d6d6d6;
+  --a-link-button-hover-bg-color: #424242;
+  --a-link-button-hover-border-style: dashed;
+  --footer-text-color: #424242;
+  --content-pre-bg-color: #f5f5f5;
+  --image-dark-display: none;
+  --image-light-display: unset;
+  --code-text-color: #0033ff;
+}
