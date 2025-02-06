@@ -20,6 +20,9 @@ export const Route = createFileRoute('/challenges/$name')({
     component: Challenge,
     loader: ({ params }) => Promise.all([
         fetchChallenge(params.name),
+        // ToDo: Not ideal to create a new PGlite instance for each challenge
+        //       but at the moment it's the easiest way to get it working.
+        //       Refactor to use a single instance for all challenges!
         PGlite.create({
             extensions: { live }
         })
