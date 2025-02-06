@@ -24,5 +24,6 @@ dist-ssr
 *.sw?
 
 package-lock.json
+bun.lock
 
 public/api
