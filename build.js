@@ -3,9 +3,8 @@
  * 
  * @description
  * - Generates JSON files for challenges in ./public/api/challenges/
- * - Creates directory for each challenge if not existing
- * - Generates index.json with challenge metadata
- * - Generates individual task JSON files
+ * - Creates directory if not existing
+ * - Generates individual task JSON files including metadata
  * 
  * @requires fs/promises
  * @requires ./src/assets/challenges
@@ -35,23 +34,47 @@ const isExisting = async (filePath) => {
     for (const [key, value] of Object.entries(challenges)) {
         try {
             // Ensure challenge directory exists
-            if (!await isExisting(`./public/api/challenges/${key}`)) {
-                await mkdir(`./public/api/challenges/${key}`, { recursive: true });
+            if (!await isExisting(`./public/api/challenges`)) {
+                await mkdir(`./public/api/challenges/`, { recursive: true });
             }
 
-            // Write challenge metadata
-            const data = {
+            const dbUrl = new URL(value.db);
+            const pdfUrl = new URL(value.pdf);
+
+            // Store metadata for challenge
+            const meta = {
                 title: value.titelDB,
-                db: value.db,
-                pdf: value.pdf,
+                db: dbUrl.pathname,
+                pdf: pdfUrl.pathname,
             };
-            await writeFile(`./public/api/challenges/${key}/index.json`, JSON.stringify(data, null, 2));
 
             // Write individual task files
             for (const task of value.tasks) {
-                const { nr, titel, aufgabe, solution, lektion, intro, view } = task;
-                const taskData = { nr, titel, aufgabe, solution, lektion, intro, view };
-                await writeFile(`./public/api/challenges/${key}/${nr}.json`, JSON.stringify(taskData, null, 2));
+                const { 
+                    nr, 
+                    titel, 
+                    aufgabe, 
+                    solution, 
+                    lektion, 
+                    intro, 
+                    view,
+                 } = task;
+
+                const taskData = { 
+                    meta,
+                    no: nr, 
+                    title: titel, 
+                    task: aufgabe, 
+                    solution, 
+                    lesson: lektion, 
+                    intro, 
+                    view,
+                };
+                
+                await writeFile(
+                    `./public/api/challenges/${nr}.json`,
+                     JSON.stringify(taskData, null, 2)
+                );
             }
         } catch (error) {
             console.error(`Error processing challenge ${key}:`, error);
