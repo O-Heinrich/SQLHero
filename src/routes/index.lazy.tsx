@@ -1,9 +1,13 @@
+import { Loading } from '@/components/Loader';
 import { Wrapper } from '@/components/Wrapper';
 import { Button } from '@headlessui/react';
 import { createLazyFileRoute, Link } from '@tanstack/react-router';
 
 export const Route = createLazyFileRoute('/')({
     component: Index,
+    errorComponent: ({ error }) => <div>Error: {error.message}</div>,
+    pendingComponent: () => <Loading />,
+    notFoundComponent: () => <div>Challenge not found</div>,
 })
 
 function Index() {
