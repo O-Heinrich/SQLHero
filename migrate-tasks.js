@@ -9,8 +9,9 @@
  * @requires fs/promises
  * @requires ./src/assets/challenges
  */
-import { challenges } from "./migration/challenges.tsx";
 import { writeFile, mkdir, stat } from "node:fs/promises";
+import { renderToStaticMarkup } from "react-dom/server";
+import { challenges } from "./migration/challenges.tsx";
 
 /**
  * Checks if a file/directory exists
@@ -66,7 +67,7 @@ const isExisting = async (filePath) => {
                     title: titel, 
                     task: aufgabe, 
                     solution, 
-                    lesson: lektion, 
+                    lesson: renderToStaticMarkup(lektion), 
                     intro, 
                     view,
                 };
