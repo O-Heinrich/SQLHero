@@ -72,7 +72,7 @@ const isExisting = async (filePath) => {
                     view,
                 };
                 
-                await writeFile(
+                writeFile(
                     `./public/api/challenges/${nr}.json`,
                      JSON.stringify(taskData, null, 2)
                 );
