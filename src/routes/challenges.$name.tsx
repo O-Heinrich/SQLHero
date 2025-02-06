@@ -34,8 +34,9 @@ function Challenge() {
     <Wrapper>
         <PGliteProvider db={pg}>
             <title>SQL Hero - Challenges</title>
-            <h2>{challenge.name}</h2>
-            <p>{challenge.description}</p>
+            <h2>{challenge.meta.title}</h2>
+            <h3>{challenge.title}</h3>
+            <p dangerouslySetInnerHTML={{__html: challenge.task}} />
         </PGliteProvider>
     </Wrapper>
     );

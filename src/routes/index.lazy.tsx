@@ -14,7 +14,7 @@ function Index() {
             <div className="max-w-2xl">
                 <p>Teste dein SQL Wissen mit SQL Hero, dem SQL Tool mit interaktiven Übungen.</p>
                 <p>Auf jeder Seite findest du eine Aufgabe. Beantworte die Aufgabe direkt auf der Seite. Starte den Test und du siehst, ob deine Lösung richtig ist.</p>
-                <Link to="/challenges/$name" params={{name: 'select'}}>
+                <Link to="/challenges/$name" params={{name: '1'}}>
                     <Button className="mt-6 w-32 text-2xl">
                         Start
                     </Button>
