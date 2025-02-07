@@ -1,16 +1,24 @@
 import { InlineCode } from '@/components/InlineCode';
-import { Loading } from '@/components/Loader';
+import { Skeleton } from '@/components/Skeleton';
 import { Wrapper } from '@/components/Wrapper';
 import { createLazyFileRoute } from '@tanstack/react-router';
 
+import hljs from "highlight.js";
+
+import { useEffect } from 'react';
+
 export const Route = createLazyFileRoute('/introduction')({
-    component: introduction,
+    component: Introduction,
     errorComponent: ({ error }) => <div>Error: {error.message}</div>,
-    pendingComponent: () => <Loading />,
+    pendingComponent: () => <Skeleton />,
     notFoundComponent: () => <div>Challenge not found</div>,
 });
 
-function introduction() {
+function Introduction() {
+    useEffect(() => {
+        hljs.highlightAll();
+    }, []);
+
     return (
         <Wrapper>
             <title>SQL Hero - Einführung</title>

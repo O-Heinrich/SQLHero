@@ -5,7 +5,11 @@ import DOMPurify from 'dompurify';
 import { Wrapper } from '@/components/Wrapper';
 import { PGliteProvider } from '@electric-sql/pglite-react';
 import { live } from '@electric-sql/pglite/live';
-import { Loading } from '@/components/Loader';
+import { Skeleton } from '@/components/Skeleton';
+
+import hljs from "highlight.js";
+
+import { useEffect } from 'react';
 
 
 const fetchChallenge = async (name: string) => {
@@ -28,13 +32,18 @@ export const Route = createFileRoute('/challenges/$name')({
         })
     ]),
     errorComponent: ({ error }) => <div>Error: {error.message}</div>,
-    pendingComponent: () => <Loading />,
+    pendingComponent: () => <Skeleton />,
     notFoundComponent: () => <div>Challenge not found</div>,
 });
 
 function Challenge() {
     const [challenge, pg] = Route.useLoaderData();
     const hasLesson = challenge.lesson !== undefined;
+
+    useEffect(() => {
+        hljs.highlightAll();
+    }, []);
+    
     return (
         <Wrapper>
             <PGliteProvider db={pg}>
