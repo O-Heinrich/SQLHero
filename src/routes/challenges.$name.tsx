@@ -1,15 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { PGlite } from '@electric-sql/pglite';
 import DOMPurify from 'dompurify';
 
 import { Wrapper } from '@/components/Wrapper';
 import { PGliteProvider } from '@electric-sql/pglite-react';
-import { live } from '@electric-sql/pglite/live';
 import { Skeleton } from '@/components/Skeleton';
 
 import hljs from "highlight.js";
 
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
+import { PGlightContext } from '@/lib/PGlightContext';
 
 
 const fetchChallenge = async (name: string) => {
@@ -22,22 +21,15 @@ const fetchChallenge = async (name: string) => {
 
 export const Route = createFileRoute('/challenges/$name')({
     component: Challenge,
-    loader: ({ params }) => Promise.all([
-        fetchChallenge(params.name),
-        // ToDo: Not ideal to create a new PGlite instance for each challenge
-        //       but at the moment it's the easiest way to get it working.
-        //       Refactor to use a single instance for all challenges!
-        PGlite.create({
-            extensions: { live }
-        })
-    ]),
+    loader: ({ params }) => fetchChallenge(params.name),
     errorComponent: ({ error }) => <div>Error: {error.message}</div>,
     pendingComponent: () => <Skeleton />,
     notFoundComponent: () => <div>Challenge not found</div>,
 });
 
 function Challenge() {
-    const [challenge, pg] = Route.useLoaderData();
+    const pg = useContext(PGlightContext).pg;
+    const challenge = Route.useLoaderData();
     const hasLesson = challenge.lesson !== undefined;
 
     useEffect(() => {
