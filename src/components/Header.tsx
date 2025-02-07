@@ -44,10 +44,9 @@ export const Header: React.FC<HeaderProps> = ({ ref }: HeaderProps): React.React
             <Wrapper className={clsx('flex', 'justify-between', 'items-center')}>
                 <span className={clsx('flex', 'items-center', 'gap-1')}>
                     <Logo fill={isDarkMode ? '#efefef' : '#343434'} />
-                    <h1 className={clsx('text-3xl', 'dark:text-white/85', 'text-black/85')}>{APP_NAME}</h1>
+                    <h1 className={clsx('text-4xl', 'dark:text-white/85', 'text-black/85', 'py-4', 'font-light')}>{APP_NAME}</h1>
                 </span>
                 <div className="px-2 flex gap-2">
-                    
                     <ToggleThemeButton />
                 </div>
             </Wrapper>

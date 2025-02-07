@@ -31,9 +31,9 @@ export const Footer: React.FC = (): React.ReactElement => {
     const isDarkMode = React.useMemo(() => theme === 'dark', [theme]);
 
     return (
-        <footer className="flex justify-center items-center min-h-16 bg-slate-200 dark:bg-slate-900 dark:text-white border-t border-gray-300 dark:border-slate-700">
+        <footer className="flex justify-center items-center min-h-16 bg-slate-200 dark:bg-slate-900 dark:text-white border-t border-gray-300 dark:border-slate-700 py-4">
             <Wrapper className="text-center">
-                <div className="text-sm">loving</div>
+                <div className="text-sm font-light">LOVING</div>
                 <img 
                     src={isDarkMode ? '/drk-rki-bbw-3-dark-b.png' : '/drk-rki-bbw-3.png'} 
                     alt="Logo Berlin Beta Works Inklusiv" 
