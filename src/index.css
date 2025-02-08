@@ -136,6 +136,21 @@ button {
         focus:ring-slate-400/50
 }
 
+header button {
+    @apply
+        py-6
+        rounded-none
+        bg-slate-100/15
+        dark:bg-slate-800/75
+        ring-0
+        focus:ring-0
+        focus:ring-offset-0
+        shadow-none
+        border-none
+        dark:text-gray-100 
+        text-gray-800;
+}
+
 button.theme-button {
     @apply transition-none shadow shadow-none ring-offset-0 m-0 ring-0 dark:bg-transparent border-none bg-transparent dark:text-gray-100 text-gray-800 outline-0;
     transition: opacity 0.2s;
