@@ -71,6 +71,7 @@ const removeAllAttibutesFromHtml = (html, tagNames) => {
         if (element.tagName === 'CODE' && element.children.length > 0) {
             const childs = Array.from(element.childNodes).map(child => child.textContent).join("");
             element.innerHTML = childs;
+            element.classList.add('hljs', 'sql');
         }
 
     }
@@ -115,7 +116,6 @@ const removeAllAttibutesFromHtml = (html, tagNames) => {
                     titel,
                     aufgabe,
                     solution,
-                    lektion,
                     intro,
                     view,
                 } = task;
