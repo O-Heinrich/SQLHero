@@ -1,8 +1,8 @@
-import { PGliteWithLive } from "@electric-sql/pglite/live";
+import { PGlite } from "@electric-sql/pglite";
 import { createContext } from "react";
 
 export interface PGliteContextType {
-    pg: PGliteWithLive | undefined;
+    pg: PGlite | undefined;
 }
 
 export const PGlightContext = createContext<PGliteContextType>({

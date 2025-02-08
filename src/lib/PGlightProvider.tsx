@@ -1,9 +1,9 @@
-import { PGlite, PGliteWithLive  } from "@electric-sql/pglite";
+import { PGlite  } from "@electric-sql/pglite";
 import { ReactNode, useEffect, useState } from "react";
 import { PGlightContext } from "./PGlightContext";
 
 export const PGlightProvider: React.FC<{ children: ReactNode }> = ({ children }: { children: ReactNode; }): React.ReactElement => {
-    const [pg, setPg] = useState<PGliteWithLive  | undefined>();
+    const [pg, setPg] = useState<PGlite  | undefined>();
 
     useEffect(() => {
         if (pg) return;
