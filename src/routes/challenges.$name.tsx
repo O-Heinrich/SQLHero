@@ -1,15 +1,27 @@
 import { useContext, useEffect, useState } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
-import DOMPurify from 'dompurify';
-import hljs from "highlight.js";
-
+import dompurify from 'dompurify';
+import hljs from "highlight.js/lib/core";
+import sql from "highlight.js/lib/languages/sql";
+import AceEditor from "react-ace";
+import "ace-builds/src-noconflict/mode-sql";
+import "ace-builds/src-noconflict/theme-solarized_dark";
+import "ace-builds/src-noconflict/theme-iplastic";
+import "ace-builds/src-noconflict/ext-language_tools";
 import { Wrapper } from '@/components/Wrapper';
 import { Skeleton } from '@/components/Skeleton';
 import { PGlightContext } from '@/lib/PGlightContext';
 import { Button } from '@headlessui/react';
+import { useTheme } from '@/hooks/useTheme';
 
-
-const fetchChallenge = async (name: string) => {
+/**
+ * Fetches challenge data from the API
+ * @async
+ * @param {string} name - Challenge identifier
+ * @returns {Promise<Object>} Challenge data
+ * @throws {Error} If challenge not found or fetch fails
+ */
+const fetchChallenge = async (name: string): Promise<object> => {
     const response = await fetch(`/api/challenges/${name}.json`);
     if (!response.ok) {
         throw new Error(`Challenge "${name}" not found (${response.status})`);
@@ -17,26 +29,41 @@ const fetchChallenge = async (name: string) => {
     return response.json();
 };
 
-export const Route = createFileRoute('/challenges/$name')({
-    component: Challenge,
-    loader: ({ params }) => fetchChallenge(params.name),
-    errorComponent: ({ error }) => <div>Error: {error.message}</div>,
-    pendingComponent: () => <Skeleton />,
-    notFoundComponent: () => <div>Challenge not found</div>,
-});
+/**
+ * Represents the structure of challenge data
+ */
+interface ChallengeData {
+    meta: {
+        title: string;
+        schema: string;
+    };
+    title: string;
+    solution: string;
+    lesson?: string;
+    task: string;
+}
 
+/**
+ * Main Challenge component that displays and manages SQL challenges
+ * @component
+ * @description
+ * Provides a complete interface for:
+ * - Displaying challenge details and lessons
+ * - SQL editor with syntax highlighting
+ * - Query execution capabilities
+ * - Theme-aware styling
+ */
 function Challenge() {
-    const [isHighlighted, setIsHighlighted] = useState(false);
-    const pg = useContext(PGlightContext).pg;
-    const challenge = Route.useLoaderData();
+    const { pg } = useContext(PGlightContext);
+    const challenge = Route.useLoaderData() as ChallengeData;
+    const editorState = useState(challenge.solution);
     const hasLesson = challenge.lesson !== undefined;
-
     useEffect(() => {
-        if (!isHighlighted) {
+        if (challenge.lesson !== undefined) {
+            hljs.registerLanguage("sql", sql);
             hljs.highlightAll();
-            setIsHighlighted(true);
         }
-    }, [isHighlighted]);
+    }, [challenge]);
 
     const handleRun = async () => {
         if (!pg) return;
@@ -48,25 +75,126 @@ function Challenge() {
         const result = await pg.query(challenge.solution);
         console.log(result);
     }
-    
+
     return (
         <Wrapper>
             <title>SQL Hero - {challenge.meta.title}</title>
-            <h2>{challenge.meta.title}</h2>
-            <h3>{challenge.title}</h3>
-            {hasLesson && (
-                <div
-                    dangerouslySetInnerHTML={{
-                        __html: DOMPurify.sanitize(challenge.lesson)
-                    }}
-                />
-            )}
-            <p
-                dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(challenge.task)
-                }}
-            />
+            <ChallengeHeader title={challenge.meta.title} subtitle={challenge.title} />
+            {hasLesson && <ChallengeLesson lesson={challenge.lesson!} />}
+            <ChallengeTask task={challenge.task} />
+            <ChallengeEditor value={editorState[0]} setValue={editorState[1]} />
             <Button onClick={handleRun}>Run</Button>
         </Wrapper>
     );
 }
+
+/**
+ * Challenge header properties
+ * 
+ * @typedef ChallengeHeaderProps
+ * @property {string} title - Challenge title
+ * @property {string} subtitle - Challenge subtitle
+ */
+interface ChallengeHeaderProps {
+    title: string;
+    subtitle: string;
+}
+
+/**
+ * Challenge header component
+ * @component
+ * @param {Object} props - Component properties
+ * @param {string} props.title - Challenge title
+ * @param {string} props.subtitle - Challenge subtitle
+ */
+const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({ 
+    title, 
+    subtitle 
+}: { 
+    title: string; 
+    subtitle: string; 
+}) => (
+    <>
+        <h2>{title}</h2>
+        <h3>{subtitle}</h3>
+    </>
+);
+
+/**
+ * Challenge lesson display component with sanitized HTML
+ * @component
+ * @param {Object} props - Component properties
+ * @param {string} props.lesson - HTML lesson content
+ */
+const ChallengeLesson: React.FC<{ lesson: string }> = ({ lesson }: { lesson: string; }) => (
+    <div
+        dangerouslySetInnerHTML={{
+            __html: dompurify.sanitize(lesson)
+        }}
+    />
+);
+
+/**
+ * Challenge task display component with sanitized HTML
+ * @component
+ * @param {Object} props - Component properties
+ * @param {string} props.task - HTML task content
+ */
+const ChallengeTask: React.FC<{ task: string }> = ({ task }: { task: string }) => (
+    <p
+        dangerouslySetInnerHTML={{
+            __html: dompurify.sanitize(task)
+        }}
+    />
+);
+
+/**
+ * SQL editor component with theme support
+ * @component
+ * @param {Object} props - Component properties
+ * @param {string} props.value - Current editor value
+ * @param {Function} props.setValue - Value update function
+ */
+const ChallengeEditor: React.FC<{ value: string, setValue: React.Dispatch<string> }> = ({ 
+    value, setValue 
+}: { 
+    value: string, 
+    setValue: React.Dispatch<string> 
+}) => {
+    const { theme } = useTheme();
+    return (
+        <AceEditor
+            mode="sql"
+            theme={theme === 'dark' ? 'solarized_dark' : 'iplastic'}
+            width='100%'
+            height='300px'
+            className='border-2 border-ridge shadow-lg border-gray-300 dark:border-gray-700 my-4 rounded-md'
+            setOptions={{
+                enableBasicAutocompletion: true,
+                enableLiveAutocompletion: true,
+                enableSnippets: true,
+                showLineNumbers: true,
+                tabSize: 4,
+                cursorStyle: 'smooth',
+            }}
+            fontSize={16}
+            value={value}
+            onChange={(value: string) => setValue(value)}
+            name="editor"
+            editorProps={{ $blockScrolling: true }}
+        />
+    );
+}
+
+/**
+ * TanStack Router configuration for challenge routes
+ * @constant
+ * @type {RouteConfig}
+ */
+export const Route = createFileRoute('/challenges/$name')({
+    component: Challenge,
+    loader: ({ params }) => fetchChallenge(params.name),
+    errorComponent: ({ error }) => <div>Error: {error.message}</div>,
+    pendingComponent: () => <Skeleton />,
+    notFoundComponent: () => <div>Challenge not found</div>,
+});
