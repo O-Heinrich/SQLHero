@@ -40,12 +40,12 @@ function Challenge() {
 
     const handleRun = async () => {
         if (!pg) return;
-        const body = await fetch('/databases/nordwind.sql');
+        const body = await fetch(challenge.meta.schema);
         const sql = await body.text();
 
         const schemaResult = await pg.exec(sql);
-        console.log(schemaResult);
-        const result = await pg.query('SELECT * FROM customers');
+        console.log(schemaResult, challenge.solution);
+        const result = await pg.query(challenge.solution);
         console.log(result);
     }
     
