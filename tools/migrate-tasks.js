@@ -11,7 +11,7 @@
  */
 import { writeFile, mkdir, stat } from "node:fs/promises";
 import { renderToStaticMarkup } from "react-dom/server";
-import { challenges } from "./migration/challenges.tsx";
+import { challenges } from "../migration/challenges.tsx";
 
 /**
  * Checks if a file/directory exists
