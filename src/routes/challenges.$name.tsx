@@ -1,14 +1,12 @@
+import { useContext, useEffect, useState } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import DOMPurify from 'dompurify';
-
-import { Wrapper } from '@/components/Wrapper';
-import { PGliteProvider } from '@electric-sql/pglite-react';
-import { Skeleton } from '@/components/Skeleton';
-
 import hljs from "highlight.js";
 
-import { useContext, useEffect } from 'react';
+import { Wrapper } from '@/components/Wrapper';
+import { Skeleton } from '@/components/Skeleton';
 import { PGlightContext } from '@/lib/PGlightContext';
+import { Button } from '@headlessui/react';
 
 
 const fetchChallenge = async (name: string) => {
@@ -28,33 +26,47 @@ export const Route = createFileRoute('/challenges/$name')({
 });
 
 function Challenge() {
+    const [isHighlighted, setIsHighlighted] = useState(false);
     const pg = useContext(PGlightContext).pg;
     const challenge = Route.useLoaderData();
     const hasLesson = challenge.lesson !== undefined;
 
     useEffect(() => {
-        hljs.highlightAll();
-    }, []);
+        if (!isHighlighted) {
+            hljs.highlightAll();
+            setIsHighlighted(true);
+        }
+    }, [isHighlighted]);
+
+    const handleRun = async () => {
+        if (!pg) return;
+        const body = await fetch('/databases/nordwind.sql');
+        const sql = await body.text();
+
+        const schemaResult = await pg.exec(sql);
+        console.log(schemaResult);
+        const result = await pg.query('SELECT * FROM customers');
+        console.log(result);
+    }
     
     return (
         <Wrapper>
-            <PGliteProvider db={pg}>
-                <title>SQL Hero - {challenge.meta.title}</title>
-                <h2>{challenge.meta.title}</h2>
-                <h3>{challenge.title}</h3>
-                {hasLesson && (
-                    <div
-                        dangerouslySetInnerHTML={{
-                            __html: DOMPurify.sanitize(challenge.lesson)
-                        }}
-                    />
-                )}
-                <p
+            <title>SQL Hero - {challenge.meta.title}</title>
+            <h2>{challenge.meta.title}</h2>
+            <h3>{challenge.title}</h3>
+            {hasLesson && (
+                <div
                     dangerouslySetInnerHTML={{
-                        __html: DOMPurify.sanitize(challenge.task)
+                        __html: DOMPurify.sanitize(challenge.lesson)
                     }}
                 />
-            </PGliteProvider>
+            )}
+            <p
+                dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(challenge.task)
+                }}
+            />
+            <Button onClick={handleRun}>Run</Button>
         </Wrapper>
     );
 }
