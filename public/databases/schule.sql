@@ -13,18 +13,12 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-
--- Exportiere Datenbank-Struktur für schule
-DROP DATABASE IF EXISTS "schule";
-CREATE DATABASE IF NOT EXISTS "schule";
-;
-
 -- Exportiere Struktur von Tabelle schule.ag
 DROP TABLE IF EXISTS "ag";
-CREATE TABLE IF NOT EXISTS `ag` (
-  `id` integer NOT NULL
-,  `name` varchar(40) NOT NULL
-,  `lehrer_id` integer NOT NULL
+CREATE TABLE IF NOT EXISTS ag (
+  id integer NOT NULL
+,  name varchar(40) NOT NULL
+,  lehrer_id integer NOT NULL
 );
 
 -- Exportiere Daten aus Tabelle schule.ag: -1 rows
@@ -41,10 +35,10 @@ INSERT INTO "ag" ("id", "name", "lehrer_id") VALUES
 
 -- Exportiere Struktur von Tabelle schule.klasse
 DROP TABLE IF EXISTS "klasse";
-CREATE TABLE IF NOT EXISTS `klasse` (
-  `id` integer NOT NULL
-,  `name` varchar(10) NOT NULL
-,  `klassenlehrer_id` integer NOT NULL
+CREATE TABLE IF NOT EXISTS klasse (
+  id integer NOT NULL
+,  name varchar(10) NOT NULL
+,  klassenlehrer_id integer NOT NULL
 );
 
 -- Exportiere Daten aus Tabelle schule.klasse: 4 rows
@@ -59,10 +53,10 @@ INSERT INTO "klasse" ("id", "name", "klassenlehrer_id") VALUES
 
 -- Exportiere Struktur von Tabelle schule.lehrer
 DROP TABLE IF EXISTS "lehrer";
-CREATE TABLE IF NOT EXISTS `lehrer` (
-  `id` integer NOT NULL
-,  `name` varchar(20) NOT NULL
-,  `vorname` varchar(20) NOT NULL
+CREATE TABLE IF NOT EXISTS lehrer (
+  id integer NOT NULL
+,  name varchar(20) NOT NULL
+,  vorname varchar(20) NOT NULL
 );
 
 -- Exportiere Daten aus Tabelle schule.lehrer: -1 rows
@@ -78,11 +72,11 @@ INSERT INTO "lehrer" ("id", "name", "vorname") VALUES
 
 -- Exportiere Struktur von Tabelle schule.raum
 DROP TABLE IF EXISTS "raum";
-CREATE TABLE IF NOT EXISTS `raum` (
-  `id` integer NOT NULL
-,  `nummer` varchar(10) NOT NULL
-,  `plaetze` integer NOT NULL
-,  `etage` varchar(10) NOT NULL
+CREATE TABLE IF NOT EXISTS raum (
+  id integer NOT NULL
+,  nummer varchar(10) NOT NULL
+,  plaetze integer NOT NULL
+,  etage varchar(10) NOT NULL
 );
 
 -- Exportiere Daten aus Tabelle schule.raum: -1 rows
@@ -101,11 +95,11 @@ INSERT INTO "raum" ("id", "nummer", "plaetze", "etage") VALUES
 
 -- Exportiere Struktur von Tabelle schule.schueler
 DROP TABLE IF EXISTS "schueler";
-CREATE TABLE IF NOT EXISTS `schueler` (
-  `id` integer NOT NULL
-,  `name` varchar(20) NOT NULL
-,  `vorname` varchar(20) NOT NULL
-,  `klasse_id` integer NOT NULL
+CREATE TABLE IF NOT EXISTS schueler (
+  id integer NOT NULL
+,  name varchar(20) NOT NULL
+,  vorname varchar(20) NOT NULL
+,  klasse_id integer NOT NULL
 );
 
 -- Exportiere Daten aus Tabelle schule.schueler: -1 rows
@@ -122,9 +116,9 @@ INSERT INTO "schueler" ("id", "name", "vorname", "klasse_id") VALUES
 
 -- Exportiere Struktur von Tabelle schule.teilnahme
 DROP TABLE IF EXISTS "teilnahme";
-CREATE TABLE IF NOT EXISTS `teilnahme` (
-  `schueler_id` integer NOT NULL
-,  `ag_id` integer NOT NULL
+CREATE TABLE IF NOT EXISTS teilnahme (
+  schueler_id integer NOT NULL
+,  ag_id integer NOT NULL
 );
 
 -- Exportiere Daten aus Tabelle schule.teilnahme: -1 rows
@@ -144,13 +138,13 @@ INSERT INTO "teilnahme" ("schueler_id", "ag_id") VALUES
 
 -- Exportiere Struktur von Tabelle schule.unterricht
 DROP TABLE IF EXISTS "unterricht";
-CREATE TABLE IF NOT EXISTS `unterricht` (
-  `id` integer NOT NULL
-,  `klasse_id` integer NOT NULL
-,  `lehrer_id` integer NOT NULL
-,  `raum_id` integer NOT NULL
-,  `fach` varchar(20) NOT NULL
-,  `stunden` integer NOT NULL
+CREATE TABLE IF NOT EXISTS unterricht (
+  id integer NOT NULL
+,  klasse_id integer NOT NULL
+,  lehrer_id integer NOT NULL
+,  raum_id integer NOT NULL
+,  fach varchar(20) NOT NULL
+,  stunden integer NOT NULL
 );
 
 -- Exportiere Daten aus Tabelle schule.unterricht: -1 rows
