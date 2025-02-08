@@ -41,11 +41,12 @@ const isExisting = async (filePath) => {
 
             const dbUrl = new URL(value.db);
             const pdfUrl = new URL(value.pdf);
+            const dbLen = dbUrl.pathname.length;
 
             // Store metadata for challenge
             const meta = {
                 title: value.titelDB,
-                db: dbUrl.pathname,
+                schema: `${dbUrl.pathname.substring(0, dbLen - 2)}sql`,
                 pdf: pdfUrl.pathname,
             };
 
