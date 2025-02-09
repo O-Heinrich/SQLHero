@@ -176,8 +176,18 @@ button.theme-button {
     transition: opacity 0.2s;
 }
 
+code.hljs {
+    box-shadow: 0 3px 8px -3px #00007733;
+    border-color: oklch(0.89 0.05 252.8);
+}
+
+.dark code.hljs {
+    box-shadow: 0 3px 8px -3px #0000775b;
+    border-color: hsl(212, 20%, 27%);
+}
+
 code {
-    @apply text-sm sm:text-base inline-flex text-left items-center border-1 my-1 border-slate-300 dark:border-slate-600 bg-gray-200 dark:bg-slate-700 text-blue-700 dark:text-blue-400 rounded-lg p-1;
+    @apply text-sm sm:text-base inline-flex text-left items-center border-1 my-1 border-slate-200 dark:border-slate-600 bg-gray-200/50 dark:bg-slate-700/50 text-blue-700 dark:text-blue-400 rounded-lg p-1;
 }
 
 
