@@ -9,11 +9,13 @@ export const Route = createLazyFileRoute('/overview')({
 function RouteComponent() {
     return (
         <Wrapper>
-            <h2>Hello "/overview"!</h2>
+            <h2>Übersicht</h2>
             <ol>
-                {CHALLENGES.map((challenge, index) => (
+                {CHALLENGES.map(({no, title}, index) => (
                     <li key={index}>
-                        <Link to={`/challenges/${challenge.no}`}>{challenge.title}</Link>
+                        <Link to={`/challenges/$name`} params={{name: no.toString()}}>
+                            {title}
+                        </Link>
                     </li>
                 ))}
             </ol>
