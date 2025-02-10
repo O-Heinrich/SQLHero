@@ -3,10 +3,6 @@ import { Wrapper } from '@/components/Wrapper';
 import { Button } from '@headlessui/react';
 import { createLazyFileRoute, Link } from '@tanstack/react-router';
 
-import hljs from "highlight.js";
-
-import { useEffect } from 'react';
-
 export const Route = createLazyFileRoute('/')({
     component: Index,
     errorComponent: ({ error }) => <div>Error: {error.message}</div>,
@@ -15,10 +11,6 @@ export const Route = createLazyFileRoute('/')({
 })
 
 function Index() {
-    useEffect(() => {
-        hljs.highlightAll();
-    }, []);
-
     return (
         <Wrapper>
             <title>SQL Hero - Startseite</title>
