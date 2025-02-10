@@ -78,7 +78,7 @@ function Challenge() {
 
     return (
         <Wrapper>
-            <title>SQL Hero - {challenge.meta.title}</title>
+            <title>SQL Hero - Challenge</title>
             <ChallengeHeader title={challenge.meta.title} subtitle={challenge.title} />
             {hasLesson && <ChallengeLesson lesson={challenge.lesson!} />}
             <ChallengeTask task={challenge.task} />

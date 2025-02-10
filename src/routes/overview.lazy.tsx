@@ -9,6 +9,7 @@ export const Route = createLazyFileRoute('/overview')({
 function RouteComponent() {
     return (
         <Wrapper>
+            <title>SQL Hero - Übersicht</title>
             <h2>Übersicht</h2>
             <ol>
                 {CHALLENGES.map(({no, title}, index) => (
