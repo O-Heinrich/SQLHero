@@ -7,8 +7,9 @@ import { ToggleThemeButton } from "./buttons/ToggleTheme";
 import { useTheme } from "@/hooks/useTheme";
 import { ChevronLeft, ChevronRight } from "./icons";
 import { Button } from "@headlessui/react";
-import { useNavigate } from "@tanstack/react-router";
+import { useLocation, useNavigate } from "@tanstack/react-router";
 import { COUNT_CHALLENGES } from "@/constants";
+import { Ellipses } from "./icons/Ellipses";
 
 interface HeaderProps {
     ref?: React.Ref<HTMLHeadingElement>;
@@ -44,6 +45,7 @@ export const Header: React.FC<HeaderProps> = ({ ref }: HeaderProps): React.React
     const isDarkMode = React.useMemo(() => theme === 'dark', [theme]);
     const [challengeNo, setChallengeNo] = React.useState(1);
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleNext = () => {
         setChallengeNo((prev) => {
@@ -73,6 +75,16 @@ export const Header: React.FC<HeaderProps> = ({ ref }: HeaderProps): React.React
         });
     }
 
+    const handleOverview = () => {
+        if (location.pathname === '/overview') {
+            history?.back();
+        } else {
+            navigate({
+                to: '/overview',
+            });
+        }        
+    }
+
     return (
         <header ref={ref} className={clsx('sticky', 'top-0', 'z-50', 'dark:bg-red-500/50', 'bg-red-800/50', 'text-white', 'backdrop-blur-xl')}>
             <Wrapper className={clsx('flex',  'items-center')}>
@@ -83,6 +95,9 @@ export const Header: React.FC<HeaderProps> = ({ ref }: HeaderProps): React.React
                 <div className="px-2 flex">
                     <Button onClick={handlePrev}>
                         <ChevronLeft size={2} fill="currentColor" />
+                    </Button>
+                    <Button onClick={handleOverview}>
+                        <Ellipses size={2} fill="currentColor" />
                     </Button>
                     <Button onClick={handleNext}>
                         <ChevronRight size={2} fill="currentColor" />
