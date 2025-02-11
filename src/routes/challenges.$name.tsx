@@ -13,6 +13,7 @@ import { Skeleton } from '@/components/Skeleton';
 import { PGlightContext } from '@/lib/PGlightContext';
 import { Button } from '@headlessui/react';
 import { useTheme } from '@/hooks/useTheme';
+import { Table } from '@/components/table';
 
 /**
  * Fetches challenge data from the API
@@ -57,6 +58,7 @@ function Challenge() {
     const { pg } = useContext(PGlightContext);
     const challenge = Route.useLoaderData() as ChallengeData;
     const editorState = useState(challenge.solution);
+    const [result, setResult] = useState<any>(null);
     const hasLesson = challenge.lesson !== undefined;
     useEffect(() => {
         if (challenge.lesson !== undefined) {
@@ -70,10 +72,10 @@ function Challenge() {
         const body = await fetch(challenge.meta.schema);
         const sql = await body.text();
 
-        const schemaResult = await pg.exec(sql);
-        console.log(schemaResult, challenge.solution);
-        const result = await pg.query(challenge.solution);
-        console.log(result);
+        await pg.exec(sql);
+    
+        const result = await pg.query(editorState[0]);
+        setResult(result);
     }
 
     return (
@@ -84,6 +86,7 @@ function Challenge() {
             <ChallengeTask task={challenge.task} />
             <ChallengeEditor value={editorState[0]} setValue={editorState[1]} />
             <Button onClick={handleRun}>Run</Button>
+            {result && <Table columns={result.fields.map((field: any) => field.name)} rows={result.rows.map((row: any) => Object.values(row))} />}
         </Wrapper>
     );
 }
