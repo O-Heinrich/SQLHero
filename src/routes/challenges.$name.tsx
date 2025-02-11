@@ -44,6 +44,11 @@ interface ChallengeData {
     task: string;
 }
 
+interface QueryResult {
+    fields: { name: string }[];
+    rows: Record<string, unknown>[];
+}
+
 /**
  * Main Challenge component that displays and manages SQL challenges
  * @component
@@ -58,7 +63,7 @@ function Challenge() {
     const { pg } = useContext(PGlightContext);
     const challenge = Route.useLoaderData() as ChallengeData;
     const editorState = useState(challenge.solution);
-    const [result, setResult] = useState<any>(null);
+    const [result, setResult] = useState<QueryResult | null>(null);
     const hasLesson = challenge.lesson !== undefined;
     useEffect(() => {
         if (challenge.lesson !== undefined) {
@@ -75,18 +80,18 @@ function Challenge() {
         await pg.exec(sql);
     
         const result = await pg.query(editorState[0]);
-        setResult(result);
+        setResult(result as QueryResult);
     }
 
     return (
         <Wrapper>
             <title>SQL Hero - Challenge</title>
-            <ChallengeHeader title={challenge.meta.title} subtitle={challenge.title} />
+            <ChallengeHeader title={challenge.title} subtitle={challenge.meta.title} />
             {hasLesson && <ChallengeLesson lesson={challenge.lesson!} />}
             <ChallengeTask task={challenge.task} />
             <ChallengeEditor value={editorState[0]} setValue={editorState[1]} />
             <Button onClick={handleRun}>Run</Button>
-            {result && <Table columns={result.fields.map((field: any) => field.name)} rows={result.rows.map((row: any) => Object.values(row))} />}
+            {result && <Table columns={result.fields.map((field) => field.name)} rows={result.rows.map((row) => Object.values(row))} />}
         </Wrapper>
     );
 }
