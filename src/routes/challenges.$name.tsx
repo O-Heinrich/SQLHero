@@ -42,6 +42,7 @@ interface ChallengeData {
     solution: string;
     lesson?: string;
     task: string;
+    info: string;
 }
 
 interface QueryResult {
@@ -62,8 +63,9 @@ interface QueryResult {
 function Challenge() {
     const { pg } = useContext(PGlightContext);
     const challenge = Route.useLoaderData() as ChallengeData;
-    const editorState = useState(challenge.solution);
+    const editorState = useState('');
     const [result, setResult] = useState<QueryResult | null>(null);
+    const [db, setDb] = useState<string>('');
     const hasLesson = challenge.lesson !== undefined;
     useEffect(() => {
         if (challenge.lesson !== undefined) {
@@ -72,15 +74,24 @@ function Challenge() {
         }
     }, [challenge]);
 
+    useEffect(() => {
+        editorState[1](challenge.solution);
+    }, [challenge]);
+
+    useEffect(() => {
+        if (pg && db === '') {
+            fetch(challenge.meta.schema).then(async (response) => {
+                const sql = await response.text();
+                await pg.exec(sql);
+                setDb(() => sql);
+            });
+        }
+    }, [db, pg, challenge]);
+
     const handleRun = async () => {
         if (!pg) return;
-        const body = await fetch(challenge.meta.schema);
-        const sql = await body.text();
-
-        await pg.exec(sql);
-    
         const result = await pg.query(editorState[0]);
-        setResult(result as QueryResult);
+        setResult(() => result as QueryResult);
     }
 
     return (
@@ -88,6 +99,9 @@ function Challenge() {
             <title>SQL Hero - Challenge</title>
             <ChallengeHeader title={challenge.title} subtitle={challenge.meta.title} />
             {hasLesson && <ChallengeLesson lesson={challenge.lesson!} />}
+            <div 
+                dangerouslySetInnerHTML={{ __html: dompurify.sanitize(challenge.info) }} 
+            />
             <ChallengeTask task={challenge.task} />
             <ChallengeEditor value={editorState[0]} setValue={editorState[1]} />
             <Button onClick={handleRun}>Run</Button>
