@@ -1,8 +1,6 @@
 import { useContext, useEffect, useState, useRef } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import dompurify from 'dompurify';
-import hljs from "highlight.js/lib/core";
-import sql from "highlight.js/lib/languages/sql";
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-sql";
 import "ace-builds/src-noconflict/theme-solarized_dark";
@@ -14,8 +12,7 @@ import { PGlightContext } from '@/lib/PGlightContext';
 import { Button } from '@headlessui/react';
 import { useTheme } from '@/hooks/useTheme';
 import { Table } from '@/components/table';
-
-hljs.registerLanguage("sql", sql);
+import { NotificationContext } from '@/lib/NotificationContext';
 
 /**
  * Fetches challenge data from the API
@@ -66,45 +63,47 @@ function Challenge() {
     const { pg } = useContext(PGlightContext);
     const challenge = Route.useLoaderData() as ChallengeData;
     const [editorState, setEditorState] = useState('');
-    const [lessonState, setLessonState] = useState('');
     const [result, setResult] = useState<QueryResult | null>(null);
     const [db, setDb] = useState<string>('');
     const hasLesson = challenge.lesson !== undefined;
     const lessonsRef = useRef<HTMLDivElement>(null);
-    useEffect(() => {
-        const element = lessonsRef.current?.querySelector('pre code') as HTMLElement|null;
-        if (element?.dataset.highlighted === undefined) {
-            hljs.highlightAll();
-            setLessonState(() => element?.innerHTML ?? '');
-        }
-    }, []);
+    const notificator = useContext(NotificationContext);
 
     useEffect(() => {
-        setLessonState(() => challenge.lesson ?? '');
         setEditorState(() => challenge.solution);
     }, [challenge]);
 
     useEffect(() => {
         if (pg && db === '') {
             fetch(challenge.meta.schema).then(async (response) => {
-                const sql = await response.text();
-                await pg.exec(sql);
-                setDb(() => sql);
+                try {
+                    const sql = await response.text();
+                    await pg.exec(sql);
+                    setDb(() => sql);
+                } catch (error) {
+                    const errMsg = typeof error === 'string' ? error : (error as Error).message;
+                    notificator.notify(`Failed to load schema: ${errMsg}`);
+                }
             });
         }
-    }, [db, pg, challenge]);
+    }, [db, pg, challenge, notificator]);
 
     const handleRun = async () => {
         if (!pg) return;
-        const result = await pg.query(editorState);
-        setResult(() => result as QueryResult);
+        try {
+            const result = await pg.query(editorState);
+            setResult(() => result as QueryResult);
+        } catch (error) {
+            const errMsg = typeof error === 'string' ? error : (error as Error).message;
+            notificator.notify(`Failed to execute query: ${errMsg}`);
+        }
     }
 
     return (
         <Wrapper>
             <title>SQL Hero - Challenge</title>
             <ChallengeHeader title={challenge.title} subtitle={challenge.meta.title} />
-            {hasLesson && <ChallengeLesson ref={lessonsRef} lesson={lessonState ?? ''} />}
+            {hasLesson && <ChallengeLesson ref={lessonsRef} lesson={challenge.lesson!} />}
             <div 
                 dangerouslySetInnerHTML={{ __html: dompurify.sanitize(challenge.info) }} 
             />

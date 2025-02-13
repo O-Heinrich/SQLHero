@@ -4,6 +4,7 @@ import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { ThemeProvider } from '@/lib/ThemeProvider';
 import { Footer } from '@/components/Footer';
 import { PGlightProvider } from '@/lib/PGlightProvider';
+import { NotificationProvider } from '@/lib/NotificationProvider';
 
 const Root: React.FC = () => {
     const headerRef = React.useRef<HTMLHeadingElement>(null);
@@ -11,13 +12,15 @@ const Root: React.FC = () => {
     return (
         <ThemeProvider>
             <PGlightProvider>
-                <div className="flex flex-col min-h-screen">
-                    <Header ref={headerRef} />
-                    <main className="flex-1 pt-10 pb-6">
-                        <Outlet />
-                    </main>
-                    <Footer />
-                </div>
+                <NotificationProvider>
+                    <div className="flex flex-col min-h-screen">
+                        <Header ref={headerRef} />
+                        <main className="flex-1 pt-10 pb-6">
+                            <Outlet />
+                        </main>
+                        <Footer />
+                    </div>
+                </NotificationProvider>
             </PGlightProvider>
         </ThemeProvider>
     );
