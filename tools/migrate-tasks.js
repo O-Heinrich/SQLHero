@@ -14,6 +14,7 @@ import { writeFile, mkdir, stat } from "node:fs/promises";
 import { JSDOM } from "jsdom";
 import { renderToStaticMarkup } from "react-dom/server";
 import { challenges } from "../migration/challenges.tsx";
+import hljs from "highlight.js";
 
 /**
  * Checks if a file/directory exists
@@ -72,6 +73,7 @@ const removeAllAttibutesFromHtml = (html, tagNames) => {
             const childs = Array.from(element.childNodes).map(child => child.textContent).join("");
             element.innerHTML = childs;
             element.classList.add('hljs', 'language-sql');
+            hljs.highlightElement(element);
         }
 
     }
