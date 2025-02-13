@@ -157,8 +157,12 @@ code.hljs {
 
 code {
     @apply text-sm sm:text-base inline-flex text-left items-center border-1 my-1 border-slate-200 dark:border-slate-600 bg-gray-200/50 dark:bg-slate-700/50 text-blue-700 dark:text-blue-400 rounded-lg p-1;
+    border-color: oklch(0.89 0.05 252.8);
 }
 
+.dark code {
+    border-color: hsl(212, 20%, 27%);
+}
 
 @media (prefers-color-scheme: light) {
     :root {
