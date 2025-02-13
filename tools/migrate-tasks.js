@@ -50,9 +50,9 @@ const throwIfTypeMismatch = (value, type, message) => {
 /**
  * Removes all attributes from the specified HTML elements within a given HTML string.
  *
- * @param {string} html - The HTML content to be processed.
+ * @param {string|JSDOM} html - The HTML content to be processed.
  * @param {string[]} tagNames - An array of tag names; attributes will be removed from these elements.
- * @returns {JSDOM} A JSDOM instance containing the modified document.
+ * @returns {JSDOM} A JSDOM instance with the attributes removed.
  * @throws {TypeError} If the provided html is not a string or tagNames is not an array.
  */
 const removeAllAttibutesFromHtml = (html, tagNames) => {
@@ -71,7 +71,7 @@ const removeAllAttibutesFromHtml = (html, tagNames) => {
         if (element.tagName === 'CODE' && element.children.length > 0) {
             const childs = Array.from(element.childNodes).map(child => child.textContent).join("");
             element.innerHTML = childs;
-            element.classList.add('hljs', 'sql');
+            element.classList.add('hljs', 'language-sql');
         }
 
     }
@@ -80,10 +80,48 @@ const removeAllAttibutesFromHtml = (html, tagNames) => {
 }
 
 /**
+ * Removes Font Awesome icons from the specified HTML content.
+ * 
+ * @param {string|JSDOM} html - The HTML content to be processed.
+ * @returns {JSDOM} A JSDOM instance with the Font Awesome icons removed.
+ * @throws {TypeError} If the provided html is not a string or a JSDOM instance.
+ */
+const removeFontawesome = (html) => {
+    const dom = html === 'string' ? new JSDOM(html) : html;
+    const { document } = dom.window;
+    const elements = document.querySelectorAll('i');
+
+    for (const element of elements) {
+        if (element.classList.contains('fa')) {
+            if (element.parentNode.tagName === 'A') {
+                element.parentNode.remove();
+            } else {
+                element.remove();
+            }
+        }
+    }
+
+    return dom;
+}
+
+/**
+ * Converts a JSX element to a string.
+ * 
+ * @param {ReactElement} jsx - The JSX element to be converted.
+ * @returns {string} The string representation of the JSX element.
+ */
+const jsxToMarkup = (jsx) => removeFontawesome(
+    removeAllAttibutesFromHtml(
+        renderToStaticMarkup(jsx),
+        ['h3', 'code']
+    )
+).window.document.body.innerHTML;
+
+/**
  * Main execution function for challenge file generation
  * @async
  */
-(async () => {
+(async () => {Element
     for (const [key, value] of Object.entries(challenges)) {
         try {
             // Ensure challenge directory exists
@@ -105,17 +143,14 @@ const removeAllAttibutesFromHtml = (html, tagNames) => {
             // Write individual task files
             for (const task of value.tasks) {
                 const lesson = task.lektion !== ''
-                    ? removeAllAttibutesFromHtml(
-                        renderToStaticMarkup(task.lektion),
-                        ['h3', 'code']
-                      ).serialize()
+                    ? jsxToMarkup(task.lektion)
                     : undefined;
 
                 const {
                     nr,
                     titel,
                     aufgabe,
-                    solution,
+                    solution,                    
                     intro,
                     view,
                 } = task;

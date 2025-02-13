@@ -86,17 +86,50 @@ p {
 }
 
 ol {
-    @apply list-decimal list-inside;
+    @apply list-decimal list-outside md:pl-16 pl-8;
+}
+
+ol li {
+    @apply mb-2 text-xl;
 }
 
 a:not(a:has(button)) {
     font-weight: 500;
     color: #646cff;
     text-decoration: inherit;
+    transition: color 0.2s;
 }
 
 a:not(a:has(button)):hover {
-    color: #535bf2;
+    color: #454cc2;
+}
+
+table {
+    @apply min-w-full divide-y  divide-gray-200 dark:divide-gray-700 my-8 rounded-lg overflow-hidden shadow-lg;
+}
+
+table thead {
+    @apply bg-slate-50 dark:bg-slate-700;
+}
+
+table thead th {
+    @apply py-2 px-4 text-left text-lg font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider;
+}
+
+table tbody {
+    @apply bg-white divide-y divide-slate-200 dark:bg-gray-700 dark:divide-slate-500;
+}
+
+table tbody tr:nth-child(odd) {
+    @apply bg-slate-50 dark:bg-slate-600;
+}
+
+table tbody tr:nth-child(even) {
+    @apply bg-slate-100 dark:bg-slate-700;
+}
+
+table tbody td {
+    @apply py-2 px-4 text-lg text-gray-500 dark:text-gray-300;
 }
 
 button {
@@ -132,8 +165,9 @@ code {
         color: #213547;
         background-color: #ffffff;
     }
-
+/*
     a:hover {
         color: #747bff;
     }
+*/
 }
