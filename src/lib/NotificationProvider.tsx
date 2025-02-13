@@ -47,7 +47,6 @@ const Notification: React.FC<{children: ReactNode}> = ({children}): ReactElement
     )
 };
 
-
 /**
  * NotificationProvider component that provides notification context to its children.
  *
