@@ -3,6 +3,7 @@ import { ReactElement, ReactNode, useEffect, useState, useContext } from "react"
 import { AnimatePresence, motion } from "motion/react"
 import { NotificationContext, NotificationType } from "./NotificationContext";
 import { Exclamation } from "@/components/icons";
+import { NotNotificationTypeError } from "./errors";
 
 /**
  * Notification component that displays a notification message with animation.
@@ -48,14 +49,29 @@ const Notification: React.FC<{children: ReactNode, active: boolean}> = ({childre
     )
 };
 
-const NotificationIcon = ({ type }: { type: NotificationType }) => {
+/**
+ * NotificationIcon component that displays an icon based on the notification type.
+ * 
+ * @param {Object} props - The properties object.
+ * @param {NotificationType} props.type - The type of notification.
+ * 
+ * @returns {ReactElement} The rendered notification icon component.
+ * 
+ * @example
+ * ```tsx
+ * <NotificationIcon type={NotificationType.INFO} />
+ * ```
+ */
+const NotificationIcon = ({ type }: { type: NotificationType }): ReactElement => {
     switch (type) {
-    case NotificationType.INFO:
-        return <>(I) </>;
-    case NotificationType.WARNING:
-        return <Exclamation fill="yellow" size={2} />;
-    case NotificationType.ERROR:
-        return <Exclamation fill="#ff6467" size={2} />;
+        case NotificationType.INFO:
+            return <>(I) </>;
+        case NotificationType.WARNING:
+            return <Exclamation fill="#64ff67" size={2} />;
+        case NotificationType.ERROR:
+            return <Exclamation fill="#ff6467" size={2} />;
+        default:
+            throw new NotNotificationTypeError(`Invalid notification type: ${type}`);
     }
 };
 
