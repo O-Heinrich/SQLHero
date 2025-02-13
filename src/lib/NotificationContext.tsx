@@ -16,6 +16,7 @@ export enum NotificationType {
  */
 type ContextType = {
     notify: (message: string, type?: NotificationType) => void;
+    toggle: () => void;
 };
 /**
  * NotificationContext is a React context that provides notification functionality.
@@ -26,6 +27,9 @@ type ContextType = {
  */
 export const NotificationContext = createContext<ContextType>({
     notify: () => {
+        throw new NotImplementedError('NotificationContext is not implemented');
+    },
+    toggle: () => {
         throw new NotImplementedError('NotificationContext is not implemented');
     },
 });

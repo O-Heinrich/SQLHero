@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { ReactElement, ReactNode, useEffect, useState } from "react";
+import { ReactElement, ReactNode, useEffect, useState, useContext } from "react";
 import { AnimatePresence, motion } from "motion/react"
 import { NotificationContext, NotificationType } from "./NotificationContext";
 import { Exclamation } from "@/components/icons";
@@ -21,27 +21,29 @@ import { Exclamation } from "@/components/icons";
  * 
  * The notification will appear with an animation and disappear after 5 seconds.
  */
-const Notification: React.FC<{children: ReactNode}> = ({children}): ReactElement => {
-    const [isVisible, setIsVisible] = useState(false)
+const Notification: React.FC<{children: ReactNode, active: boolean}> = ({children, active}): ReactElement => {
+    const { toggle } = useContext(NotificationContext);
 
     useEffect(() => {
-        setIsVisible(() => true);
-        const timeout = setTimeout(() => setIsVisible(() => false), 5000);
+        if (!active) return;
+        const timeout = setTimeout(toggle, 5000);
         return () => clearTimeout(timeout);
-    }, [children])
+    }, [active, toggle]);
 
     return (
         <AnimatePresence initial={false}>
-            {isVisible &&
-            <motion.div 
-                className={clsx('fixed items-center gap-4 bottom-0 right-0 m-4 p-4 text-white rounded-md border-1 border-red-400 shadow-xl bg-red-800/40 backdrop-blur-lg flex flex-row')}
-                initial={{ opacity: 0, translateY: 100, scale: 0.5 }}
-                animate={{ opacity: 1, translateY: 0, scale: 1 }}
-                exit={{ opacity: 0, translateY: 100, scale: 0.5 }}
-                key="box"
-            >
-                {children}
-            </motion.div>}
+            {
+                active &&
+                <motion.div 
+                    className={clsx('fixed items-center gap-4 bottom-0 right-0 m-4 p-4 text-white rounded-md border-1 border-red-400 shadow-xl inner-shadow-sm inner-shadow-white/30 bg-red-800/40 backdrop-blur-lg flex flex-row')}
+                    initial={{ opacity: 0, translateY: 100, scale: 0.5 }}
+                    animate={{ opacity: 1, translateY: 0, scale: 1 }}
+                    exit={{ opacity: 0, translateY: 100, scale: 0.5 }}
+                    key="box"
+                >
+                    {children}
+                </motion.div>
+            }
         </AnimatePresence>
     )
 };
@@ -77,11 +79,15 @@ const NotificationIcon = ({ type }: { type: NotificationType }) => {
  */
 export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ children }: { children: ReactNode; }): ReactElement => {
     const [msg, setMsg] = useState<{message: string, type: NotificationType}>({ message: '', type: NotificationType.INFO });
-    const notify = (message: string, type?: NotificationType) => setMsg(() => ({ message, type: type ?? NotificationType.INFO }));
+    const [active, setActive] = useState(false);
+    const notify = (message: string, type?: NotificationType) => {
+        setActive(() => true);
+        setMsg(() => ({ message, type: type ?? NotificationType.INFO }))
+    };
     return (
-        <NotificationContext.Provider value={{ notify }}>
+        <NotificationContext.Provider value={{ notify, toggle: () => setActive((prev) => !prev) }}>
             {children}
-            <Notification>
+            <Notification active={active}>
                 <NotificationIcon type={msg.type} />
                 {' '}
                 {msg.message}
