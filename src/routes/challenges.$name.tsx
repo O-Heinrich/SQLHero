@@ -76,13 +76,14 @@ function Challenge() {
     useEffect(() => {
         if (pg && db === '') {
             fetch(challenge.meta.schema).then(async (response) => {
+                const sql = await response.text();
                 try {
-                    const sql = await response.text();
                     await pg.exec(sql);
-                    setDb(() => sql);
                 } catch (error) {
                     const errMsg = typeof error === 'string' ? error : (error as Error).message;
                     notificator.notify(`Failed to load schema: ${errMsg}`, NotificationType.ERROR);
+                } finally {
+                    setDb(() => sql);
                 }
             });
         }
