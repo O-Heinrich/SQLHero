@@ -1,6 +1,12 @@
 import { createContext } from 'react';
 import { NotImplementedError } from './errors';
 
+export enum NotificationType {
+    INFO = 'info',
+    WARNING = 'warning',
+    ERROR = 'error',
+}
+
 /**
  * ContextType defines the shape of the context object used in NotificationContext.
  * 
@@ -9,7 +15,7 @@ import { NotImplementedError } from './errors';
  * @property {React.RefObject<HTMLDivElement>} msgRef - Reference to a HTMLDivElement to display the notification message.
  */
 type ContextType = {
-    notify: (message: string) => void;
+    notify: (message: string, type?: NotificationType) => void;
 };
 /**
  * NotificationContext is a React context that provides notification functionality.

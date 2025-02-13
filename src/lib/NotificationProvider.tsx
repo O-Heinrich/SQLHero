@@ -1,7 +1,8 @@
 import clsx from "clsx";
 import { ReactElement, ReactNode, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react"
-import { NotificationContext } from "./NotificationContext";
+import { NotificationContext, NotificationType } from "./NotificationContext";
+import { Exclamation } from "@/components/icons";
 
 /**
  * Notification component that displays a notification message with animation.
@@ -24,18 +25,16 @@ const Notification: React.FC<{children: ReactNode}> = ({children}): ReactElement
     const [isVisible, setIsVisible] = useState(false)
 
     useEffect(() => {
-        if (children) {
-            setIsVisible(() => true);
-            const timeout = setTimeout(() => setIsVisible(() => false), 5000);
-            return () => clearTimeout(timeout);
-        }
+        setIsVisible(() => true);
+        const timeout = setTimeout(() => setIsVisible(() => false), 5000);
+        return () => clearTimeout(timeout);
     }, [children])
 
     return (
         <AnimatePresence initial={false}>
             {isVisible &&
             <motion.div 
-                className={clsx('fixed bottom-0 right-0 m-4 p-4 text-white rounded-md border-1 border-red-400 shadow-xl bg-red-800/40 backdrop-blur-lg')}
+                className={clsx('fixed items-center gap-4 bottom-0 right-0 m-4 p-4 text-white rounded-md border-1 border-red-400 shadow-xl bg-red-800/40 backdrop-blur-lg flex flex-row')}
                 initial={{ opacity: 0, translateY: 100, scale: 0.5 }}
                 animate={{ opacity: 1, translateY: 0, scale: 1 }}
                 exit={{ opacity: 0, translateY: 100, scale: 0.5 }}
@@ -45,6 +44,17 @@ const Notification: React.FC<{children: ReactNode}> = ({children}): ReactElement
             </motion.div>}
         </AnimatePresence>
     )
+};
+
+const NotificationIcon = ({ type }: { type: NotificationType }) => {
+    switch (type) {
+    case NotificationType.INFO:
+        return <>(I) </>;
+    case NotificationType.WARNING:
+        return <Exclamation fill="yellow" size={2} />;
+    case NotificationType.ERROR:
+        return <Exclamation fill="#ff6467" size={2} />;
+    }
 };
 
 /**
@@ -66,12 +76,16 @@ const Notification: React.FC<{children: ReactNode}> = ({children}): ReactElement
  * It maintains a message state and provides a `notify` function to update the message.
  */
 export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ children }: { children: ReactNode; }): ReactElement => {
-    const [message, setMessage] = useState<string>('');
-    const notify = (message: string) => setMessage(() => message);
+    const [msg, setMsg] = useState<{message: string, type: NotificationType}>({ message: '', type: NotificationType.INFO });
+    const notify = (message: string, type?: NotificationType) => setMsg(() => ({ message, type: type ?? NotificationType.INFO }));
     return (
         <NotificationContext.Provider value={{ notify }}>
             {children}
-            <Notification>{message}</Notification>
+            <Notification>
+                <NotificationIcon type={msg.type} />
+                {' '}
+                {msg.message}
+            </Notification>
         </NotificationContext.Provider>
     );
 };

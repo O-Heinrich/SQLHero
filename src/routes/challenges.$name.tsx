@@ -12,7 +12,7 @@ import { PGlightContext } from '@/lib/PGlightContext';
 import { Button } from '@headlessui/react';
 import { useTheme } from '@/hooks/useTheme';
 import { Table } from '@/components/table';
-import { NotificationContext } from '@/lib/NotificationContext';
+import { NotificationContext, NotificationType } from '@/lib/NotificationContext';
 
 /**
  * Fetches challenge data from the API
@@ -82,7 +82,7 @@ function Challenge() {
                     setDb(() => sql);
                 } catch (error) {
                     const errMsg = typeof error === 'string' ? error : (error as Error).message;
-                    notificator.notify(`Failed to load schema: ${errMsg}`);
+                    notificator.notify(`Failed to load schema: ${errMsg}`, NotificationType.ERROR);
                 }
             });
         }
@@ -95,7 +95,7 @@ function Challenge() {
             setResult(() => result as QueryResult);
         } catch (error) {
             const errMsg = typeof error === 'string' ? error : (error as Error).message;
-            notificator.notify(`Failed to execute query: ${errMsg}`);
+            notificator.notify(`Failed to execute query: ${errMsg}`, NotificationType.ERROR);
         }
     }
 
