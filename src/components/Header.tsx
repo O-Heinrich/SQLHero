@@ -124,13 +124,13 @@ export const Header: React.FC<HeaderProps> = ({ ref }: HeaderProps): React.React
                     <h1 className={clsx('text-4xl', 'dark:text-white/85', 'text-black/85', 'py-4', 'font-light')}>{APP_NAME}</h1>
                 </span>
                 <div className="px-2 flex">
-                    <Button onClick={handlePrev}>
+                    <Button onClick={handlePrev} disabled={Number.isNaN(challengeNo)}>
                         <ChevronLeft size={2} fill="currentColor" />
                     </Button>
                     <Button onClick={handleOverview}>
                         <Ellipses size={2} fill="currentColor" />
                     </Button>
-                    <Button onClick={handleNext}>
+                    <Button onClick={handleNext} disabled={Number.isNaN(challengeNo)}>
                         <ChevronRight size={2} fill="currentColor" />
                     </Button>
                 </div>
