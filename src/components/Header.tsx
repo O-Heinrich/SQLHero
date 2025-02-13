@@ -16,6 +16,9 @@ import { Button } from "@headlessui/react";
 import { COUNT_CHALLENGES } from "@/constants";
 import { Ellipses } from "./icons/Ellipses";
 
+/**
+ * Represents the properties of the Header component
+ */
 interface HeaderProps {
     ref?: React.Ref<HTMLHeadingElement>;
 }
@@ -51,29 +54,58 @@ export const Header: React.FC<HeaderProps> = ({ ref }: HeaderProps): React.React
     const canGoBack = useCanGoBack();
     const navigate = useNavigate();
     const location = useLocation();
-    const isDarkMode = React.useMemo(() => theme === 'dark', [theme]);
-    const challengeNo = React.useMemo(() => {
+    
+    /**
+     * Checks if current theme is dark mode
+     * @type {boolean} True if dark mode, false otherwise
+     * @default false
+     * @see useTheme
+     */ 
+    const isDarkMode: boolean = React.useMemo(() => theme === 'dark', [theme]);
+    /**
+     * Extracts challenge number from URL path
+     * @type {number}
+     * @default 1
+     */
+    const challengeNo: number = React.useMemo(() => {
         const path = location.pathname.split('/').pop();
-        return parseInt(path || '1', 10);
+        return parseInt(path ?? '1', 10);
     }, [location.pathname]);
 
-    const handleNext = () => navigate({
-        to: '/challenges/$name',
-        params: {
-            name: ((challengeNo + 1) % (COUNT_CHALLENGES + 1)).toString()
-        }
-    });
-
+    /**
+     * Handles navigation to next challenge.
+     * Cycles through challenges 1 to COUNT_CHALLENGES.
+     * If at last challenge, wraps back to challenge 1.
+     */
+    const handleNext = () => {
+        const next = (challengeNo + 1) % (COUNT_CHALLENGES + 1);
+        navigate({
+            to: '/challenges/$name',
+            params: {
+                name: (next <= 0 ? 1 : next).toString()
+            }
+        });
+    }
+    /**
+     * Handles navigation to previous challenge.
+     * Goes to previous challenge number.
+     * If at challenge 1, wraps to last challenge.
+     */
     const handlePrev = () => {
         const next = challengeNo - 1;
         navigate({
             to: '/challenges/$name',
             params: {
-                name: (next === 0 ? COUNT_CHALLENGES : next).toString()
+                name: (next <= 0 ? COUNT_CHALLENGES : next).toString()
             }
         });
     }
 
+    /**
+     * Handles navigation to overview page.
+     * If already on overview page and can go back, returns to previous page.
+     * Otherwise navigates to overview page.
+     */
     const handleOverview = () => {
         if (location.pathname === '/overview' && canGoBack) {
             router.history.back();
