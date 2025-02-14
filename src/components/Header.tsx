@@ -15,13 +15,8 @@ import { ChevronLeft, ChevronRight } from "./icons";
 import { Button } from "@headlessui/react";
 import { COUNT_CHALLENGES } from "@/constants";
 import { Ellipses } from "./icons/Ellipses";
-
-/**
- * Represents the properties of the Header component
- */
-interface HeaderProps {
-    ref?: React.Ref<HTMLHeadingElement>;
-}
+import { useAppState } from "@/hooks/useAppState";
+import { ChallengeAction } from "@/lib/types";
 
 /**
  * Header component with navigation and theme-responsive design
@@ -44,7 +39,7 @@ interface HeaderProps {
  * 
  * @returns {React.ReactElement} Themed and responsive header
  */
-export const Header: React.FC<HeaderProps> = ({ ref }: HeaderProps): React.ReactElement => {
+export const Header: React.FC = (): React.ReactElement => {
     /**
      * Determines if current theme is dark mode
      * @type {boolean}
@@ -54,6 +49,14 @@ export const Header: React.FC<HeaderProps> = ({ ref }: HeaderProps): React.React
     const canGoBack = useCanGoBack();
     const navigate = useNavigate();
     const location = useLocation();
+    const headerRef = React.useRef<HTMLHeadingElement>(null);
+    const { dispatch }: { dispatch: React.Dispatch<ChallengeAction> } = useAppState();
+
+    React.useEffect(() => {
+        if (headerRef.current) {
+            dispatch({ type: 'SET_HEADER_REF', payload: headerRef.current });
+        }
+    }, [headerRef, dispatch]);
     
     /**
      * Checks if current theme is dark mode
@@ -62,7 +65,7 @@ export const Header: React.FC<HeaderProps> = ({ ref }: HeaderProps): React.React
      * @see useTheme
      */ 
     const isDarkMode: boolean = React.useMemo(() => theme === 'dark', [theme]);
-    
+
     /**
      * Extracts challenge number from URL path
      * @type {number}
@@ -118,7 +121,7 @@ export const Header: React.FC<HeaderProps> = ({ ref }: HeaderProps): React.React
     }
 
     return (
-        <header ref={ref} className={clsx('sticky', 'top-0', 'z-50', 'dark:bg-red-500/50', 'bg-red-800/50', 'text-white', 'backdrop-blur-xl')}>
+        <header ref={headerRef} className={clsx('sticky', 'top-0', 'z-50', 'dark:bg-red-500/50', 'bg-red-800/50', 'text-white', 'backdrop-blur-xl')}>
             <Wrapper className={clsx('flex', 'items-center')}>
                 <span className={clsx('flex', 'items-center', 'gap-1', 'flex-grow')}>
                     <Logo fill={isDarkMode ? '#efefef' : '#343434'} />
