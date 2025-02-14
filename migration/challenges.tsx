@@ -56,7 +56,7 @@ export const challenges: Record<string, Database> = {
                 ),
                 'intro': "Laden Sie das <a href=\"http://sqlhero.it.bbwi/databases/pdf/NordwindDB.pdf\" >PDF </a> der Nordwind DB herunter, um die Tabellen und Attribute der DB zu sehen. Für diese DB sind entsprechende <br /> SQL-Aufgaben zu lösen. Viel Spaß!",
                 "aufgabe": "Aus welchen Ländern kommen die Kunden? Ausgabe: Länder.",
-                "solution": "SELECT DISTINCT Land FROM tbl_kunden ORDER BY Land ASC;"
+                "solution": "SELECT DISTINCT \"Country\" \nFROM customers \nORDER BY \"Country\" ASC;"
             },
             {
                 'nr': 2,
@@ -81,7 +81,7 @@ export const challenges: Record<string, Database> = {
                     </>
                 ),
                 "aufgabe": "Lassen Sie die Anzahl der Länder ausgeben. <br /> Ausgabe: Anzahl der Länder",
-                "solution": "SELECT COUNT(DISTINCT Land) FROM tbl_kunden;"
+                "solution": "SELECT COUNT(DISTINCT \"Country\") \nFROM customers;"
             },
             {
                 'nr': 3,
@@ -104,7 +104,7 @@ export const challenges: Record<string, Database> = {
                     </>
                 ),
                 "aufgabe": "Wo kommen die meisten Kunden her? <br /> Ausgabe: Anzahl der Kunden (absteigend sortiert), Länder",
-                "solution": "SELECT COUNT(KundenCode) AS 'Anzahl der Kunden', Land FROM tbl_kunden GROUP BY Land ORDER BY COUNT(KundenCode) DESC;"
+                "solution": "SELECT COUNT(\"CustomerID\") AS \"Number of Customers\", \n\t\"Country\"\nFROM customers \nGROUP BY \"Country\" \nORDER BY COUNT(\"CustomerID\") DESC;"
             },
             {
                 'nr': 4,
@@ -188,19 +188,19 @@ export const challenges: Record<string, Database> = {
                     </>
                 ),
                 "aufgabe": "Wie heißt der oder die Mitarbeiter*in mit der Personalnummer 9? <br /> Ausgabe: Nachname, Vorname",
-                "solution": "SELECT nachname, vorname FROM tbl_personal WHERE PersonalNr=9;"
+                "solution": "SELECT \"LastName\", \"FirstName\" \nFROM Employees \nWHERE \"EmployeeID\" = 9;"
             },
             {
                 'nr': 5,
                 'titel': "Empfänger / Where-Klausel?",
                 "aufgabe": "Gesucht werden die Empfänger, die vom Mitarbeiter mit der Personalnummer 9 betreut worden sind. <br /> Ausgabe: Empfänger, Straße, Ort, PLZ, Bestimmungsland",
-                "solution": "SELECT DISTINCT Empfaenger, Strasse, Ort, Plz, Bestimmungsland FROM tbl_bestellungen WHERE PersonalNr=9 ORDER BY Bestimmungsland ASC;"
+                "solution": "SELECT DISTINCT \"ShipName\", \"ShipAddress\", \"ShipCity\", \"ShipPostalCode\", \"ShipCountry\"\nFROM Orders \nWHERE \"EmployeeID\" = 9\nORDER BY \"ShipCountry\" ASC;"
             },
             {
                 'nr': 6,
                 'titel': "Bestellte Artikel",
                 "aufgabe": "Welche Artikel wurden bisher bestellt? <br /> Ausgabe: Artikelnummer (aufsteigend sortiert), Artikelname",
-                "solution": "SELECT DISTINCT t1.ArtikelNr, t1.Artikelname FROM tbl_artikel AS t1, tbl_bestelldetails AS t2 WHERE t1.ArtikelNr=t2.ArtikelNr;"
+                "solution": "SELECT DISTINCT t1.\"ProductID\", t1.\"ProductName\" \nFROM Products AS t1, order_details AS t2 \nWHERE t1.\"ProductID\" = t2.\"ProductID\";"
             },
             {
                 'nr': 7,
