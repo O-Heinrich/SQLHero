@@ -1,47 +1,59 @@
+/**
+ * This module provides a React context (`ThemeContext`) for managing the application's theme.
+ * The context holds the current theme (e.g., 'light' or 'dark') and a function to toggle between themes.
+ * This allows the theme state and toggle functionality to be shared across the application.
+ *
+ * The context is initialized with a default value where the theme is set to 'light' and the `toggleTheme`
+ * function is a no-op. Consumers of the context can provide their own implementation of the theme state
+ * and toggle logic.
+ *
+ * @module context/ThemeContext
+ */
+
 import { createContext } from 'react';
 
 /**
- * @typedef {Object} ThemeContextType
- * @property {string} theme - Current theme identifier (e.g., 'light', 'dark')
- * @property {function} toggleTheme - Function to switch between themes
+ * Represents the structure of the `ThemeContext`. It contains the current theme and a function
+ * to toggle between themes.
  */
 export interface IThemeContext {
+    /**
+     * The current theme of the application. This can be a string value such as 'light' or 'dark'.
+     */
     theme: string;
+
+    /**
+     * A function to toggle the theme between different states (e.g., 'light' and 'dark').
+     * This function is typically implemented to update the theme state.
+     */
     toggleTheme: () => void;
 }
 
 /**
- * React context object for managing theme state across components
- * @context ThemeContext
- * @type {React.Context<IThemeContext>}
- * @default
- * @property {string} theme='light' - Default theme initialization
- * @property {function} toggleTheme=() => {} - No-op default toggle function (to be implemented in provider)
+ * The React context for managing the application's theme. It provides the current theme
+ * and a function to toggle the theme to all components in the tree. The context is initialized
+ * with a default value where the theme is 'light' and the `toggleTheme` function is a no-op.
+ *
  * @example
- * // Create a theme provider component
- * function ThemeProvider({ children }) {
- *   const [theme, setTheme] = useState('light');
- *   const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
- * 
- *   return (
- *     <ThemeContext.Provider value={{ theme, toggleTheme }}>
- *       {children}
- *     </ThemeContext.Provider>
- *   );
- * }
- * 
+ * // Providing a custom theme and toggle function
+ * const [theme, setTheme] = useState('light');
+ * const toggleTheme = () => {
+ *     setTheme(theme === 'light' ? 'dark' : 'light');
+ * };
+ * <ThemeContext.Provider value={{ theme, toggleTheme }}>
+ *     <App />
+ * </ThemeContext.Provider>
+ *
  * @example
- * // Consume context in a component
- * function ThemeButton() {
- *   const { theme, toggleTheme } = useContext(ThemeContext);
- *   return (
+ * // Consuming the context in a component
+ * const { theme, toggleTheme } = useContext(ThemeContext);
+ * return (
  *     <button onClick={toggleTheme}>
- *       Switch to {theme === 'light' ? 'dark' : 'light'} mode
+ *         Switch to {theme === 'light' ? 'dark' : 'light'} mode
  *     </button>
- *   );
- * }
+ * );
  */
 export const ThemeContext: React.Context<IThemeContext> = createContext<IThemeContext>({
-    theme: 'light',
-    toggleTheme: () => { },
+    theme: 'light', // Default theme
+    toggleTheme: () => { }, // Default no-op toggle function
 });
