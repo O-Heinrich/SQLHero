@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, useRef } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import dompurify from 'dompurify';
@@ -66,7 +66,6 @@ function Challenge() {
     const [result, setResult] = useState<QueryResult | null>(null);
     const [db, setDb] = useState<string>('');
     const hasLesson = challenge.lesson !== undefined;
-    const lessonsRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         setEditorState(() => challenge.solution);
@@ -103,7 +102,7 @@ function Challenge() {
         <Wrapper>
             <title>SQL Hero - Challenge</title>
             <ChallengeHeader title={challenge.title} subtitle={challenge.meta.title} />
-            {hasLesson && <ChallengeLesson ref={lessonsRef} lesson={challenge.lesson!} />}
+            {hasLesson && <ChallengeLesson lesson={challenge.lesson!} />}
             <div 
                 dangerouslySetInnerHTML={{ __html: dompurify.sanitize(challenge.info) }} 
             />
@@ -153,15 +152,12 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
  * @param {Object} props - Component properties
  * @param {string} props.lesson - HTML lesson content
  */
-const ChallengeLesson: React.FC<{ 
-    ref: React.Ref<HTMLDivElement>
-    lesson: string 
-}> = ({ ref, lesson }: { 
-    ref: React.Ref<HTMLDivElement>;
+const ChallengeLesson: React.FC<{ lesson: string }> = ({ 
+    lesson 
+}: { 
     lesson: string; 
 }) => (
     <div
-        ref={ref}
         dangerouslySetInnerHTML={{
             __html: dompurify.sanitize(lesson)
         }}
