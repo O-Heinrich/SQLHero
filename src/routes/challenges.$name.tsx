@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState, useRef } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
+import { toast } from 'sonner';
 import dompurify from 'dompurify';
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-sql";
@@ -12,7 +13,6 @@ import { PGlightContext } from '@/lib/PGlightContext';
 import { Button } from '@headlessui/react';
 import { useTheme } from '@/hooks/useTheme';
 import { Table } from '@/components/table';
-import { NotificationContext, NotificationType } from '@/lib/NotificationContext';
 
 /**
  * Fetches challenge data from the API
@@ -67,7 +67,6 @@ function Challenge() {
     const [db, setDb] = useState<string>('');
     const hasLesson = challenge.lesson !== undefined;
     const lessonsRef = useRef<HTMLDivElement>(null);
-    const notificator = useContext(NotificationContext);
 
     useEffect(() => {
         setEditorState(() => challenge.solution);
@@ -81,13 +80,13 @@ function Challenge() {
                     await pg.exec(sql);
                 } catch (error) {
                     const errMsg = typeof error === 'string' ? error : (error as Error).message;
-                    notificator.notify(`Failed to load schema: ${errMsg}`, NotificationType.ERROR);
+                    toast.error(`Failed to load schema: ${errMsg}`);
                 } finally {
                     setDb(() => challenge.meta.schema);
                 }
             });
         }
-    }, [db, pg, challenge, notificator]);
+    }, [db, pg, challenge]);
 
     const handleRun = async () => {
         if (!pg) return;
@@ -96,7 +95,7 @@ function Challenge() {
             setResult(() => result as QueryResult);
         } catch (error) {
             const errMsg = typeof error === 'string' ? error : (error as Error).message;
-            notificator.notify(`Failed to execute query: ${errMsg}`, NotificationType.ERROR);
+            toast.error(`Failed to load schema: ${errMsg}`);
         }
     }
 
