@@ -1,4 +1,4 @@
-import { Skeleton } from '@/components/Skeleton';
+import { IndexSkeleton } from '@/components/Skeleton';
 import { Wrapper } from '@/components/Wrapper';
 import { Button } from '@headlessui/react';
 import { createLazyFileRoute, Link } from '@tanstack/react-router';
@@ -10,7 +10,7 @@ import { useMemo } from 'react';
 export const Route = createLazyFileRoute('/')({
     component: Index,
     errorComponent: ({ error }) => <div>Error: {error.message}</div>,
-    pendingComponent: () => <Skeleton />,
+    pendingComponent: () => <IndexSkeleton />,
     notFoundComponent: () => <div>Challenge not found</div>,
 })
 
@@ -21,9 +21,9 @@ function Index() {
     return (
         <Wrapper>
             <title>SQL Hero - Startseite</title>
-            <h2>Teste dein SQL Wissen!</h2>
-            <div className="flex items-center">
-                <section className="w-1/2">
+            <div className="flex items-center h-full">
+                <section className="flex-1">
+                    <h2>Teste dein SQL Wissen!</h2>
                     <p>Teste dein SQL Wissen mit SQL Hero, dem SQL Tool mit interaktiven Übungen.</p>
                     <p>Auf jeder Seite findest du eine Aufgabe. Beantworte die Aufgabe direkt auf der Seite. Starte den Test und du siehst, ob deine Lösung richtig ist.</p>
                     <Link to="/challenges/$name" params={{name: '1'}}>
@@ -32,7 +32,7 @@ function Index() {
                         </Button>
                     </Link>
                 </section>
-                <img src={isDark ? databaseDark : databaseLight} alt="SQL Hero" className="w-1/2 dark:mix-blend-color-dodge" />
+                <img src={isDark ? databaseDark : databaseLight} alt="SQL Hero" className="w-1/2 max-w-132 dark:mix-blend-color-dodge" />
             </div>
         </Wrapper>
     )
