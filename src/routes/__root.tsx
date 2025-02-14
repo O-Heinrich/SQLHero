@@ -6,22 +6,20 @@ import { ThemeProvider } from '@/context/ThemeProvider';
 import { Footer } from '@/components/Footer';
 import { PGlightProvider } from '@/context/PGlightProvider';
 import { ThemeContext } from '@/context/ThemeContext';
+import { AppStateProvider } from '@/context/AppStateContext';
 
-const Root: React.FC = () => {
-    const headerRef = React.useRef<HTMLHeadingElement>(null);
-    
-    return (
-        <ThemeProvider>
-            <PGlightProvider>
+const Root: React.FC = () => (
+    <ThemeProvider>
+        <PGlightProvider>
+            <AppStateProvider>
                 <div className="flex flex-col min-h-screen">
-                    <Header ref={headerRef} />
-                    <main className="flex-1 pt-10 pb-6">
+                    <Header />
+                    <main className="flex flex-1 pt-10 pb-6">
                         <Outlet />
                     </main>
                     <Footer />
                 </div>
                 <Toaster 
-               
                     offset={{right: '8vw'}} 
                     theme={use(ThemeContext).theme as 'light' | 'dark'}
                     toastOptions={{
@@ -31,10 +29,10 @@ const Root: React.FC = () => {
                         }
                     }}
                 />
-            </PGlightProvider>
-        </ThemeProvider>
-    );
-};
+            </AppStateProvider>
+        </PGlightProvider>
+    </ThemeProvider>
+);
 
 export const Route = createRootRoute({
     component: () => <Root />,

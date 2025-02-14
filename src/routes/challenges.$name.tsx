@@ -13,6 +13,7 @@ import { PGlightContext } from '@/context/PGlightContext';
 import { Button } from '@headlessui/react';
 import { useTheme } from '@/hooks/useTheme';
 import { Table } from '@/components/table';
+import { useAppState } from '@/hooks/useAppState';
 
 /**
  * Fetches challenge data from the API
@@ -64,12 +65,26 @@ function Challenge() {
     const challenge = Route.useLoaderData() as ChallengeData;
     const [editorState, setEditorState] = useState('');
     const [result, setResult] = useState<QueryResult | null>(null);
+    const [sollution, setSollution] = useState<QueryResult | null>(null);
     const [db, setDb] = useState<string>('');
+    const { state, dispatch } = useAppState();
     const hasLesson = challenge.lesson !== undefined;
+    
 
     useEffect(() => {
-        setEditorState(() => challenge.solution);
-    }, [challenge]);
+        try {
+            setEditorState(() => challenge.solution);
+            if (challenge.meta.schema === db) {
+                const solution = pg?.query(challenge.solution);
+                setSollution(() => solution as unknown as QueryResult);
+            } else {
+                throw new Error('No solution provided because the schema does not match');
+            }
+        } catch (error) {
+            const errMsg = typeof error === 'string' ? error : (error as Error).message;
+            toast.error(`Failed to evaluate solution: ${errMsg}`);
+        }
+    }, [challenge, db, pg]);
 
     useEffect(() => {
         if (pg && db !== challenge.meta.schema) {
@@ -92,6 +107,30 @@ function Challenge() {
         try {
             const result = await pg.query(editorState);
             setResult(() => result as QueryResult);
+            dispatch({
+                type: 'ATTEMPT_CHALLENGE',
+                payload: { id: challenge.meta.title }
+            })
+
+            // if ((result as QueryResult).rows.length === sollution?.rows.length) {
+            const isCorrect = (result as QueryResult).rows.every((row, i) => {
+                const sollutionRow = sollution?.rows[i];
+                return sollutionRow && Object.values(row).every((value, j) => value === (sollutionRow as Record<string, unknown>)[j]);
+            });
+
+            if (isCorrect) {
+                state.headerElement?.classList.add('bg-green-500/50');
+                dispatch({
+                    type: 'COMPLETE_CHALLENGE',
+                    payload: { id: challenge.meta.title }
+                });
+            } else {
+                toast.error('Query result does not match the solution');
+                state.headerElement?.classList.add('bg-red-500/50');
+            }
+            // } else {
+            //     toast.error('Number of result rows does not match the expected solution row count.');
+            // }
         } catch (error) {
             const errMsg = typeof error === 'string' ? error : (error as Error).message;
             toast.error(`Failed to load schema: ${errMsg}`);
