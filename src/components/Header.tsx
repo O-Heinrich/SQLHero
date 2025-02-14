@@ -62,6 +62,7 @@ export const Header: React.FC<HeaderProps> = ({ ref }: HeaderProps): React.React
      * @see useTheme
      */ 
     const isDarkMode: boolean = React.useMemo(() => theme === 'dark', [theme]);
+    
     /**
      * Extracts challenge number from URL path
      * @type {number}
