@@ -25,23 +25,61 @@ import { Wrapper } from "./Wrapper";
  * 
  * @returns {React.ReactElement} Animated skeleton loader
  */
-export const Skeleton = () => (
+export const Skeleton = (): React.ReactElement => (
     <Wrapper>
         <div className="flex w-full flex-col gap-2">
-            <div className="h-18 w-1/3 mb-8 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true"></div>
-            <div className="h-10 w-1/2 my-4 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true"></div>
-            <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true"></div>
-            <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true"></div>
-            <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true"></div>
-            <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true"></div>
-            <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true"></div>
-            <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true"></div>
-            <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true"></div>
-            <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true"></div>
-            <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true"></div>
-            <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true"></div>
-            <div className="h-3.5 w-1/2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true"></div>
+            <div className="h-18 w-1/3 mb-8 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+            <div className="h-10 w-1/2 my-4 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+            <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+            <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+            <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+            <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+            <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+            <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+            <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+            <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+            <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+            <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+            <div className="h-3.5 w-1/2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
             <span className="sr-only">loading</span>
         </div>
+    </Wrapper>
+);
+
+/**
+ * Loading skeleton component for index page
+ * 
+ * @component
+ * @description
+ * Renders a loading skeleton for the index page including:
+ * - Animated placeholders with varying sizes
+ * - Theme-aware styling (light/dark mode support)
+ * - Wrapped in a layout container
+ * - Accessible with screen reader announcement
+ * - Two-column layout with image placeholder
+ * 
+ * @example
+ * ```tsx
+ * <IndexSkeleton />
+ * ```
+ * 
+ * @returns {React.ReactElement} Animated index skeleton loader
+ */
+export const IndexSkeleton = (): React.ReactElement => (
+    <Wrapper>
+        <div className="flex items-center h-full gap-2">
+            <div className="flex flex-1 flex-col gap-2">
+                <div className="h-18 w-[80%] mb-8 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+                <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+                <div className="h-3.5 w-1/4 mb-4 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />   
+                <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+                <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+                <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+                <div className="h-3.5 w-1/4 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />          
+                <div className="h-12 w-24 mt-8 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />      
+            </div>
+            <div className="w-1/2 h-1/2 max-w-[512px] animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+        </div>
+        <span className="sr-only">loading</span>
     </Wrapper>
 );
