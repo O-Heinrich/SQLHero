@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import dompurify from 'dompurify';
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-sql";
-import "ace-builds/src-noconflict/theme-solarized_dark";
+import "ace-builds/src-noconflict/theme-one_dark";
 import "ace-builds/src-noconflict/theme-iplastic";
 import "ace-builds/src-noconflict/ext-language_tools";
 import { Wrapper } from '@/components/Wrapper';
@@ -200,7 +200,7 @@ const ChallengeEditor: React.FC<{ value: string, setValue: React.Dispatch<string
     return (
         <AceEditor
             mode="sql"
-            theme={theme === 'dark' ? 'solarized_dark' : 'iplastic'}
+            theme={theme === 'dark' ? 'one_dark' : 'iplastic'}
             width='100%'
             height='300px'
             className='border-2 border-ridge shadow-lg border-gray-300 dark:border-gray-700 my-4 rounded-md'
