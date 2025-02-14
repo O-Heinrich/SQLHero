@@ -2,10 +2,10 @@ import React, { use } from 'react';
 import { Toaster } from 'sonner';
 import { Header } from '@/components/Header';
 import { createRootRoute, Outlet } from '@tanstack/react-router';
-import { ThemeProvider } from '@/lib/ThemeProvider';
+import { ThemeProvider } from '@/context/ThemeProvider';
 import { Footer } from '@/components/Footer';
-import { PGlightProvider } from '@/lib/PGlightProvider';
-import { ThemeContext } from '@/lib/ThemeContext';
+import { PGlightProvider } from '@/context/PGlightProvider';
+import { ThemeContext } from '@/context/ThemeContext';
 
 const Root: React.FC = () => {
     const headerRef = React.useRef<HTMLHeadingElement>(null);

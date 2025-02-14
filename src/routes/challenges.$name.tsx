@@ -9,7 +9,7 @@ import "ace-builds/src-noconflict/theme-iplastic";
 import "ace-builds/src-noconflict/ext-language_tools";
 import { Wrapper } from '@/components/Wrapper';
 import { Skeleton } from '@/components/Skeleton';
-import { PGlightContext } from '@/lib/PGlightContext';
+import { PGlightContext } from '@/context/PGlightContext';
 import { Button } from '@headlessui/react';
 import { useTheme } from '@/hooks/useTheme';
 import { Table } from '@/components/table';

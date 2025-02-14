@@ -5,7 +5,7 @@ import { createContext } from 'react';
  * @property {string} theme - Current theme identifier (e.g., 'light', 'dark')
  * @property {function} toggleTheme - Function to switch between themes
  */
-export interface ThemeContextType {
+export interface IThemeContext {
     theme: string;
     toggleTheme: () => void;
 }
@@ -13,7 +13,7 @@ export interface ThemeContextType {
 /**
  * React context object for managing theme state across components
  * @context ThemeContext
- * @type {React.Context<ThemeContextType>}
+ * @type {React.Context<IThemeContext>}
  * @default
  * @property {string} theme='light' - Default theme initialization
  * @property {function} toggleTheme=() => {} - No-op default toggle function (to be implemented in provider)
@@ -41,7 +41,7 @@ export interface ThemeContextType {
  *   );
  * }
  */
-export const ThemeContext: React.Context<ThemeContextType> = createContext<ThemeContextType>({
+export const ThemeContext: React.Context<IThemeContext> = createContext<IThemeContext>({
     theme: 'light',
     toggleTheme: () => { },
 });
