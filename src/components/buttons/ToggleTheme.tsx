@@ -31,7 +31,7 @@ export const ToggleThemeButton: React.FC = (): React.ReactElement => {
     return (
         <motion.button 
             onClick={toggleTheme} 
-            className="theme-button" 
+            className="theme-button"
             whileTap={{ scale: 0.75 }}
         >
             {theme === 'dark' ? <Sun size={1.75} /> : <Moon size={1.75} />}
