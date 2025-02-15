@@ -37,10 +37,10 @@ function Index() {
                     width="400"
                     height="auto"
                     style={{ 
-                        filter: isDark ? 'drop-shadow(-0.2em 1.5em 0.95em rgba(0, 0, 0, 0.41))' : 'drop-shadow(rgb(128, 128, 128) -0.2em 1.5em 0.95em)',
+                        filter: isDark ? 'drop-shadow(rgba(0 0 0 / 60%) -0.2em -1em 1.2em)' : 'drop-shadow(rgb(128 128 128 / 40%) -0.2em -1em 1.2em)',
                         perspective: '200px',
                         perspectiveOrigin: '250% 50%',
-                        transform: 'perspective(1200px) translate3d(-10px, 20px, 400px) rotate3d(100, 0.2, -0.1, 337deg)',
+                        transform: 'perspective(1200px) translate3d(-10px, 20px, 400px) rotate3d(100, 0.2, -0.1, 330deg)',
                     }}
                 />
             </div>
