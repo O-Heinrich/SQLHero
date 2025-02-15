@@ -16,6 +16,7 @@
     "@tailwindcss/vite": "^4.0.0",
     "@tanstack/react-router": "^1.97.25",
     "ace-builds": "^1.37.5",
+    "allotment": "^1.20.3",
     "clsx": "^2.1.1",
     "dompurify": "^3.2.4",
     "highlight.js": "^11.11.1",
