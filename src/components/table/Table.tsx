@@ -1,13 +1,14 @@
 import clsx from "clsx";
 
 export interface TableProps {
+    id?: string;
     columns: string[];
     rows: unknown[][];
 }
 
-export const Table: React.FC<TableProps> = ({ columns, rows }) => (
-    <table className={clsx('min-w-full', 'divide-y', 'divide-gray-200', 'dark:divide-gray-700', 'my-8', 'rounded-lg', 'overflow-hidden', 'shadow-lg')}>
-        <thead className={clsx('bg-slate-50', 'dark:bg-slate-700')}>
+export const Table: React.FC<TableProps> = ({ id, columns, rows }) => (
+    <table id={id} className={clsx('min-w-full', 'divide-y', 'divide-gray-200', 'dark:divide-gray-700', 'shadow-lg')}>
+        <thead className={clsx('bg-slate-50', 'dark:bg-slate-700', 'sticky', 'top-0', 'z-10')}>
             <tr>
                 {columns.map((column, index) => (
                     <th key={index} className={clsx('p-2')}>{column}</th>
