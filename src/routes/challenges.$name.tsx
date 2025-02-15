@@ -70,8 +70,6 @@ function Challenge() {
     const [db, setDb] = useState<string>('');
     const { state, dispatch } = useAppState();
     const hasLesson = challenge.lesson !== undefined;
-    
-
     useEffect(() => {
         try {
             setEditorState(() => challenge.solution);
@@ -87,7 +85,6 @@ function Challenge() {
             toast.error(`Failed to evaluate solution: ${errMsg}`);
         }
     }, [challenge, db, pg]);
-
     useEffect(() => {
         if (pg && db !== challenge.meta.schema) {
             fetch(challenge.meta.schema).then(async (response) => {
