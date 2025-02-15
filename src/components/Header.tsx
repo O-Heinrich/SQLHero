@@ -1,9 +1,10 @@
 import React from "react";
 import clsx from "clsx";
-import { 
-    useCanGoBack, 
-    useLocation, 
-    useNavigate, 
+import {
+    Link,
+    useCanGoBack,
+    useLocation,
+    useNavigate,
     useRouter,
 } from "@tanstack/react-router";
 import { APP_NAME } from "@/constants";
@@ -12,7 +13,13 @@ import { Logo } from "@/components/Logo";
 import { ToggleThemeButton } from "./buttons/ToggleTheme";
 import { useTheme } from "@/hooks/useTheme";
 import { ChevronLeft, ChevronRight } from "./icons";
-import { Button } from "@headlessui/react";
+import { 
+    Button, 
+    Menu, 
+    MenuButton, 
+    MenuItem, 
+    MenuItems 
+} from "@headlessui/react";
 import { COUNT_CHALLENGES } from "@/constants";
 import { Ellipses } from "./icons/Ellipses";
 import { useAppState } from "@/hooks/useAppState";
@@ -40,11 +47,7 @@ import { ChallengeAction } from "@/lib/types";
  * @returns {React.ReactElement} Themed and responsive header
  */
 export const Header: React.FC = (): React.ReactElement => {
-    /**
-     * Determines if current theme is dark mode
-     * @type {boolean}
-     */
-    const { theme } = useTheme(); 
+    const { theme } = useTheme();
     const router = useRouter();
     const canGoBack = useCanGoBack();
     const navigate = useNavigate();
@@ -57,13 +60,13 @@ export const Header: React.FC = (): React.ReactElement => {
             dispatch({ type: 'SET_HEADER_REF', payload: headerRef.current });
         }
     }, [headerRef, dispatch]);
-    
+
     /**
      * Checks if current theme is dark mode
      * @type {boolean} True if dark mode, false otherwise
      * @default false
      * @see useTheme
-     */ 
+     */
     const isDarkMode: boolean = React.useMemo(() => theme === 'dark', [theme]);
 
     /**
@@ -120,20 +123,56 @@ export const Header: React.FC = (): React.ReactElement => {
         }
     }
 
+    /**
+     * Handles navigation to link.
+     * Shorthand function to navigate to URL path.
+     * 
+     * @param {string} link - URL path to navigate
+     * @returns {Promise<void>}
+     * @see useNavigate
+     */ 
+    const handleLnkClk = (link: string): Promise<void> => navigate({
+        to: link,
+    });   
+
     return (
         <header ref={headerRef} className={clsx('sticky', 'top-0', 'z-50', 'dark:bg-red-500/50', 'bg-red-800/50', 'text-white', 'backdrop-blur-xl')}>
             <Wrapper className={clsx('flex', 'items-center')}>
                 <span className={clsx('flex', 'items-center', 'gap-1', 'flex-grow')}>
                     <Logo fill={isDarkMode ? '#efefef' : '#343434'} />
-                    <h1 className={clsx('text-4xl', 'dark:text-white/85', 'text-black/85', 'py-4', 'font-light')}>{APP_NAME}</h1>
+                    <h1 className={clsx('text-4xl', 'dark:text-white/85', 'text-black/85', 'py-4', 'font-light')}>
+                        <Link to="/">
+                            {APP_NAME}
+                        </Link>
+                    </h1>
                 </span>
                 <div className="px-2 flex">
                     <Button onClick={handlePrev} disabled={Number.isNaN(challengeNo)}>
                         <ChevronLeft size={2} fill="currentColor" />
                     </Button>
-                    <Button onClick={handleOverview}>
-                        <Ellipses size={2} fill="currentColor" />
-                    </Button>
+                    <Menu>
+                        <MenuButton className="inline-flex items-center gap-2">
+                            <Ellipses size={2} fill="currentColor" />
+                        </MenuButton>
+
+                        <MenuItems
+                            transition
+                            anchor="bottom end"
+                            className="navigation bg-red-800/50 dark:bg-red-500/50 backdrop-blur-md shadow-lg origin-top-right transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
+                        >
+                            <MenuItem>
+                                <Button onClick={handleOverview}>
+                                    {location.pathname === '/overview' && canGoBack ? 'Zurück' : 'Übersicht'}
+                                </Button>
+                            </MenuItem>
+                            <div className="my-1 h-px bg-white/5" />
+                            <MenuItem>
+                                <Button onClick={() => handleLnkClk('/introduction')}>
+                                    Einführung
+                                </Button>
+                            </MenuItem>
+                        </MenuItems>
+                    </Menu>
                     <Button onClick={handleNext} disabled={Number.isNaN(challengeNo)}>
                         <ChevronRight size={2} fill="currentColor" />
                     </Button>
