@@ -55,6 +55,9 @@ export const Header: React.FC = (): React.ReactElement => {
     const headerRef = React.useRef<HTMLHeadingElement>(null);
     const { dispatch }: { dispatch: React.Dispatch<ChallengeAction> } = useAppState();
 
+    /**
+     * Sets header reference for handling success messages
+     */
     React.useEffect(() => {
         if (headerRef.current) {
             dispatch({ type: 'SET_HEADER_REF', payload: headerRef.current });
@@ -140,7 +143,7 @@ export const Header: React.FC = (): React.ReactElement => {
             <Wrapper className={clsx('flex', 'items-center')}>
                 <span className={clsx('flex', 'items-center', 'gap-1', 'flex-grow')}>
                     <Logo fill={isDarkMode ? '#efefef' : '#343434'} />
-                    <h1 className={clsx('text-4xl', 'dark:text-white/85', 'text-black/85', 'py-4', 'font-light')}>
+                    <h1 className={clsx('lg:text-4xl', 'md:text-2xl', 'md:inline', 'hidden', 'dark:text-white/85', 'text-black/85', 'py-4', 'font-light')}>
                         <Link to="/">
                             {APP_NAME}
                         </Link>
@@ -158,7 +161,7 @@ export const Header: React.FC = (): React.ReactElement => {
                         <MenuItems
                             transition
                             anchor="bottom end"
-                            className="navigation bg-red-800/50 dark:bg-red-500/50 backdrop-blur-md shadow-lg origin-top-right transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
+                            className="navigation z-100 bg-red-800/50 dark:bg-red-500/50 backdrop-blur-md shadow-lg origin-top-right transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
                         >
                             <MenuItem>
                                 <Button onClick={handleOverview}>
