@@ -37,9 +37,11 @@ function Index() {
                     width="400"
                     height="auto"
                     style={{ 
+                        mixBlendMode: isDark ? 'color-dodge' : 'multiply',
                         filter: isDark ? 'drop-shadow(rgba(0 0 0 / 60%) -0.2em -1em 1.2em)' : 'drop-shadow(rgb(128 128 128 / 40%) -0.2em -1em 1.2em)',
                         perspective: '200px',
                         perspectiveOrigin: '250% 50%',
+                        transition: 'all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1)',
                         transform: 'perspective(1200px) translate3d(-10px, 20px, 400px) rotate3d(100, 0.2, -0.1, 330deg)',
                     }}
                 />
