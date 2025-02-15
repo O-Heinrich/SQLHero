@@ -2,18 +2,19 @@ import { useContext, useEffect, useState } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import dompurify from 'dompurify';
+import { Allotment } from "allotment";
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-sql";
 import "ace-builds/src-noconflict/theme-one_dark";
 import "ace-builds/src-noconflict/theme-iplastic";
 import "ace-builds/src-noconflict/ext-language_tools";
-import { Wrapper } from '@/components/Wrapper';
 import { Skeleton } from '@/components/Skeleton';
 import { PGlightContext } from '@/context/PGlightContext';
 import { Button } from '@headlessui/react';
 import { useTheme } from '@/hooks/useTheme';
 import { Table } from '@/components/table';
 import { useAppState } from '@/hooks/useAppState';
+import "allotment/dist/style.css";
 
 /**
  * Fetches challenge data from the API
@@ -74,6 +75,7 @@ function Challenge() {
     useEffect(() => {
         try {
             setEditorState(() => challenge.solution);
+            setResult(() => null);
             if (challenge.meta.schema === db) {
                 const solution = pg?.query(challenge.solution);
                 setSollution(() => solution as unknown as QueryResult);
@@ -111,7 +113,7 @@ function Challenge() {
                 type: 'ATTEMPT_CHALLENGE',
                 payload: { id: challenge.meta.title }
             })
-
+            console.log(result)
             // if ((result as QueryResult).rows.length === sollution?.rows.length) {
             const isCorrect = (result as QueryResult).rows.every((row, i) => {
                 const sollutionRow = sollution?.rows[i];
@@ -138,18 +140,30 @@ function Challenge() {
     }
 
     return (
-        <Wrapper>
-            <title>SQL Hero - Challenge</title>
-            <ChallengeHeader title={challenge.title} subtitle={challenge.meta.title} />
-            {hasLesson && <ChallengeLesson lesson={challenge.lesson!} />}
-            <div 
-                dangerouslySetInnerHTML={{ __html: dompurify.sanitize(challenge.info) }} 
-            />
-            <ChallengeTask task={challenge.task} />
-            <ChallengeEditor value={editorState} setValue={setEditorState} />
-            <Button onClick={handleRun}>Run</Button>
-            {result && <Table columns={result.fields.map((field) => field.name)} rows={result.rows.map((row) => Object.values(row))} />}
-        </Wrapper>
+        <div className="flex flex-col gap-4 flex-1 inset-0  mt-[-80px]">
+            <Allotment>
+                <div className="px-4 border-r-4 border-ridge border-white/20 dark:border-slate-900/20 overflow-auto h-full">
+                    <title>SQL Hero - Challenge</title>
+                    <ChallengeHeader title={challenge.title} subtitle={challenge.meta.title} />
+                    {hasLesson && <ChallengeLesson lesson={challenge.lesson!} />}
+                    <div 
+                        dangerouslySetInnerHTML={{ __html: dompurify.sanitize(challenge.info) }} 
+                    />
+                    <ChallengeTask task={challenge.task} />
+                </div>
+                <Allotment vertical={true} className="mt-20 pb-22 overflow-auto h-full bg-gray-200/30 dark:bg-slate-900/50">
+                    <div className="relative h-full flex flex-col border-b-4 border-ridge border-white/20 dark:border-slate-900/20">
+                        <ChallengeEditor value={editorState} setValue={setEditorState} />
+                        <div className="flex justify-end p-2">
+                            <Button onClick={handleRun}>Run</Button>
+                        </div>
+                    </div>
+                    <div className="overflow-auto h-full">
+                        {result && <Table id="query-result" columns={result.fields.map((field) => field.name)} rows={result.rows.map((row) => Object.values(row))} />}
+                    </div>
+                </Allotment>
+            </Allotment>
+        </div>
     );
 }
 
@@ -180,7 +194,7 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
     subtitle: string; 
 }) => (
     <>
-        <h2>{title}</h2>
+        <h2 style={{paddingTop: '2em'}}>{title}</h2>
         <h3>{subtitle}</h3>
     </>
 );
@@ -236,8 +250,8 @@ const ChallengeEditor: React.FC<{ value: string, setValue: React.Dispatch<string
             mode="sql"
             theme={theme === 'dark' ? 'one_dark' : 'iplastic'}
             width='100%'
-            height='300px'
-            className='border-2 border-ridge shadow-lg border-gray-300 dark:border-gray-700 my-4 rounded-md'
+            height='100%'
+            className='border-2 border-ridge shadow-lg border-gray-300 dark:border-gray-700 absolute inset-0'
             setOptions={{
                 enableBasicAutocompletion: true,
                 enableLiveAutocompletion: true,
