@@ -7,7 +7,7 @@ export interface TableProps {
 }
 
 export const Table: React.FC<TableProps> = ({ id, columns, rows }) => (
-    <table id={id} className={clsx('min-w-full', 'divide-y', 'divide-gray-200', 'dark:divide-gray-700', 'shadow-lg')}>
+    <table id={id} className={clsx('min-w-full', 'divide-y', 'divide-gray-200', 'dark:divide-gray-700', 'shadow-lg', 'h-full', 'overflow-hidden')}>
         <thead className={clsx('bg-slate-50', 'dark:bg-slate-700', 'sticky', 'top-0', 'z-10')}>
             <tr>
                 {columns.map((column, index) => (
@@ -15,7 +15,7 @@ export const Table: React.FC<TableProps> = ({ id, columns, rows }) => (
                 ))}
             </tr>
         </thead>
-        <tbody className={clsx('bg-white', 'divide-y', 'divide-gray-200', 'dark:bg-gray-800', 'dark:divide-gray-700')}>
+        <tbody className={clsx('bg-white', 'divide-y', 'divide-gray-200', 'dark:bg-gray-800', 'dark:divide-gray-700', 'overflow-y-auto')}>
             {rows.map((row, index) => (
                 <tr key={index} className={clsx('hover:bg-gray-50', 'dark:hover:bg-gray-700')}>
                     {row.map((cell, index) => (
