@@ -1,3 +1,32 @@
+/**
+ * @module SQLChallenge
+ * @description
+ * This module implements an interactive SQL learning environment with challenge management,
+ * code editing, and real-time validation capabilities. It provides a complete interface
+ * for users to learn and practice SQL through hands-on challenges.
+ * 
+ * Key features:
+ * - Interactive SQL code editor with syntax highlighting
+ * - Real-time query execution and validation
+ * - Challenge progress tracking
+ * - Educational content display
+ * - Theme-aware UI components
+ * 
+ * The module uses several external dependencies:
+ * - React for UI components and state management
+ * - TanStack Router for routing
+ * - Ace Editor for SQL editing
+ * - DOMPurify for HTML sanitization
+ * - Allotment for split-pane layouts
+ * 
+ * @requires react
+ * @requires @tanstack/react-router
+ * @requires sonner
+ * @requires dompurify
+ * @requires allotment
+ * @requires react-ace
+ */
+
 import { useContext, useEffect, useState } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { toast } from 'sonner';
@@ -17,22 +46,16 @@ import { useAppState } from '@/hooks/useAppState';
 import "allotment/dist/style.css";
 
 /**
- * Fetches challenge data from the API
- * @async
- * @param {string} name - Challenge identifier
- * @returns {Promise<Object>} Challenge data
- * @throws {Error} If challenge not found or fetch fails
- */
-const fetchChallenge = async (name: string): Promise<object> => {
-    const response = await fetch(`/api/challenges/${name}.json`);
-    if (!response.ok) {
-        throw new Error(`Challenge "${name}" not found (${response.status})`);
-    }
-    return response.json();
-};
-
-/**
- * Represents the structure of challenge data
+ * Represents the core structure of SQL challenge data
+ * @interface
+ * @property {Object} meta - Challenge metadata
+ * @property {string} meta.title - Unique identifier for the challenge
+ * @property {string} meta.schema - Database schema file path/URL
+ * @property {string} title - Display title of the challenge
+ * @property {string} solution - Correct SQL query solution
+ * @property {string} [lesson] - Optional educational content in HTML format
+ * @property {string} task - Challenge requirements/instructions in HTML format
+ * @property {string} info - Additional challenge information in HTML format
  */
 interface ChallengeData {
     meta: {
@@ -46,20 +69,63 @@ interface ChallengeData {
     info: string;
 }
 
+/**
+ * Represents the structure of a SQL query execution result
+ * @interface
+ * @property {Object[]} fields - Array of column definitions
+ * @property {string} fields[].name - Name of each column
+ * @property {Record<string, unknown>[]} rows - Array of result rows
+ */
 interface QueryResult {
     fields: { name: string }[];
     rows: Record<string, unknown>[];
 }
 
 /**
- * Main Challenge component that displays and manages SQL challenges
+ * Challenge header properties
+ * @interface
+ * @property {string} title - Challenge title
+ * @property {string} subtitle - Challenge subtitle
+ */
+interface ChallengeHeaderProps {
+    title: string;
+    subtitle: string;
+}
+
+
+/**
+ * Fetches challenge data from the API
+ * @async
+ * @function
+ * @param {string} name - Challenge identifier
+ * @returns {Promise<Object>} Challenge data object
+ * @throws {Error} If challenge not found or fetch fails
+ */
+const fetchChallenge = async (name: string): Promise<object> => {
+    const response = await fetch(`/api/challenges/${name}.json`);
+    if (!response.ok) {
+        throw new Error(`Challenge "${name}" not found (${response.status})`);
+    }
+    return response.json();
+};
+
+/**
+ * Main Challenge component that provides a complete SQL learning environment
  * @component
  * @description
- * Provides a complete interface for:
- * - Displaying challenge details and lessons
- * - SQL editor with syntax highlighting
- * - Query execution capabilities
- * - Theme-aware styling
+ * Provides an interactive SQL challenge interface with the following features:
+ * - Challenge description and educational content display
+ * - SQL editor with syntax highlighting and autocompletion
+ * - Query execution and result visualization
+ * - Automatic solution validation
+ * - Progress tracking and success/failure feedback
+ * 
+ * Uses PGlightContext for database operations and theme context for visual customization.
+ * 
+ * @example
+ * ```tsx
+ * <Challenge />
+ * ```
  */
 function Challenge() {
     const { pg } = useContext(PGlightContext);
@@ -165,18 +231,6 @@ function Challenge() {
 }
 
 /**
- * Challenge header properties
- * 
- * @typedef ChallengeHeaderProps
- * @property {string} title - Challenge title
- * @property {string} subtitle - Challenge subtitle
- */
-interface ChallengeHeaderProps {
-    title: string;
-    subtitle: string;
-}
-
-/**
  * Challenge header component
  * @component
  * @param {Object} props - Component properties
@@ -229,11 +283,28 @@ const ChallengeTask: React.FC<{ task: string }> = ({ task }: { task: string }) =
 );
 
 /**
- * SQL editor component with theme support
+ * SQL code editor component with theme awareness
  * @component
+ * @description
+ * Provides a full-featured SQL editor using Ace Editor with:
+ * - Syntax highlighting
+ * - Autocompletion
+ * - Theme-aware styling
+ * - Line numbers
+ * - Live autocompletion
+ * 
  * @param {Object} props - Component properties
- * @param {string} props.value - Current editor value
- * @param {Function} props.setValue - Value update function
+ * @param {string} props.value - Current SQL query content
+ * @param {React.Dispatch<string>} props.setValue - Function to update query content
+ * 
+ * @example
+ * ```tsx
+ * const [query, setQuery] = useState('');
+ * <ChallengeEditor 
+ *   value={query} 
+ *   setValue={setQuery}
+ * />
+ * ```
  */
 const ChallengeEditor: React.FC<{ value: string, setValue: React.Dispatch<string> }> = ({ 
     value, setValue 
