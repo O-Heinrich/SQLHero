@@ -2,8 +2,7 @@ import { IndexSkeleton } from '@/components/Skeleton';
 import { Wrapper } from '@/components/Wrapper';
 import { Button } from '@headlessui/react';
 import { createLazyFileRoute, Link } from '@tanstack/react-router';
-import databaseLight from '@/assets/database-light.svg';
-import databaseDark from '@/assets/database-dark.svg';
+import pgImage from '@/assets/pg.svg';
 import { useTheme } from '@/hooks/useTheme';
 import { useMemo } from 'react';
 
@@ -26,13 +25,24 @@ function Index() {
                     <h2>Teste dein SQL Wissen!</h2>
                     <p>Teste dein SQL Wissen mit SQL Hero, dem SQL Tool mit interaktiven Übungen.</p>
                     <p>Auf jeder Seite findest du eine Aufgabe. Beantworte die Aufgabe direkt auf der Seite. Starte den Test und du siehst, ob deine Lösung richtig ist.</p>
-                    <Link to="/challenges/$name" params={{name: '1'}}>
+                    <Link to="/challenges/$name" params={{ name: '1' }}>
                         <Button className="mt-6 text-2xl">
                             Start
                         </Button>
                     </Link>
                 </section>
-                <img src={isDark ? databaseDark : databaseLight} alt="SQL Hero" className="w-1/2 max-w-132 dark:mix-blend-color-dodge" />
+                <img
+                    src={pgImage}
+                    alt="SQL Hero"
+                    width="400"
+                    height="auto"
+                    style={{ 
+                        filter: isDark ? 'drop-shadow(0.3em 1.2em 1.5em rgba(0, 0, 0, 0.41))' : 'drop-shadow(0.3em 1.2em 1.5em rgb(128, 128, 128))',
+                        perspective: '200px',
+                        perspectiveOrigin: '250% 50%',
+                        transform: 'perspective(1200px) translate3d(-10px, 20px, 400px) rotate3d(100, 0.2, -0.1, 337deg)',
+                    }}
+                />
             </div>
         </Wrapper>
     )
