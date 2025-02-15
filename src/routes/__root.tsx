@@ -14,7 +14,7 @@ const Root: React.FC = () => (
             <AppStateProvider>
                 <div className="flex flex-col min-h-screen">
                     <Header />
-                    <main className="flex flex-1 pt-10 pb-6">
+                    <main className="flex flex-1">
                         <Outlet />
                     </main>
                     <Footer />
