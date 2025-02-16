@@ -64,8 +64,13 @@ function Index() {
 
                     {/* Navigation to first challenge */}
                     <Link to="/challenges/$name" params={{ name: '1' }}>
-                        <Button className="mx-4 mt-6 text-2xl">
-                            Start
+                        <Button className="call-to-action group/button">
+                            <span className="text-3xl">Start</span>
+                            <div
+                                className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]"
+                            >
+                                <div className="relative h-full w-10 bg-white/60"></div>
+                            </div>
                         </Button>
                     </Link>
                 </section>
