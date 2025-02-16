@@ -214,7 +214,7 @@ function Challenge() {
     }
 
     return (
-        <div className="flex flex-col gap-4 flex-1 inset-0  mt-[-80px] mb-[-90px]">
+        <div className="flex flex-col gap-4 flex-1 inset-0  mt-[calc(var(--spacing)*-20)] mb-[calc(var(--spacing)*-20)]">
             <Allotment>
                 <Allotment vertical={true} className="mt-20 pb-22 overflow-auto h-full bg-gray-200/50 dark:bg-slate-900/50">
                     <div className="relative h-full flex flex-col mx-4 mt-4 pb-4">
@@ -223,7 +223,7 @@ function Challenge() {
                             <Button onClick={handleRun}>Run</Button>
                         </Toolbar>
                     </div>
-                    <div className="px-4 overflow-auto h-full pb-18 border-t-4 border-ridge border-white/20 dark:border-slate-900/20">
+                    <div className="px-4 overflow-auto h-full pb-16 border-t-4 border-ridge border-white/20 dark:border-slate-900/20">
                         {result && <Table id="query-result" columns={result.fields.map((field) => field.name)} rows={result.rows.map((row) => Object.values(row))} />}
                     </div>
                 </Allotment>
