@@ -119,7 +119,7 @@ export const FlashButton: React.FC<FlashButtonProps> = (props: FlashButtonProps)
     dark:to-white/3
     bg-gradient-to-l
     opacity-80 dark:opacity-40
-    `;
+    `.trim();
 
     return (
         <button
