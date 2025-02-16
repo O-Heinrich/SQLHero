@@ -105,7 +105,7 @@ body {
 }
 
 body {
-    @apply bg-fixed dark:text-white/85 text-black/85 dark:bg-gray-900 bg-gray-100 dark:to-slate-900 dark:from-slate-700 from-slate-50 to-slate-300 bg-radial;
+    @apply dark:text-white/85 text-black/85 dark:bg-gray-900 bg-gray-100 dark:to-slate-900 dark:from-slate-700 from-slate-50 to-slate-300 bg-radial-[at_100%_50%];
 }
 
 h2 {
