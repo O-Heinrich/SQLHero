@@ -161,14 +161,14 @@ export const Header: React.FC = (): React.ReactElement => {
                         <MenuItems
                             transition
                             anchor="bottom end"
-                            className="navigation z-100 bg-red-800/50 dark:bg-red-500/50 backdrop-blur-md shadow-lg origin-top-right transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
+                            className="navigation z-100 bg-red-500/50 dark:bg-red-500/50 backdrop-blur-md shadow-xl rounded-b-lg origin-top-right transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
                         >
                             <MenuItem>
                                 <Button onClick={handleOverview}>
                                     {location.pathname === '/overview' && canGoBack ? 'Zurück' : 'Übersicht'}
                                 </Button>
                             </MenuItem>
-                            <div className="my-1 h-px bg-white/5" />
+                            <div className="h-px bg-gray-500/50 dark:bg-white/25" />
                             <MenuItem>
                                 <Button onClick={() => handleLnkClk('/introduction')}>
                                     Einführung

@@ -147,7 +147,8 @@ table {
 }
 
 table#query-result {
-    @apply rounded-none h-full overflow-x-auto;
+    @apply overflow-x-auto my-2 overflow-hidden;
+    height: calc(100% - (var(--spacing) * 4));
 }
 
 table thead {
@@ -182,6 +183,10 @@ table#query-result thead {
     @apply sticky text-sm top-0 z-10 shadow-sm;
 }
 
+table#query-result thead {
+    @apply bg-slate-50/40 dark:bg-slate-700/40 backdrop-blur-xl to-slate-200/25 from-slate-100/0 bg-gradient-to-b dark:from-slate-800/0 dark:to-slate-900/25 border-b-1 border-white dark:border-gray-700;
+}
+
 
 table#query-result thead tr,
 table#query-result tbody tr {
@@ -198,16 +203,16 @@ header button {
 
 button.theme-button {
     @apply transition-none shadow-none ring-offset-0 m-0 ml-4 py-4 px-4 ring-0 self-start dark:bg-transparent border-none bg-transparent dark:text-gray-100 text-gray-800 outline-0;
-    transition: opacity 0.2s;
+    transition: all 0.2s;
     align-self: center;
 }
 
 .navigation button {
-    @apply transition-all dark:mix-blend-overlay w-full rounded-none bg-slate-100/0 dark:bg-slate-800/0 ring-0 focus:ring-0 opacity-80 focus:ring-offset-0 shadow-none border-none dark:text-gray-100 text-gray-800 dark:active:mix-blend-color-burn active:mix-blend-soft-light;
+    @apply mix-blend-overlay dark:active:mix-blend-color-burn active:mix-blend-soft-light transition-all w-full rounded-none dark:bg-transparent bg-transparent ring-0 focus:ring-0 focus:ring-offset-0 shadow-none border-none dark:text-gray-100 text-gray-800 opacity-80 mix-blend-multiply dark:active:mix-blend-color-burn active:mix-blend-soft-light;
 }
 
 .navigation button:hover {
-    @apply bg-slate-100/20 dark:bg-slate-800/20 mix-blend-normal dark:mix-blend-normal;
+    @apply bg-white/50 dark:bg-black/20;
 }
 
 code.hljs {
