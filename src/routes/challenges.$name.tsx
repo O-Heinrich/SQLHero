@@ -27,7 +27,7 @@
  * @requires react-ace
  */
 
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import dompurify from 'dompurify';
@@ -44,6 +44,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { Table } from '@/components/table';
 import { useAppState } from '@/hooks/useAppState';
 import "allotment/dist/style.css";
+import { QueryResult } from '@/lib/types';
 
 /**
  * Represents the core structure of SQL challenge data
@@ -70,18 +71,6 @@ interface ChallengeData {
 }
 
 /**
- * Represents the structure of a SQL query execution result
- * @interface
- * @property {Object[]} fields - Array of column definitions
- * @property {string} fields[].name - Name of each column
- * @property {Record<string, unknown>[]} rows - Array of result rows
- */
-interface QueryResult {
-    fields: { name: string }[];
-    rows: Record<string, unknown>[];
-}
-
-/**
  * Challenge header properties
  * @interface
  * @property {string} title - Challenge title
@@ -103,6 +92,16 @@ interface ToolbarProps {
     className?: string;
 }
 
+/**
+ * Query result table properties
+ * @interface
+ * @extends TableProps
+ * @property {QueryResult} result - Query result data
+ */
+interface QueryResultTableProps {
+    id: string;
+    result: QueryResult;
+}
 
 /**
  * Fetches challenge data from the API
@@ -182,14 +181,14 @@ function Challenge() {
         if (!pg) return;
         try {
             const result = await pg.query(editorState);
-            setResult(() => result as QueryResult);
+            setResult(() => result as unknown as QueryResult);
             dispatch({
                 type: 'ATTEMPT_CHALLENGE',
                 payload: { id: challenge.meta.title }
             })
             console.log(result)
             // if ((result as QueryResult).rows.length === sollution?.rows.length) {
-            const isCorrect = (result as QueryResult).rows.every((row, i) => {
+            const isCorrect = (result as unknown as QueryResult).rows.every((row, i) => {
                 const sollutionRow = sollution?.rows[i];
                 return sollutionRow && Object.values(row).every((value, j) => value === (sollutionRow as Record<string, unknown>)[j]);
             });
@@ -224,7 +223,7 @@ function Challenge() {
                         </Toolbar>
                     </div>
                     <div className="px-4 overflow-auto h-full pb-16 border-t-4 border-ridge border-white/20 dark:border-slate-900/20">
-                        {result && <Table id="query-result" columns={result.fields.map((field) => field.name)} rows={result.rows.map((row) => Object.values(row))} />}
+                        {result && <QueryResultTable id="query-result" result={result ?? {} as QueryResult} />}
                     </div>
                 </Allotment>
                 <div className="px-4 pt-4 pb-22 overflow-auto h-full border-l-4 border-ridge border-white/80 dark:border-slate-900/80">
@@ -238,6 +237,41 @@ function Challenge() {
                 </div>
             </Allotment>
         </div>
+    );
+}
+
+/** 
+ * Query result table component
+ * 
+ * @description 
+ * The component uses the Table component to render the query result data in a tabular format.
+ * 
+ * @component
+ * @param {Object} props - Component properties
+ * @param {QueryResult} props.result - Query result data
+ * @param {string} props.id - Unique table identifier
+ * @returns {React.ReactElement} Query result table
+ */
+const QueryResultTable: React.FC<QueryResultTableProps> = ({ result, ...props }) => {
+    const columns = useMemo(() => result.fields.map((field) => field.name), [result.fields]);
+    const rows = useMemo(() => result.rows.map((row) => {
+        const rowValues: string[] = [];
+        for (const value of Object.values(row)) {
+            if (value instanceof Date) {
+                rowValues.push((value as Date).toISOString());
+            } else if (value instanceof Uint8Array) {
+                rowValues.push('Uint8Array[]');
+
+            } else {
+                rowValues.push(value as string|null ?? 'NULL');
+            }
+        }
+        
+        return rowValues;
+    }), [result.rows]);
+
+    return (
+        <Table {...props} columns={columns} rows={rows} />
     );
 }
 
