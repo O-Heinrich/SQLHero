@@ -1,7 +1,2 @@
-import { ToggleThemeButton } from './ToggleTheme';
-
-export const Button = {
-    Toggle: ToggleThemeButton,
-};
-
-export default Button;
+export { ToggleThemeButton } from '@/components/buttons/ToggleTheme';
+export { FlashButton } from '@/components/buttons/FlashButton';

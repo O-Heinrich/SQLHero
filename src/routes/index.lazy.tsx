@@ -13,11 +13,11 @@
 
 import { IndexSkeleton } from '@/components/Skeleton';
 import { Wrapper } from '@/components/Wrapper';
-import { Button } from '@headlessui/react';
-import { createLazyFileRoute, Link } from '@tanstack/react-router';
+import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 import pgImage from '@/assets/pg.svg';
 import { useTheme } from '@/hooks/useTheme';
 import { useMemo } from 'react';
+import { FlashButton } from '@/components/buttons';
 
 /**
 * Route configuration for home page.
@@ -40,6 +40,7 @@ export const Route = createLazyFileRoute('/')({
 * - Call-to-action button linking to first challenge
 */
 function Index() {
+    const navigate = useNavigate();
     const { theme } = useTheme();
 
     /**
@@ -53,7 +54,7 @@ function Index() {
             <title>SQL Hero - Startseite</title>
 
             {/* Main content container with responsive flex layout */}
-            <div className="flex justify-center overflow-hidden items-center min-h-full flex-wrap">
+            <div className="flex justify-center items-center min-h-full flex-wrap">
 
                 {/* Text content section */}
                 <section className="flex-1 min-w-md z-1">
@@ -63,16 +64,14 @@ function Index() {
                         Starte den Test und du siehst, ob deine Lösung richtig ist.</p>
 
                     {/* Navigation to first challenge */}
-                    <Link to="/challenges/$name" params={{ name: '1' }}>
-                        <Button className="call-to-action group/button">
-                            <span className="text-3xl">Start</span>
-                            <div
-                                className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]"
-                            >
-                                <div className="relative h-full w-10 bg-white/60"></div>
-                            </div>
-                        </Button>
-                    </Link>
+                    <FlashButton 
+                        label="Start" 
+                        size="lg"
+                        onClick={() => navigate({ 
+                            to: '/challenges/$name', 
+                            params: { name: '1' } 
+                        })} 
+                    />
                 </section>
 
                 {/* PostgreSQL logo with theme-aware styling and 3D animation */}
