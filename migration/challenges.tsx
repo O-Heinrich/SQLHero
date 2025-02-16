@@ -206,13 +206,13 @@ export const challenges: Record<string, Database> = {
                 'nr': 7,
                 'titel': "Kundentelefonliste",
                 "aufgabe": "Erstellen Sie eine Kundentelefonliste. <br /> Ausgabe: Firma (sortiert), Kontaktperson, Telefonnummer, Telefax",
-                "solution": "SELECT Firma, Kontaktperson, Telefon, Telefax FROM tbl_kunden ORDER BY Firma;"
+                "solution": "SELECT\n\t\"CompanyName\",\n\t\"ContactName\",\n\t\"Phone\",\n\t\"Fax\"\nFROM\n\tcustomers\nORDER BY\n\t\"CompanyName\";"
             },
             {
                 'nr': 8,
                 'titel': "Geburtstagsliste",
                 "aufgabe": "Erstellen Sie eine Geburtstagsliste. <br /> Ausgabe: Name, Geburtstag",
-                "solution": "SELECT geburtsdatum, vorname, nachname FROM tbl_personal ORDER BY vorname;"
+                "solution": "SELECT\n\t\"BirthDate\",\n\t\"FirstName\",\n\t\"LastName\"\nFROM\n\temployees\nORDER BY\n\t\"FirstName\";"
             },
             {
                 'nr': 9,
