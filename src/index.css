@@ -195,7 +195,7 @@ table#query-result tbody tr {
 }
 
 button {
-    @apply px-8 py-3 text-xl font-light text-center cursor-pointer transition duration-250 ease-in-out transform bg-slate-200 border-gray-300 border-1 dark:bg-slate-900 dark:border-gray-800/20 dark:hover:bg-slate-800/25 dark:hover:border-white/25 dark:focus:ring-slate-500/80 dark:focus:ring-offset-gray-700 rounded-xl shadow-inner shadow-gray-100 dark:shadow-inner dark:shadow-gray-600/80 dark:hover:shadow-gray-100/25 hover:bg-slate-100 hover:shadow-white hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-200 focus:ring-slate-400/50
+    @apply px-8 py-3 text-xl font-light text-center cursor-pointer transition duration-250 ease-in-out transform bg-slate-200 border-gray-300 border-1 dark:bg-slate-900 dark:border-gray-800/20 dark:hover:bg-slate-800/25 dark:hover:border-white/25 dark:focus:ring-slate-900/40 dark:focus:ring-offset-gray-700 rounded-xl shadow-inner shadow-gray-100 dark:shadow-inner dark:shadow-gray-600/80 dark:hover:shadow-gray-100/25 hover:bg-slate-100 hover:shadow-white hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-200 focus:ring-slate-400/50 dark:active:bg-slate-900/50 active:bg-white/30;
 }
 
 header button {
