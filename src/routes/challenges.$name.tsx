@@ -92,6 +92,17 @@ interface ChallengeHeaderProps {
     subtitle: string;
 }
 
+/**
+ * Toolbar component properties
+ * @interface
+ * @property {React.ReactNode} children - Toolbar content
+ * @property {string} [className] - Additional CSS classes
+ */
+interface ToolbarProps {
+    children: React.ReactNode;
+    className?: string;
+}
+
 
 /**
  * Fetches challenge data from the API
@@ -203,9 +214,20 @@ function Challenge() {
     }
 
     return (
-        <div className="flex flex-col gap-4 flex-1 inset-0  mt-[-80px]">
+        <div className="flex flex-col gap-4 flex-1 inset-0  mt-[-80px] mb-[-90px]">
             <Allotment>
-                <div className="px-4 border-r-4 border-ridge border-white/20 dark:border-slate-900/20 overflow-auto h-full">
+                <Allotment vertical={true} className="mt-20 pb-22 overflow-auto h-full bg-gray-200/50 dark:bg-slate-900/50">
+                    <div className="relative h-full flex flex-col mx-4 mt-4 pb-4">
+                        <ChallengeEditor value={editorState} setValue={setEditorState} />
+                        <Toolbar className="mx-4">
+                            <Button onClick={handleRun}>Run</Button>
+                        </Toolbar>
+                    </div>
+                    <div className="px-4 overflow-auto h-full pb-18 border-t-4 border-ridge border-white/20 dark:border-slate-900/20">
+                        {result && <Table id="query-result" columns={result.fields.map((field) => field.name)} rows={result.rows.map((row) => Object.values(row))} />}
+                    </div>
+                </Allotment>
+                <div className="px-4 pt-4 pb-22 overflow-auto h-full border-l-4 border-ridge border-white/80 dark:border-slate-900/80">
                     <title>SQL Hero - Challenge</title>
                     <ChallengeHeader title={challenge.title} subtitle={challenge.meta.title} />
                     {hasLesson && <ChallengeLesson lesson={challenge.lesson!} />}
@@ -214,21 +236,29 @@ function Challenge() {
                     />
                     <ChallengeTask task={challenge.task} />
                 </div>
-                <Allotment vertical={true} className="mt-20 pb-22 overflow-auto h-full bg-gray-200/30 dark:bg-slate-900/50">
-                    <div className="relative h-full flex flex-col border-b-4 border-ridge border-white/20 dark:border-slate-900/20">
-                        <ChallengeEditor value={editorState} setValue={setEditorState} />
-                        <div className="flex justify-end p-2">
-                            <Button onClick={handleRun}>Run</Button>
-                        </div>
-                    </div>
-                    <div className="overflow-auto h-full">
-                        {result && <Table id="query-result" columns={result.fields.map((field) => field.name)} rows={result.rows.map((row) => Object.values(row))} />}
-                    </div>
-                </Allotment>
             </Allotment>
         </div>
     );
 }
+
+/**
+ * Toolbar component for challenge actions
+ * @component
+ * @param {Object} props - Component properties
+ * @param {React.ReactNode} props.children - Toolbar content
+ * @param {string} [props.className] - Additional CSS classes
+ */
+const Toolbar: React.FC<ToolbarProps> = ({ 
+    children, 
+    className, 
+}: { 
+    children: React.ReactNode; 
+    className?: string; 
+}) => (
+    <div className={`flex gap-2 justify-end p-2 ${className ?? ''}`}>
+        {children}
+    </div>
+);
 
 /**
  * Challenge header component
