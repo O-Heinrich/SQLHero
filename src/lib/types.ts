@@ -2,7 +2,6 @@
 * Types and interfaces for the challenge application state management.
 * 
 * @description  This module defines the data structures used to represent challenges and the global application state.
-*               It also includes helper functions and enumerations for working with PostgreSQL data types.
 * 
 * @note         If more helpers are added, consider moving them to a separate utils file for better organization.
 * @module       lib/types
@@ -344,63 +343,3 @@ export const PostgresTypeNameToID = new Map<string, number>([
     ['TSTZRANGE', PostgresTypeID.TSTZRANGE],
     ['DATERANGE', PostgresTypeID.DATERANGE]
 ]);
-
-/**
- * Checks if a given PostgreSQL type ID represents a numeric data type.
- * 
- * @param {number} typeID - PostgreSQL type ID to check
- * @returns {boolean} True if the type ID is a numeric type, false otherwise
- */
-export function isPostrgesDateType(typeID: number): boolean {
-    return typeID === PostgresTypeID.DATE || typeID === PostgresTypeID.TIMESTAMP;
-}
-
-/**
- * Checks if a given PostgreSQL type ID represents a numeric data type.
- * 
- * @param {number} typeID - PostgreSQL type ID to check
- * @returns {boolean} True if the type ID is a numeric type, false otherwise
- */ 
-export function isPostgresNumericType(typeID: number): boolean {
-    return typeID === PostgresTypeID.INTEGER || typeID === PostgresTypeID.BIGINT || typeID === PostgresTypeID.DECIMAL;
-}
-
-/**
- * Checks if a given PostgreSQL type ID represents a text data type.
- * 
- * @param {number} typeID - PostgreSQL type ID to check
- * @returns {boolean} True if the type ID is a text type, false otherwise
- */
-export function isPostgresTextType(typeID: number): boolean {
-    return typeID === PostgresTypeID.CHAR || typeID === PostgresTypeID.VARCHAR || typeID === PostgresTypeID.TEXT;
-}
-
-/**
- * Checks if a given PostgreSQL type ID represents an array data type.
- * 
- * @param {number} typeID - PostgreSQL type ID to check
- * @returns {boolean} True if the type ID is an array type, false otherwise
- */
-export function isPostgresArrayType(typeID: number): boolean {
-    return typeID === PostgresTypeID.INTEGER_ARRAY || typeID === PostgresTypeID.TEXT_ARRAY;
-}
-
-/**
- * Checks if a given PostgreSQL type ID represents a range data type.
- * 
- * @param {number} typeID - PostgreSQL type ID to check
- * @returns {boolean} True if the type ID is a range type, false otherwise
- */
-export function isPostgresRangeType(typeID: number): boolean {
-    return typeID === PostgresTypeID.INT4RANGE || typeID === PostgresTypeID.INT8RANGE || typeID === PostgresTypeID.NUMRANGE;
-}
-
-/**
- * Checks if a given PostgreSQL type ID represents a JSON data type.
- * 
- * @param {number} typeID - PostgreSQL type ID to check
- * @returns {boolean} True if the type ID is a JSON type, false otherwise
- */
-export function isPostgresJSONType(typeID: number): boolean {
-    return typeID === PostgresTypeID.JSON || typeID === PostgresTypeID.JSONB;
-}

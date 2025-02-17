@@ -1,4 +1,10 @@
-import { PgCell } from "@/lib/types";
+/**
+ * Helper functions for working with PostgreSQL data types.
+ * 
+ * @module lib/utils
+ */
+
+import { PgCell, PostgresTypeID } from "@/lib/types";
 
 /**
  * Converts a Postgres record to a string array.
@@ -37,4 +43,64 @@ export function queryRecordToStringArray(row: PgCell): string[] {
     }
 
     return values;
+}
+
+/**
+ * Checks if a given PostgreSQL type ID represents a date data type.
+ * 
+ * @param {number} typeID - PostgreSQL type ID to check
+ * @returns {boolean} True if the type ID is a date type, false otherwise
+ */
+export function isPostrgesDateType(typeID: number): boolean {
+    return typeID === PostgresTypeID.DATE || typeID === PostgresTypeID.TIMESTAMP;
+}
+
+/**
+ * Checks if a given PostgreSQL type ID represents a numeric data type.
+ * 
+ * @param {number} typeID - PostgreSQL type ID to check
+ * @returns {boolean} True if the type ID is a numeric type, false otherwise
+ */ 
+export function isPostgresNumericType(typeID: number): boolean {
+    return typeID === PostgresTypeID.INTEGER || typeID === PostgresTypeID.BIGINT || typeID === PostgresTypeID.DECIMAL;
+}
+
+/**
+ * Checks if a given PostgreSQL type ID represents a text data type.
+ * 
+ * @param {number} typeID - PostgreSQL type ID to check
+ * @returns {boolean} True if the type ID is a text type, false otherwise
+ */
+export function isPostgresTextType(typeID: number): boolean {
+    return typeID === PostgresTypeID.CHAR || typeID === PostgresTypeID.VARCHAR || typeID === PostgresTypeID.TEXT;
+}
+
+/**
+ * Checks if a given PostgreSQL type ID represents an array data type.
+ * 
+ * @param {number} typeID - PostgreSQL type ID to check
+ * @returns {boolean} True if the type ID is an array type, false otherwise
+ */
+export function isPostgresArrayType(typeID: number): boolean {
+    return typeID === PostgresTypeID.INTEGER_ARRAY || typeID === PostgresTypeID.TEXT_ARRAY;
+}
+
+/**
+ * Checks if a given PostgreSQL type ID represents a range data type.
+ * 
+ * @param {number} typeID - PostgreSQL type ID to check
+ * @returns {boolean} True if the type ID is a range type, false otherwise
+ */
+export function isPostgresRangeType(typeID: number): boolean {
+    return typeID === PostgresTypeID.INT4RANGE || typeID === PostgresTypeID.INT8RANGE || typeID === PostgresTypeID.NUMRANGE;
+}
+
+/**
+ * Checks if a given PostgreSQL type ID represents a JSON data type.
+ * 
+ * @param {number} typeID - PostgreSQL type ID to check
+ * @returns {boolean} True if the type ID is a JSON type, false otherwise
+ */
+export function isPostgresJSONType(typeID: number): boolean {
+    return typeID === PostgresTypeID.JSON || typeID === PostgresTypeID.JSONB;
 }
