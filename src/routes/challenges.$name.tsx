@@ -37,7 +37,7 @@ import "ace-builds/src-noconflict/mode-sql";
 import "ace-builds/src-noconflict/theme-one_dark";
 import "ace-builds/src-noconflict/theme-iplastic";
 import "ace-builds/src-noconflict/ext-language_tools";
-import { Skeleton } from '@/components/Skeleton';
+import { ChallengeSkeleton } from '@/components/Skeleton';
 import { PGlightContext } from '@/context/PGlightContext';
 import { Button } from '@headlessui/react';
 import { useTheme } from '@/hooks/useTheme';
@@ -405,6 +405,6 @@ export const Route = createFileRoute('/challenges/$name')({
     component: Challenge,
     loader: ({ params }) => fetchChallenge(params.name),
     errorComponent: ({ error }) => <div>Error: {error.message}</div>,
-    pendingComponent: () => <Skeleton />,
+    pendingComponent: ChallengeSkeleton,
     notFoundComponent: () => <div>Challenge not found</div>,
 });
