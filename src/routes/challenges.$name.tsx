@@ -45,7 +45,7 @@ import { Table } from '@/components/table';
 import { useAppState } from '@/hooks/useAppState';
 import "allotment/dist/style.css";
 import { QueryResult } from '@/lib/types';
-import { queryRecordToStringArray } from '@/lib/utils';
+import { queryResultToStringArray } from '@/lib/utils';
 
 /**
  * Represents the core structure of SQL challenge data
@@ -263,10 +263,9 @@ const QueryResultTable: React.FC<QueryResultTableProps> = ({
     result: QueryResult; 
     id: string; 
 }): React.ReactElement => {
-    const columns = useMemo(() => result.fields.map((field) => field.name), [result.fields]);
-    const rows = useMemo(() => result.rows.map(queryRecordToStringArray), [result.rows]);
+    const data = useMemo(() => queryResultToStringArray(result), [result]);
     return (
-        <Table {...props} columns={columns} rows={rows} />
+        <Table {...props} columns={data.columns} rows={data.rows} />
     );
 }
 
