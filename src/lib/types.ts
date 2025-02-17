@@ -44,7 +44,19 @@ export interface AppState {
     currentChallenge?: string;
 }
 
- 
+/**
+ * Represents the field structure of a PostgreSQL table.
+ */
+export interface PgField { 
+    name: string, 
+    dataTypeID: number 
+};
+
+/**
+ * Represents a single cell value in a PostgreSQL table.
+*/
+export type PgCell = Record<string, unknown>;
+
 /**
  * Represents the structure of a SQL query execution result
  * @interface
@@ -54,11 +66,8 @@ export interface AppState {
  * @property {Record<string, unknown>[]} rows - Array of result rows
  */
 export interface QueryResult {
-    fields: { 
-        name: string,
-        dataTypeId: number,
-    }[];
-    rows: Record<string, unknown>[];
+    fields: PgField[];
+    rows: PgCell[];
 }
 
 /**

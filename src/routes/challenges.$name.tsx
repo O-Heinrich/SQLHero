@@ -45,6 +45,7 @@ import { Table } from '@/components/table';
 import { useAppState } from '@/hooks/useAppState';
 import "allotment/dist/style.css";
 import { QueryResult } from '@/lib/types';
+import { queryRecordToStringArray } from '@/lib/utils';
 
 /**
  * Represents the core structure of SQL challenge data
@@ -223,7 +224,10 @@ function Challenge() {
                         </Toolbar>
                     </div>
                     <div className="px-4 overflow-auto h-full pb-16 border-t-4 border-ridge border-white/20 dark:border-slate-900/20">
-                        {result && <QueryResultTable id="query-result" result={result ?? {} as QueryResult} />}
+                        {result 
+                            ? <QueryResultTable id="query-result" result={result ?? {} as QueryResult} />
+                            : <Table id="query-result" columns={['Ergebnis Tabelle']} rows={[['']]} />
+                        }
                     </div>
                 </Allotment>
                 <div className="px-4 pt-4 pb-22 overflow-auto h-full border-l-4 border-ridge border-white/80 dark:border-slate-900/80">
@@ -252,24 +256,15 @@ function Challenge() {
  * @param {string} props.id - Unique table identifier
  * @returns {React.ReactElement} Query result table
  */
-const QueryResultTable: React.FC<QueryResultTableProps> = ({ result, ...props }) => {
+const QueryResultTable: React.FC<QueryResultTableProps> = ({ 
+    result, 
+    ...props 
+}: { 
+    result: QueryResult; 
+    id: string; 
+}): React.ReactElement => {
     const columns = useMemo(() => result.fields.map((field) => field.name), [result.fields]);
-    const rows = useMemo(() => result.rows.map((row) => {
-        const rowValues: string[] = [];
-        for (const value of Object.values(row)) {
-            if (value instanceof Date) {
-                rowValues.push((value as Date).toISOString());
-            } else if (value instanceof Uint8Array) {
-                rowValues.push('Uint8Array[]');
-
-            } else {
-                rowValues.push(value as string|null ?? 'NULL');
-            }
-        }
-        
-        return rowValues;
-    }), [result.rows]);
-
+    const rows = useMemo(() => result.rows.map(queryRecordToStringArray), [result.rows]);
     return (
         <Table {...props} columns={columns} rows={rows} />
     );
