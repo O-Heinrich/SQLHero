@@ -40,12 +40,12 @@ function Introduction() {
                         Ihr persönlicher Bibliothekar, der Ihnen hilft, Informationen zu finden, zu ordnen und zu verwalten.
                     </p>
                     <div className="grid md:grid-cols-2 gap-4 my-4">
-                        <div className="p-4 bg-blue-200/50 dark:bg-blue-400/10 rounded-lg">
+                        <div className="p-4 bg-blue-100/25 dark:bg-blue-400/10 rounded-lg mix-blend-multiply dark:mix-blend-color-dodge">
                             <h3 className="font-semibold mb-2">Daten abrufen</h3>
                             <p className="dark:text-gray-300">Wie ein Bibliothekar, der genau das richtige Buch findet,
                                 hilft Ihnen <InlineCode>SELECT</InlineCode>, die gewünschten Informationen aus der Datenbank zu holen.</p>
                         </div>
-                        <div className="p-4 bg-green-50/50 dark:bg-green-400/10 rounded-lg">
+                        <div className="p-4 bg-green-50/50 dark:bg-green-400/10 rounded-lg mix-blend-multiply dark:mix-blend-color-dodge">
                             <h3 className="font-semibold mb-2">Daten speichern</h3>
                             <p className="dark:text-gray-300">Mit <InlineCode>INSERT</InlineCode> fügen Sie neue Informationen
                                 hinzu - vergleichbar mit dem Einordnen neuer Bücher in die Bibliothek.</p>
@@ -63,7 +63,7 @@ function Introduction() {
 
                     <div className="space-y-6">
                         {/* DDL Section */}
-                        <div className="bg-gray-50/50 dark:bg-gray-400/10 p-6 rounded-lg">
+                        <div className="bg-slate-50 dark:bg-gray-400/10 p-6 rounded-lg mix-blend-multiply dark:mix-blend-color-dodge">
                             <h3 className="text-xl font-semibold mb-3">1. Data Definition Language (DDL)</h3>
                             <p className="mb-3 dark:text-gray-300">
                                 Die DDL ist wie der Architekt Ihrer Datenbank. Mit ihr erstellen Sie die grundlegende Struktur:
@@ -76,7 +76,7 @@ function Introduction() {
                         </div>
 
                         {/* DML Section */}
-                        <div className="bg-gray-50/50 dark:bg-gray-400/10 p-6 rounded-lg">
+                        <div className="bg-slate-50 dark:bg-gray-400/10 p-6 rounded-lg mix-blend-multiply dark:mix-blend-color-dodge">
                             <h3 className="text-xl font-semibold mb-3">2. Data Manipulation Language (DML)</h3>
                             <p className="mb-3 dark:text-gray-300">
                                 Die DML ist Ihr wichtigstes Werkzeug für die tägliche Arbeit mit Daten:
@@ -101,12 +101,12 @@ function Introduction() {
                             </div>
                         </div>
                     </div>
-                    <div className="bg-gray-50/50 dark:bg-gray-400/10 p-6 rounded-lg">
+                    <div className="bg-slate-50 dark:bg-gray-400/10 p-6 rounded-lg mix-blend-multiply dark:mix-blend-color-dodge">
                         <h3 className="text-xl font-semibold mb-3">3. Data Control Language (DCL)</h3>
                         <p className="mb-3 dark:text-gray-300">
                             Die DCL kontrolliert die Zugriffsrechte auf Ihre Datenbank. Sie ist wie ein Sicherheitssystem:
                         </p>
-                        <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-sm space-y-3">
+                        <div className="bg-white/50 dark:bg-gray-300/10 p-4 rounded-lg shadow-sm space-y-3">
                             <div>
                                 <p className="font-semibold dark:text-gray-200">
                                     <InlineCode>GRANT</InlineCode> - Berechtigungen erteilen
@@ -126,12 +126,12 @@ function Introduction() {
                         </div>
                     </div>
 
-                    <div className="bg-gray-50/50 dark:bg-gray-400/10 p-6 rounded-lg">
+                    <div className="bg-slate-50 dark:bg-gray-400/10 p-6 rounded-lg mix-blend-multiply dark:mix-blend-color-dodge">
                         <h3 className="text-xl font-semibold mb-3">4. Transaction Control Language (TCL)</h3>
                         <p className="mb-3 dark:text-gray-300">
                             Die TCL steuert Transaktionen - also Gruppen von Datenbankoperationen, die als Einheit behandelt werden:
                         </p>
-                        <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-sm space-y-3">
+                        <div className="bg-white/50 dark:bg-gray-300/10 p-4 rounded-lg shadow-sm space-y-3">
                             <div>
                                 <p className="font-semibold dark:text-gray-200">
                                     <InlineCode>COMMIT</InlineCode> - Änderungen dauerhaft speichern
@@ -165,7 +165,7 @@ function Introduction() {
                 {/* Lernen mit SQL Hero Section */}
                 <section className="space-y-4">
                     <h2 className="text-2xl font-semibold">Lernen mit SQL Hero</h2>
-                    <div className="bg-blue-50/50 dark:bg-blue-400/10 p-6 rounded-lg space-y-4">
+                    <div className="bg-blue-50 dark:bg-blue-400/10 p-6 rounded-lg space-y-4 mix-blend-multiply dark:mix-blend-color-dodge">
                         <div>
                             <h3 className="font-semibold">Praktische Übungen</h3>
                             <p className="dark:text-gray-300">
@@ -184,15 +184,15 @@ function Introduction() {
                 {/* Fehlerbehandlung Section */}
                 <section className="space-y-4">
                     <h2 className="text-2xl font-semibold">Fehlerbehandlung und Tipps</h2>
-                    <div className="bg-gray-50/50 dark:bg-gray-400/10 p-6 rounded-lg">
+                    <div className="bg-gray-100 dark:bg-gray-400/10 p-6 rounded-lg mix-blend-multiply dark:mix-blend-color-dodge">
                         <div className="space-y-3">
-                            <div className="bg-white/50 dark:bg-gray-300/10 p-4 rounded-lg">
+                            <div className="bg-white dark:bg-gray-300/10 p-4 rounded-lg">
                                 <h4 className="font-semibold text-red-600 dark:text-red-400">Fachliche Fehler</h4>
                                 <p className="dark:text-gray-300">
                                     Das SQL ist syntaktisch korrekt, liefert aber nicht das erwartete Ergebnis.
                                 </p>
                             </div>
-                            <div className="bg-white/50 dark:bg-gray-300/10 p-4 rounded-lg">
+                            <div className="bg-white dark:bg-gray-300/10 p-4 rounded-lg">
                                 <h4 className="font-semibold text-red-600 dark:text-red-400">Technische Fehler</h4>
                                 <p className="dark:text-gray-300">
                                     Der SQL-Befehl kann nicht ausgeführt werden.
@@ -206,18 +206,18 @@ function Introduction() {
                 </section>
 
                 {/* Browser Support Section */}
-                <section className="bg-gray-50/50 dark:bg-gray-400/10 p-6 rounded-lg mt-8">
+                <section className="bg-gray-100 dark:bg-gray-400/10 p-6 rounded-lg mt-8 mix-blend-multiply dark:mix-blend-color-dodge">
                     <h2 className="text-2xl font-semibold mb-4">Technische Voraussetzungen</h2>
                     <div className="grid md:grid-cols-3 gap-4">
-                        <div className="bg-white/50 dark:bg-gray-300/10 p-4 rounded-lg text-center">
+                        <div className="bg-white dark:bg-gray-300/10 p-4 rounded-lg text-center">
                             <h3 className="font-semibold dark:text-gray-200">Firefox</h3>
                             <p className="text-sm text-gray-600 dark:text-gray-400">Vollständig getestet</p>
                         </div>
-                        <div className="bg-white/50 dark:bg-gray-300/10 p-4 rounded-lg text-center">
+                        <div className="bg-white dark:bg-gray-300/10 p-4 rounded-lg text-center">
                             <h3 className="font-semibold dark:text-gray-200">Chrome</h3>
                             <p className="text-sm text-gray-600 dark:text-gray-400">Vollständig getestet</p>
                         </div>
-                        <div className="bg-white/50 dark:bg-gray-300/10 p-4 rounded-lg text-center">
+                        <div className="bg-white dark:bg-gray-300/10 p-4 rounded-lg text-center">
                             <h3 className="font-semibold dark:text-gray-200/50">Edge</h3>
                             <p className="text-sm text-gray-600 dark:text-gray-400">Unterstützt</p>
                         </div>
