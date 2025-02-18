@@ -24,8 +24,8 @@ function Introduction() {
             <title>SQL Hero - Einführung</title>
             <article className="space-y-8 my-14">
                 <header className="mb-8">
-                    <h1 className="text-3xl font-bold mb-2">SQL Hero - Einführung in die Welt der Datenbanken</h1>
-                    <div className="h-1 w-20 bg-slate-600/50 dark:bg-slate-400/50 mb-4"></div>
+                    <h1>SQL Hero - Einführung in die Welt der Datenbanken</h1>
+                    <div className="h-1 w-20 bg-red-400/50 dark:bg-orange-200/50 mb-4"></div>
                     <p className="text-lg text-gray-700 dark:text-gray-300">
                         Entdecken Sie die faszinierende Welt der Datenbanksprache SQL - Ihr Weg zum Datenbank-Experten beginnt hier.
                     </p>
@@ -35,7 +35,7 @@ function Introduction() {
                 <section className="space-y-4">
                     <h2 className="text-2xl font-semibold">Was ist SQL?</h2>
                     <p className="leading-relaxed dark:text-gray-300">
-                        SQL (Structured Query Language) ist die Standardsprache für die Verwaltung und Abfrage von Datenbanken.
+                        SQL <em>(Structured Query Language)</em> ist die Standardsprache für die Verwaltung und Abfrage von Datenbanken.
                         Stellen Sie sich eine Datenbank wie eine sehr gut organisierte digitale Bibliothek vor: SQL ist dabei
                         Ihr persönlicher Bibliothekar, der Ihnen hilft, Informationen zu finden, zu ordnen und zu verwalten.
                     </p>
@@ -101,7 +101,66 @@ function Introduction() {
                             </div>
                         </div>
                     </div>
+                    <div className="bg-gray-50/50 dark:bg-gray-400/10 p-6 rounded-lg">
+                        <h3 className="text-xl font-semibold mb-3">3. Data Control Language (DCL)</h3>
+                        <p className="mb-3 dark:text-gray-300">
+                            Die DCL kontrolliert die Zugriffsrechte auf Ihre Datenbank. Sie ist wie ein Sicherheitssystem:
+                        </p>
+                        <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-sm space-y-3">
+                            <div>
+                                <p className="font-semibold dark:text-gray-200">
+                                    <InlineCode>GRANT</InlineCode> - Berechtigungen erteilen
+                                </p>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    Beispiel: <InlineCode>GRANT SELECT ON Kunden TO Benutzer1</InlineCode>
+                                </p>
+                            </div>
+                            <div>
+                                <p className="font-semibold dark:text-gray-200">
+                                    <InlineCode>REVOKE</InlineCode> - Berechtigungen entziehen
+                                </p>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    Beispiel: <InlineCode>REVOKE SELECT ON Kunden FROM Benutzer1</InlineCode>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-gray-50/50 dark:bg-gray-400/10 p-6 rounded-lg">
+                        <h3 className="text-xl font-semibold mb-3">4. Transaction Control Language (TCL)</h3>
+                        <p className="mb-3 dark:text-gray-300">
+                            Die TCL steuert Transaktionen - also Gruppen von Datenbankoperationen, die als Einheit behandelt werden:
+                        </p>
+                        <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-sm space-y-3">
+                            <div>
+                                <p className="font-semibold dark:text-gray-200">
+                                    <InlineCode>COMMIT</InlineCode> - Änderungen dauerhaft speichern
+                                </p>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    Beispiel: Nach erfolgreichen Änderungen <InlineCode>COMMIT</InlineCode> ausführen
+                                </p>
+                            </div>
+                            <div>
+                                <p className="font-semibold dark:text-gray-200">
+                                    <InlineCode>ROLLBACK</InlineCode> - Änderungen rückgängig machen
+                                </p>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    Beispiel: Bei Fehlern <InlineCode>ROLLBACK</InlineCode> zur Wiederherstellung des letzten stabilen Zustands
+                                </p>
+                            </div>
+                            <div>
+                                <p className="font-semibold dark:text-gray-200">
+                                    <InlineCode>SAVEPOINT</InlineCode> - Zwischenpunkt setzen
+                                </p>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    Beispiel: <InlineCode>SAVEPOINT UpdatePoint1</InlineCode> vor wichtigen Änderungen
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </section>
+
+
 
                 {/* Lernen mit SQL Hero Section */}
                 <section className="space-y-4">
@@ -165,6 +224,6 @@ function Introduction() {
                     </div>
                 </section>
             </article>
-        </Wrapper>
+        </Wrapper >
     )
 }
