@@ -105,11 +105,19 @@ body {
 }
 
 body {
-    @apply bg-fixed dark:text-white/85 text-black/85 dark:bg-gray-900 bg-gray-100 dark:to-slate-900 dark:from-slate-700 from-slate-50 to-slate-300 bg-radial-[at_100%_50%];
+    @apply bg-fixed dark:text-white/85 text-black/85 dark:bg-gray-900 bg-gray-100 dark:to-slate-900 dark:from-slate-700 from-white to-slate-300 bg-radial dark:bg-radial-[at_100%_50%];
+}
+
+article h1 {
+    @apply text-3xl pt-2 text-transparent bg-clip-text font-bold bg-gradient-to-l to-red-400 from-orange-300 dark:to-red-300 dark:from-orange-200 inline-block;
 }
 
 h2 {
     @apply mb-6 text-6xl pb-4 pt-2 text-transparent bg-clip-text font-light bg-gradient-to-r to-red-400 from-green-500 dark:to-red-300 dark:from-lime-200 inline-block;
+}
+
+h2.text-2xl {
+    @apply text-5xl;
 }
 
 h3 {
