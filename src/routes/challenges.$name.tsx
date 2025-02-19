@@ -46,6 +46,7 @@ import { useAppState } from '@/hooks/useAppState';
 import "allotment/dist/style.css";
 import { QueryResult } from '@/lib/types';
 import { queryResultToStringArray } from '@/lib/utils';
+import { DEBUG } from '@/constants';
 
 /**
  * Represents the core structure of SQL challenge data
@@ -143,31 +144,16 @@ function Challenge() {
     const challenge = Route.useLoaderData() as ChallengeData;
     const [editorState, setEditorState] = useState('');
     const [result, setResult] = useState<QueryResult | null>(null);
-    const [sollution, setSollution] = useState<QueryResult | null>(null);
     const [db, setDb] = useState<string>('');
     const { state, dispatch } = useAppState();
     const hasLesson = challenge.lesson !== undefined;
-    useEffect(() => {
-        try {
-            setEditorState(() => challenge.solution);
-            setResult(() => null);
-            if (challenge.meta.schema === db) {
-                const solution = pg?.query(challenge.solution);
-                setSollution(() => solution as unknown as QueryResult);
-            } else {
-                throw new Error('No solution provided because the schema does not match');
-            }
-        } catch (error) {
-            const errMsg = typeof error === 'string' ? error : (error as Error).message;
-            toast.error(`Failed to evaluate solution: ${errMsg}`);
-        }
-    }, [challenge, db, pg]);
     useEffect(() => {
         if (pg && db !== challenge.meta.schema) {
             fetch(challenge.meta.schema).then(async (response) => {
                 try {
                     const sql = await response.text();
-                    await pg.exec(sql);
+                    const result = await pg.exec(sql);
+                    console.log(result)
                 } catch (error) {
                     const errMsg = typeof error === 'string' ? error : (error as Error).message;
                     toast.error(`Failed to load schema: ${errMsg}`);
@@ -182,19 +168,22 @@ function Challenge() {
         if (!pg) return;
         try {
             const result = await pg.query(editorState);
-            setResult(() => result as unknown as QueryResult);
+            const sollution = await pg.query(challenge.solution);
+            const isCorrect = JSON.stringify(result.rows) === JSON.stringify(sollution?.rows);
+
+            if (DEBUG) {
+                console.table(result.rows);
+                console.table(sollution?.rows);
+                console.log(isCorrect);
+            }
+
             dispatch({
                 type: 'ATTEMPT_CHALLENGE',
                 payload: { id: challenge.meta.title }
-            })
-            console.log(result)
-            // if ((result as QueryResult).rows.length === sollution?.rows.length) {
-            const isCorrect = (result as unknown as QueryResult).rows.every((row, i) => {
-                const sollutionRow = sollution?.rows[i];
-                return sollutionRow && Object.values(row).every((value, j) => value === (sollutionRow as Record<string, unknown>)[j]);
             });
 
             if (isCorrect) {
+                toast.success('Challenge completed successfully');
                 state.headerElement?.classList.add('bg-green-500/50');
                 dispatch({
                     type: 'COMPLETE_CHALLENGE',
@@ -204,9 +193,8 @@ function Challenge() {
                 toast.error('Query result does not match the solution');
                 state.headerElement?.classList.add('bg-red-500/50');
             }
-            // } else {
-            //     toast.error('Number of result rows does not match the expected solution row count.');
-            // }
+
+            setResult(() => result as QueryResult);
         } catch (error) {
             const errMsg = typeof error === 'string' ? error : (error as Error).message;
             toast.error(`Failed to load schema: ${errMsg}`);
@@ -224,7 +212,7 @@ function Challenge() {
                         </Toolbar>
                     </div>
                     <div className="px-4 overflow-auto h-full pb-16 border-t-4 border-ridge border-white/20 dark:border-slate-900/20">
-                        {result 
+                        {result && result.fields.length > 0 
                             ? <QueryResultTable id="query-result" result={result ?? {} as QueryResult} />
                             : <Table id="query-result" columns={['Ergebnis Tabelle']} rows={[['']]} />
                         }

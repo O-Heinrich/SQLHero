@@ -24,7 +24,8 @@ const Root: React.FC = () => (
                     theme={use(ThemeContext).theme as 'light' | 'dark'}
                     toastOptions={{
                         classNames: {
-                            toast: 'hero-toast',
+                            error: 'hero-toast-error',
+                            success: 'hero-toast-success',
                             icon: 'hero-toast-icon',
                         }
                     }}

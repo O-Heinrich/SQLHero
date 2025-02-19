@@ -22,7 +22,8 @@ import { AppState, ChallengeAction } from "@/lib/types";
  */
 export const appReducer = (state: AppState, action: ChallengeAction): AppState => {
     switch (action.type) {
-        case 'COMPLETE_CHALLENGE':
+        case 'COMPLETE_CHALLENGE': {
+            
             return {
                 ...state,
                 challenges: {
@@ -34,6 +35,7 @@ export const appReducer = (state: AppState, action: ChallengeAction): AppState =
                     }
                 }
             };
+        }
 
         case 'ATTEMPT_CHALLENGE':
             return {
