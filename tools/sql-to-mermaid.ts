@@ -230,6 +230,30 @@ class SQLToErdParser {
         return mermaid;
     }
 
+    /**
+     * Generates a complete DOT language representation of the database schema
+     * @private
+     * @returns {string} A complete DOT language graph definition
+     * @description
+     * Creates a DOT language graph that visualizes the database schema as an ER diagram.
+     * The generated graph includes:
+     * - Right-to-left layout direction
+     * - Custom node styling for tables
+     * - Crow's foot notation for relationships
+     * - Custom font settings for better readability
+     * - Table nodes with column details
+     * - Foreign key relationship edges with labels
+     * 
+     * @example
+     * ```typescript
+     * // The generated DOT will look like:
+     * digraph ERDiagram {
+     *   // Node and edge styling
+     *   // Table definitions
+     *   // Relationship edges
+     * }
+     * ```
+     */
     private generateDot(): string {
         let dot = 
 `digraph ERDiagram {
