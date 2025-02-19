@@ -43,10 +43,11 @@ import { Button } from '@headlessui/react';
 import { useTheme } from '@/hooks/useTheme';
 import { Table } from '@/components/table';
 import { useAppState } from '@/hooks/useAppState';
+import { QueryResult, TableDiff } from '@/lib/types';
+import { queryResultToStringArray, ResultSetComparison } from '@/lib/utils';
+import { useChallengNumber } from '@/hooks/useChallengNumber';
+
 import "allotment/dist/style.css";
-import { QueryResult } from '@/lib/types';
-import { queryResultToStringArray } from '@/lib/utils';
-import { DEBUG } from '@/constants';
 
 /**
  * Represents the core structure of SQL challenge data
@@ -145,9 +146,11 @@ function Challenge() {
     const [editorState, setEditorState] = useState('');
     const [result, setResult] = useState<QueryResult | null>(null);
     const [db, setDb] = useState<string>('');
-    const { state, dispatch } = useAppState();
+    const { dispatch } = useAppState();
+    const challengeNo = useChallengNumber();
     const hasLesson = challenge.lesson !== undefined;
     useEffect(() => {
+        setEditorState(() => challenge.solution);
         if (pg && db !== challenge.meta.schema) {
             fetch(challenge.meta.schema).then(async (response) => {
                 try {
@@ -159,23 +162,32 @@ function Challenge() {
                     toast.error(`Failed to load schema: ${errMsg}`);
                 } finally {
                     setDb(() => challenge.meta.schema);
+                    dispatch({
+                        type: 'CHALLENGE_FAILED',
+                        payload: { 
+                            id: challenge.meta.title,
+                            difference: {} as TableDiff
+                        }
+                    });
+        
                 }
             });
         }
-    }, [db, pg, challenge]);
+    }, [db, pg, challenge, dispatch]);
 
     const handleRun = async () => {
         if (!pg) return;
         try {
-            const result = await pg.query(editorState);
-            const sollution = await pg.query(challenge.solution);
-            const isCorrect = JSON.stringify(result.rows) === JSON.stringify(sollution?.rows);
+            let solution: QueryResult|null = null;
+            const result = await pg.query(editorState) as QueryResult;
+            const key = challengeNo.toString();
 
-            if (DEBUG) {
-                console.table(result.rows);
-                console.table(sollution?.rows);
-                console.log(isCorrect);
+            if (!ResultSetComparison.hasSolution(challengeNo.toString())) {
+                solution = await pg.query(challenge.solution) as QueryResult;
+                ResultSetComparison.storeSolutionHash(key, solution);
             }
+
+            const isCorrect = ResultSetComparison.compareWithSolution(key, result);
 
             dispatch({
                 type: 'ATTEMPT_CHALLENGE',
@@ -184,14 +196,22 @@ function Challenge() {
 
             if (isCorrect) {
                 toast.success('Challenge completed successfully');
-                state.headerElement?.classList.add('bg-green-500/50');
                 dispatch({
                     type: 'COMPLETE_CHALLENGE',
                     payload: { id: challenge.meta.title }
                 });
             } else {
+                solution ??= {} as QueryResult;
+                const diff = ResultSetComparison.getDifference(solution, result);
+                console.table(diff);
                 toast.error('Query result does not match the solution');
-                state.headerElement?.classList.add('bg-red-500/50');
+                dispatch({
+                    type: 'CHALLENGE_FAILED',
+                    payload: { 
+                        id: challenge.meta.title,
+                        difference: diff
+                    }
+                });
             }
 
             setResult(() => result as QueryResult);

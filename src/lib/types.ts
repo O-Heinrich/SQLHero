@@ -19,13 +19,19 @@ export interface Challenge {
     title: string;
 
     /** Whether the challenge has been successfully completed */
-    completed: boolean;
+    completed?: boolean;
 
     /** Whether the challenge has been attempted at least once */
-    attempted: boolean;
+    attempted?: boolean;
+
+    /** Whether the most recent attempt on the challenge has failed */
+    failed?: boolean;
 
     /** Timestamp of the most recent attempt, if any */
     lastAttempt?: Date;
+
+    /** Table diff object if the challenge attempt failed */
+    difference?: TableDiff;
 }
 
 /**
@@ -70,6 +76,17 @@ export interface QueryResult {
 }
 
 /**
+ * Represents the result of comparing two query results.
+ * @interface
+ * @property {string[]} columns - Array of column names
+ * @property {string[][]} rows - 2D array of stringified values
+ */
+export type ResultComparison = {
+    columns: string[];
+    rows: string[][];
+};
+
+/**
 * Union type defining all possible actions that can modify the app state.
 * Each action has a specific type identifier and associated payload data.
 */
@@ -79,6 +96,9 @@ export type ChallengeAction =
 
     /** Records an attempt on a challenge */
     | { type: 'ATTEMPT_CHALLENGE'; payload: { id: string } }
+
+    /** Marks a challenge attempt as failed */
+    | { type: 'CHALLENGE_FAILED', payload: { id: string, difference: TableDiff } }
 
     /** Updates the header element reference */
     | { type: 'SET_HEADER_REF'; payload: HTMLHeadingElement }
@@ -167,4 +187,31 @@ export enum PostgresTypeID {
     TSRANGE = 3908,
     TSTZRANGE = 3910,
     DATERANGE = 3912
+}
+
+/**
+ * Represents the difference between two PostgreSQL tables.
+ * @interface
+ * @property {string[]} missingColumns - Array of column names missing in the received table
+ * @property {string[]} extraColumns - Array of column names present in the received table but not in the expected table
+ * @property {Array<{ 
+ *      rowIndex: number, 
+ *      differences: Array<{ 
+ *          column: string, 
+ *          expected: string, 
+ *          received: string 
+ *      }> 
+ * }>} mismatchedRows - Array of mismatched rows
+ */
+export interface TableDiff {
+    missingColumns: string[];
+    extraColumns: string[];
+    mismatchedRows: Array<{
+        rowIndex: number;
+        differences: Array<{
+            column: string;
+            expected: string;
+            received: string;
+        }>;
+    }>;
 }

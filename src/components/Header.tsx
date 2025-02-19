@@ -2,7 +2,6 @@ import React from "react";
 import clsx from "clsx";
 import {
     Link,
-    useLocation,
     useNavigate,
 } from "@tanstack/react-router";
 import { APP_NAME } from "@/constants";
@@ -14,7 +13,8 @@ import { ChevronLeft, ChevronRight } from "./icons";
 import { Button } from "@headlessui/react";
 import { COUNT_CHALLENGES } from "@/constants";
 import { useAppState } from "@/hooks/useAppState";
-import { ChallengeAction } from "@/lib/types";
+import { AppState, ChallengeAction } from "@/lib/types";
+import { useChallengNumber } from "@/hooks/useChallengNumber";
 
 /**
  * Spacer component properties
@@ -69,9 +69,9 @@ const Spacer: React.FC<SpacerProps> = ({classList}: SpacerProps): React.ReactEle
 export const Header: React.FC = (): React.ReactElement => {
     const { theme } = useTheme();
     const navigate = useNavigate();
-    const location = useLocation();
+    const challengeNo = useChallengNumber();
     const headerRef = React.useRef<HTMLHeadingElement>(null);
-    const { dispatch }: { dispatch: React.Dispatch<ChallengeAction> } = useAppState();
+    const { state, dispatch }: { state: AppState, dispatch: React.Dispatch<ChallengeAction> } = useAppState();
 
     /**
      * Sets header reference for handling success messages
@@ -91,22 +91,14 @@ export const Header: React.FC = (): React.ReactElement => {
     const isDarkMode: boolean = React.useMemo(() => theme === 'dark', [theme]);
 
     /**
-     * Extracts challenge number from URL path
-     * @type {number}
-     * @default 1
-     */
-    const challengeNo: number = React.useMemo(() => {
-        const path = location.pathname.split('/').pop();
-        return parseInt(path ?? '1', 10);
-    }, [location.pathname]);
-
-    /**
      * Handles navigation to next challenge.
      * Cycles through challenges 1 to COUNT_CHALLENGES.
      * If at last challenge, wraps back to challenge 1.
      */
     const handleNext = () => {
         const next = (challengeNo + 1) % (COUNT_CHALLENGES + 1);
+        state.headerElement?.classList.remove('dark:bg-green-500/50', 'bg-green-800/50');
+        state.headerElement?.classList.add('dark:bg-red-500/50', 'bg-red-800/50');
         navigate({
             to: '/challenges/$name',
             params: {
@@ -121,6 +113,8 @@ export const Header: React.FC = (): React.ReactElement => {
      */
     const handlePrev = () => {
         const next = challengeNo - 1;
+        state.headerElement?.classList.remove('dark:bg-green-500/50', 'bg-green-800/50');
+        state.headerElement?.classList.add('dark:bg-red-500/50', 'bg-red-800/50');
         navigate({
             to: '/challenges/$name',
             params: {
@@ -130,7 +124,7 @@ export const Header: React.FC = (): React.ReactElement => {
     }
 
     return (
-        <header ref={headerRef} className={clsx('sticky', 'top-0', 'z-50', 'dark:bg-red-500/50', 'bg-red-800/50', 'text-white', 'backdrop-blur-xl')}>
+        <header ref={headerRef} className={clsx('top-header', 'sticky', 'top-0', 'z-50', 'dark:bg-red-500/50', 'bg-red-800/50', 'text-white', 'backdrop-blur-xl', 'transition-all', 'duration-800', 'dark:mix-blend-color-dodge', 'mix-blend-hard-light')}>
             <Wrapper className={clsx('flex', 'items-center', 'max-w-400')}>
                 <span className={clsx('flex', 'items-center', 'gap-1', 'flex-grow')}>
                     <Logo fill={isDarkMode ? '#efefef' : '#343434'} />

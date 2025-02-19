@@ -108,6 +108,11 @@ body {
     @apply bg-fixed dark:text-white/85 text-black/85 dark:bg-gray-900 bg-gray-100 dark:to-slate-900 dark:from-slate-700 from-white to-slate-300 bg-radial dark:bg-radial-[at_100%_50%];
 }
 
+
+header.top-header {
+    @apply mix-blend-hard-light dark:mix-blend-color-dodge;
+}
+
 article h1 {
     @apply text-3xl pt-2 text-transparent bg-clip-text font-bold bg-gradient-to-l to-red-400 from-orange-300 dark:to-red-300 dark:from-orange-200 inline-block;
 }
@@ -211,7 +216,11 @@ button {
 }
 
 header button {
-    @apply py-6 disabled:opacity-0 disabled:cursor-default rounded-none bg-slate-100/50 dark:bg-slate-800/50 ring-0 focus:ring-0 focus:ring-offset-0 shadow-none border-none opacity-80 dark:text-gray-100 text-gray-800 mix-blend-multiply dark:mix-blend-overlay dark:active:mix-blend-color-burn active:mix-blend-soft-light;
+    @apply py-6 disabled:opacity-0 disabled:cursor-default rounded-none bg-slate-100/20 dark:bg-slate-800/50 ring-0 focus:ring-0 focus:ring-offset-0 shadow-none border-none opacity-80 dark:text-gray-100 text-gray-800/90 mix-blend-multiply dark:mix-blend-overlay dark:active:mix-blend-color-burn active:mix-blend-soft-light;
+}
+
+header a button {
+    height: 5rem;
 }
 
 button.theme-button {
@@ -221,7 +230,7 @@ button.theme-button {
 }
 
 .navigation button {
-    @apply mix-blend-overlay dark:active:mix-blend-color-burn active:mix-blend-soft-light transition-all w-full rounded-none dark:bg-transparent bg-transparent ring-0 focus:ring-0 focus:ring-offset-0 shadow-none border-none dark:text-gray-100 text-gray-800 opacity-80 mix-blend-multiply dark:active:mix-blend-color-burn active:mix-blend-soft-light;
+    @apply mix-blend-overlay dark:active:mix-blend-color-burn active:mix-blend-soft-light transition-all w-full rounded-none dark:bg-transparent bg-transparent ring-0 focus:ring-0 focus:ring-offset-0 shadow-none border-none dark:text-gray-100 text-gray-800/80 opacity-80 mix-blend-multiply dark:active:mix-blend-color-burn active:mix-blend-soft-light;
 }
 
 .navigation button:hover {
@@ -259,17 +268,4 @@ code {
     width: 2.5em;
     height: 2.5em;
     opacity: 0.6;
-}
-
-@media (prefers-color-scheme: light) {
-    :root {
-        color: #213547;
-        background-color: #ffffff;
-    }
-
-    /*
-    a:hover {
-        color: #747bff;
-    }
-*/
 }

@@ -4,7 +4,7 @@
  * @module lib/utils
  */
 
-import { PostgresTypeID, QueryResult } from "@/lib/types";
+import { PostgresTypeID, QueryResult, ResultComparison, TableDiff } from "@/lib/types";
 
 /**
  * Converts a JavaScript value to a string representation based on the PostgreSQL type context.
@@ -135,4 +135,207 @@ export function queryResultToStringArray({ fields, rows }: QueryResult): { colum
         columns,
         rows: stringRows,
     };
+}
+
+/**
+ * Custom error class representing a situation where a solution hash is not found.
+ * 
+ * @extends {Error}
+ */
+export class SolutionHashNotFountError extends Error {
+    constructor(key: string) {
+        super(`Solution hash not found for key: ${key}`);
+    }
+}
+
+/**
+ * Class for comparing PostgreSQL query results with stored solutions.
+ * Provides methods to store solution hashes, compare results with solutions,
+ * and get detailed differences between solutions and results.
+ * 
+ * @class
+ * @static
+ * @hideconstructor
+ * @example
+ * ```ts
+ * const solution = {
+ *  fields: [
+ *      { name: 'id', dataTypeID: PostgresTypeID.INTEGER },
+ *      { name: 'name', dataTypeID: PostgresTypeID.TEXT },
+ * ],
+ * rows: [
+ *      { id: 1, name: 'Alice' },
+ *      { id: 2, name: 'Bob' },
+ *  ],
+ * };
+ * 
+ * ResultSetComparison.storeSolutionHash('exercise-1', solution);
+ * 
+ * const result = {
+ * fields: [
+ *     { name: 'id', dataTypeID: PostgresTypeID.INTEGER },
+ *     { name: 'name', dataTypeID: PostgresTypeID.TEXT },
+ *  ],
+ *  rows: [
+ *      { id: 1, name: 'Alice' },
+ *      { id: 2, name: 'Bob' },
+ *  ],
+ * };
+ * 
+ * const isMatch = ResultSetComparison.compareWithSolution('exercise-1', result);
+ * console.log(isMatch); // true
+ * ```
+ */
+export class ResultSetComparison {
+    private static solutionHashes: Map<string, string> = new Map();
+
+    public static hasSolution(exerciseId: string): boolean {
+        return ResultSetComparison.solutionHashes.has(exerciseId);
+    }
+
+    /**
+     * Generates a hash for a row by joining its values with a comma.
+     * 
+     * @param {string[]} row - The row to hash.
+     * @returns {string} - The hash of the row.
+     */
+    private static hashRow(row: string[]): string {
+        return row.join(',');
+    }
+
+    /**
+     * Generates a hash for a result set by hashing its columns and rows.
+     * 
+     * @param {ResultComparison} comparison - The result set to hash.
+     * @returns {string} - The hash of the result set.
+     */
+    private static hashResultSet(comparison: ResultComparison): string {
+        const columnHash = comparison.columns.join('|');
+
+        const rowHashes = comparison.rows
+            .map(this.hashRow)
+            .sort();
+
+        return columnHash + '\n' + rowHashes.join('\n');
+    }
+
+    /**
+     * Stores the hash of a solution result set for a given exercise ID.
+     * 
+     * @param {string} exerciseId - The ID of the exercise.
+     * @param {QueryResult} solution - The solution result set.
+     */
+    public static storeSolutionHash(exerciseId: string, solution: QueryResult): ResultSetComparison {
+        const serialized = queryResultToStringArray(solution);
+        const hash = this.hashResultSet(serialized);
+        this.solutionHashes.set(exerciseId, hash);
+        return this;
+    }
+
+    /**
+     * Compares a result set with the stored solution for a given exercise ID.
+     * 
+     * @param {string} exerciseId - The ID of the exercise.
+     * @param {QueryResult} result - The result set to compare.
+     * @returns {boolean} - `true` if the result matches the solution, `false` otherwise.
+     * @throws {SolutionHashNotFountError} - If no solution hash is found for the given exercise ID.
+     */
+    static compareWithSolution(exerciseId: string, result: QueryResult): boolean {
+        const solutionHash = this.solutionHashes.get(exerciseId);
+        if (!solutionHash) {
+            throw new SolutionHashNotFountError(exerciseId);
+        }
+
+        const serialized = queryResultToStringArray(result);
+        const hash = this.hashResultSet(serialized);
+        return hash === solutionHash;
+    }
+
+    /**
+     * Gets the differences between a solution result set and a student result set.
+     * 
+     * @param {QueryResult} solution - The solution result set.
+     * @param {QueryResult} result - The student result set.
+     * @returns {TableDiff} - An object containing the differences between the solution and the result.
+     */
+    static getDifference(solution: QueryResult, result: QueryResult): TableDiff {
+        const solutionSerialized = queryResultToStringArray(solution);
+        const studentSerialized = queryResultToStringArray(result);
+
+        const differences = {
+            missingColumns: [] as string[],
+            extraColumns: [] as string[],
+            mismatchedRows: [] as Array<{
+                rowIndex: number;
+                differences: Array<{
+                    column: string;
+                    expected: string;
+                    received: string;
+                }>;
+            }>,
+        };
+
+        const solutionColumns = new Set(solutionSerialized.columns);
+        const studentColumns = new Set(studentSerialized.columns);
+
+        differences.missingColumns = solutionSerialized.columns.filter(col => !studentColumns.has(col));
+        differences.extraColumns = studentSerialized.columns.filter(col => !solutionColumns.has(col));
+
+        if (differences.missingColumns.length > 0 || differences.extraColumns.length > 0) {
+            return differences;
+        }
+
+        const solutionRowMap = new Map(
+            solutionSerialized.rows.map(row => [this.hashRow(row), row])
+        );
+
+        studentSerialized.rows.forEach((studentRow, rowIndex) => {
+            const rowHash = this.hashRow(studentRow);
+            if (!solutionRowMap.has(rowHash)) {
+                // Find closest matching row for detailed feedback
+                const mismatchedColumns: Array<{
+                    column: string;
+                    expected: string;
+                    received: string;
+                }> = [];
+
+                // Find the best matching solution row
+                let minDifferences = Infinity;
+                let bestMatchRow: string[] | null = null;
+
+                for (const solutionRow of solutionRowMap.values()) {
+                    let differences = 0;
+                    for (let i = 0; i < solutionRow.length; i++) {
+                        if (solutionRow[i] !== studentRow[i]) {
+                            differences++;
+                        }
+                    }
+                    if (differences < minDifferences) {
+                        minDifferences = differences;
+                        bestMatchRow = solutionRow;
+                    }
+                }
+
+                if (bestMatchRow) {
+                    for (let i = 0; i < studentRow.length; i++) {
+                        if (studentRow[i] !== bestMatchRow[i]) {
+                            mismatchedColumns.push({
+                                column: solutionSerialized.columns[i],
+                                expected: bestMatchRow[i],
+                                received: studentRow[i]
+                            });
+                        }
+                    }
+                }
+
+                differences.mismatchedRows.push({
+                    rowIndex,
+                    differences: mismatchedColumns
+                });
+            }
+        });
+
+        return differences;
+    }
+
 }
