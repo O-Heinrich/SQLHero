@@ -41,12 +41,22 @@ function Introduction() {
                     </p>
                     <div className="grid md:grid-cols-2 gap-4 my-4">
                         <div className="p-4 bg-blue-100/25 dark:bg-blue-400/10 rounded-lg mix-blend-multiply dark:mix-blend-color-dodge">
-                            <h3 className="font-semibold mb-2">Daten abrufen</h3>
+                            <h3 className="font-semibold mb-2 flex items-center justify-between gap-2">
+                                Daten abrufen
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-18 dark:text-gray-500 text-gray-200">
+                                    <path fillRule="evenodd" d="M10.5 3.75a6 6 0 0 0-5.98 6.496A5.25 5.25 0 0 0 6.75 20.25H18a4.5 4.5 0 0 0 2.206-8.423 3.75 3.75 0 0 0-4.133-4.303A6.001 6.001 0 0 0 10.5 3.75Zm2.25 6a.75.75 0 0 0-1.5 0v4.94l-1.72-1.72a.75.75 0 0 0-1.06 1.06l3 3a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06l-1.72 1.72V9.75Z" clipRule="evenodd" />
+                                </svg>
+                            </h3>
                             <p className="dark:text-gray-300">Wie ein Bibliothekar, der genau das richtige Buch findet,
                                 hilft Ihnen <InlineCode>SELECT</InlineCode>, die gewünschten Informationen aus der Datenbank zu holen.</p>
                         </div>
                         <div className="p-4 bg-green-50/50 dark:bg-green-400/10 rounded-lg mix-blend-multiply dark:mix-blend-color-dodge">
-                            <h3 className="font-semibold mb-2">Daten speichern</h3>
+                            <h3 className="font-semibold mb-2 flex items-center justify-between gap-2">
+                                Daten speichern
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-18 dark:text-gray-500 text-gray-200">
+                                    <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clipRule="evenodd" />
+                                </svg>
+                            </h3>
                             <p className="dark:text-gray-300">Mit <InlineCode>INSERT</InlineCode> fügen Sie neue Informationen
                                 hinzu - vergleichbar mit dem Einordnen neuer Bücher in die Bibliothek.</p>
                         </div>
