@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS bundesland (
     B_ID integer NOT NULL,
-    B_Bezeichnung varchar(255) NOT NULL
+    B_Bezeichnung varchar(255) NOT NULL,
+    PRIMARY KEY (B_ID)
 );
 
 TRUNCATE TABLE bundesland;
@@ -24,7 +25,8 @@ INSERT INTO bundesland (B_ID, B_Bezeichnung) VALUES
 
 CREATE TABLE IF NOT EXISTS partei (
     P_ID integer NOT NULL,
-    P_Bezeichnung varchar(255) NOT NULL
+    P_Bezeichnung varchar(255) NOT NULL,
+    PRIMARY KEY (P_ID)
 );
 
 TRUNCATE TABLE partei;
@@ -38,7 +40,8 @@ INSERT INTO partei (P_ID, P_Bezeichnung) VALUES
 
 CREATE TABLE IF NOT EXISTS schulabschluss (
     S_ID integer NOT NULL,
-    S_Bezeichnung varchar(255) NOT NULL
+    S_Bezeichnung varchar(255) NOT NULL,
+    PRIMARY KEY (S_ID)
 );
 
 TRUNCATE TABLE schulabschluss;
@@ -54,7 +57,11 @@ CREATE TABLE IF NOT EXISTS waehler (
     W_S_ID integer NOT NULL,
     W_B_ID integer NOT NULL,
     W_PLZ varchar(5) NOT NULL,
-    W_P_ID integer NOT NULL
+    W_P_ID integer NOT NULL,
+    PRIMARY KEY (W_ID),
+    FOREIGN KEY (W_S_ID) REFERENCES schulabschluss (S_ID),
+    FOREIGN KEY (W_B_ID) REFERENCES bundesland (B_ID),
+    FOREIGN KEY (W_P_ID) REFERENCES partei (P_ID)
 );
 
 TRUNCATE TABLE waehler;
