@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS ag (
   id integer NOT NULL
 ,  name varchar(40) NOT NULL
 ,  lehrer_id integer NOT NULL
+, FOREIGN KEY (lehrer_id) REFERENCES lehrer (id)
 );
 
 -- Exportiere Daten aus Tabelle schule.ag: -1 rows
@@ -39,6 +40,7 @@ CREATE TABLE IF NOT EXISTS klasse (
   id integer NOT NULL
 ,  name varchar(10) NOT NULL
 ,  klassenlehrer_id integer NOT NULL
+, FOREIGN KEY (klassenlehrer_id) REFERENCES lehrer (id)
 );
 
 -- Exportiere Daten aus Tabelle schule.klasse: 4 rows
@@ -100,6 +102,7 @@ CREATE TABLE IF NOT EXISTS schueler (
 ,  name varchar(20) NOT NULL
 ,  vorname varchar(20) NOT NULL
 ,  klasse_id integer NOT NULL
+, FOREIGN KEY (klasse_id) REFERENCES klasse (id)
 );
 
 -- Exportiere Daten aus Tabelle schule.schueler: -1 rows
@@ -119,6 +122,9 @@ DROP TABLE IF EXISTS "teilnahme";
 CREATE TABLE IF NOT EXISTS teilnahme (
   schueler_id integer NOT NULL
 ,  ag_id integer NOT NULL
+,  PRIMARY KEY (schueler_id, ag_id)
+, FOREIGN KEY (schueler_id) REFERENCES schueler (id)
+, FOREIGN KEY (ag_id) REFERENCES ag (id)
 );
 
 -- Exportiere Daten aus Tabelle schule.teilnahme: -1 rows
@@ -145,6 +151,9 @@ CREATE TABLE IF NOT EXISTS unterricht (
 ,  raum_id integer NOT NULL
 ,  fach varchar(20) NOT NULL
 ,  stunden integer NOT NULL
+, FOREIGN KEY (klasse_id) REFERENCES klasse (id)
+, FOREIGN KEY (lehrer_id) REFERENCES lehrer (id)
+, FOREIGN KEY (raum_id) REFERENCES raum (id)
 );
 
 -- Exportiere Daten aus Tabelle schule.unterricht: -1 rows
