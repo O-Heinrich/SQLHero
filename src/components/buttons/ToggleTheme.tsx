@@ -1,6 +1,6 @@
 import { motion } from "motion/react"
 import { useTheme } from "@/hooks/useTheme";
-import { Sun, Moon } from "@/components/icons";
+import { SunIcon, MoonIcon } from "@/components/icons";
 
 /**
  * Interactive theme toggle button with animated motion
@@ -34,7 +34,7 @@ export const ToggleThemeButton: React.FC = (): React.ReactElement => {
             className="theme-button"
             whileTap={{ scale: 0.75 }}
         >
-            {theme === 'dark' ? <Sun size={1.75} /> : <Moon size={1.75} />}
+            {theme === 'dark' ? <SunIcon size={1.75} /> : <MoonIcon size={1.75} />}
         </motion.button>
     );
 }

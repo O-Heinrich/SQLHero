@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import tailwindcss from '@tailwindcss/vite';
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
-import countChallenges from './tools/vite-count-challenges-plugin';
+import createChallenges from './tools/vite-create-challenges-plugin';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -11,7 +11,10 @@ export default defineConfig({
         react(),
         tailwindcss(),
         TanStackRouterVite(),
-        countChallenges('public/api/challenges'),
+        createChallenges({
+            path: 'challenges',
+            output: 'public/api/challenges',
+        })
     ],
     resolve: {
         alias: {

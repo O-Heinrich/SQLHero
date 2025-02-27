@@ -27,4 +27,5 @@ package-lock.json
 bun.lock
 
 public/api
+public/databases/.*svg
 src/constants.ts

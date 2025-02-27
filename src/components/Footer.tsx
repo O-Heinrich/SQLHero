@@ -2,6 +2,7 @@ import React from "react";
 
 import { Wrapper } from "@/components/Wrapper";
 import { useTheme } from "@/hooks/useTheme";
+import { isFirefox } from "@/lib/agents";
 
 /**
  * Footer component displaying a logo with theme-dependent image
@@ -29,8 +30,8 @@ export const Footer: React.FC = (): React.ReactElement => {
     const isDarkMode = React.useMemo(() => theme === 'dark', [theme]);
 
     return (
-        <footer className="flex justify-center items-center min-h-16 backdrop-blur-xl z-100 relative bg-slate-50/20 dark:bg-slate-800/20 dark:text-white border-t border-groove border-gray-200 border-t-2 dark:border-slate-700 py-2 bottom-0">
-            <Wrapper className="flex justify-between items-center max-w-400">
+        <footer className={`flex justify-center relative items-center min-h-16 ${!isFirefox && 'backdrop-blur-xl'} z-100 relative bg-slate-50/20 dark:bg-slate-800/20 dark:text-white border-t border-groove border-gray-200 border-t-2 dark:border-slate-700 py-2 bottom-0`}>
+            <Wrapper className="flex justify-between items-center max-w-400 z-20">
                 <span className="text-sm/4 self-end ml-2 text-gray-500 dark:text-gray-400">
                     &copy; {new Date().getFullYear()} Berlin Beta Works Inklusiv
                 </span>
@@ -40,6 +41,7 @@ export const Footer: React.FC = (): React.ReactElement => {
                     className="max-h-16 inline-block"
                 />
             </Wrapper>
+            {isFirefox && <div className="bg-transparent backdrop-blur-md absolute h-[81.6px] t-0 l-0 r-0 b-0 z-10 w-full" />}
         </footer>
     );
 };

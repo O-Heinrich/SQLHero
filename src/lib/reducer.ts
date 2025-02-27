@@ -94,7 +94,7 @@ export const appReducer = (state: AppState, action: ChallengeAction): AppState =
             // Converts the array of challenges into a map for easier access by challenge number
             const challengesMap = action.payload.reduce((acc, challenge) => ({
                 ...acc,
-                [challenge.no.toString()]: challenge
+                [challenge.number.toString()]: challenge
             }), {});
 
             return {

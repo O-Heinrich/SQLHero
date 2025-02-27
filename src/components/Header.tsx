@@ -4,17 +4,17 @@ import {
     Link,
     useNavigate,
 } from "@tanstack/react-router";
-import { APP_NAME } from "@/constants";
 import { Wrapper } from "@/components/Wrapper";
 import { Logo } from "@/components/Logo";
 import { ToggleThemeButton } from "./buttons/ToggleTheme";
 import { useTheme } from "@/hooks/useTheme";
-import { ChevronLeft, ChevronRight } from "./icons";
+import { ChevronLeftIcon, ChevronRightIcon } from "./icons";
 import { Button } from "@headlessui/react";
-import { COUNT_CHALLENGES } from "@/constants";
+import { COUNT_CHALLENGES, APP_NAME } from "virtual:sql-hero";
 import { useAppState } from "@/hooks/useAppState";
 import { AppState, ChallengeAction } from "@/lib/types";
 import { useChallengNumber } from "@/hooks/useChallengNumber";
+import { isFirefox } from "@/lib/agents";
 
 /**
  * Spacer component properties
@@ -124,37 +124,40 @@ export const Header: React.FC = (): React.ReactElement => {
     }
 
     return (
-        <header ref={headerRef} className={clsx('top-header', 'sticky', 'top-0', 'z-50', 'dark:bg-red-500/50', 'bg-red-800/50', 'text-white', 'backdrop-blur-xl', 'transition-all', 'duration-800', 'dark:mix-blend-color-dodge', 'mix-blend-hard-light')}>
-            <Wrapper className={clsx('flex', 'items-center', 'max-w-400')}>
-                <span className={clsx('flex', 'items-center', 'gap-1', 'flex-grow')}>
-                    <Logo fill={isDarkMode ? '#efefef' : '#343434'} />
-                    <h1 className={clsx('lg:text-4xl', 'md:text-2xl', 'md:inline', 'hidden', 'dark:text-white/85', 'text-black/85', 'py-4', 'font-light')}>
-                        <Link to="/">
-                            {APP_NAME}
+        <>
+            {isFirefox && <div className="bg-transparent backdrop-blur-md fixed h-[80px] top-0 left-0 right-0 z-10" />}
+            <header ref={headerRef} className={clsx('top-header', 'relative', 'sticky', 'top-0', 'z-50', 'dark:bg-red-500/50', 'bg-red-800/50', 'text-white', !isFirefox && 'backdrop-blur-xl', 'transition-all', 'duration-800', 'dark:mix-blend-color-dodge', 'mix-blend-hard-light')}>
+                <Wrapper className={clsx('flex', 'items-center', 'max-w-400')}>
+                    <span className={clsx('flex', 'items-center', 'gap-1', 'flex-grow')}>
+                        <Logo fill={isDarkMode ? '#efefef' : '#343434'} />
+                        <h1 className={clsx('lg:text-4xl', 'md:text-2xl', 'md:inline', 'hidden', 'dark:text-white/85', 'text-black/85', 'py-4', 'font-light')}>
+                            <Link to="/">
+                                {APP_NAME}
+                            </Link>
+                        </h1>
+                    </span>
+                    <div className="px-2 flex items-center">
+                        <Link to="/overview" className="hidden md:inline">
+                            <Button>
+                                Übersicht
+                            </Button>
                         </Link>
-                    </h1>
-                </span>
-                <div className="px-2 flex items-center">
-                    <Link to="/overview" className="hidden md:inline">
-                        <Button>
-                            Übersicht
+                        <Link to="/introduction" className="hidden md:inline">
+                            <Button>
+                                Einführung
+                            </Button>
+                        </Link>
+                        {!Number.isNaN(challengeNo) && <Spacer classList="hidden md:inline" />} 
+                        <Button onClick={handlePrev} disabled={Number.isNaN(challengeNo)}>
+                            <ChevronLeftIcon size={2} fill="currentColor" />
                         </Button>
-                    </Link>
-                    <Link to="/introduction" className="hidden md:inline">
-                        <Button>
-                            Einführung
+                        <Button onClick={handleNext} disabled={Number.isNaN(challengeNo)}>
+                            <ChevronRightIcon size={2} fill="currentColor" />
                         </Button>
-                    </Link>
-                    {!Number.isNaN(challengeNo) && <Spacer classList="hidden md:inline" />} 
-                    <Button onClick={handlePrev} disabled={Number.isNaN(challengeNo)}>
-                        <ChevronLeft size={2} fill="currentColor" />
-                    </Button>
-                    <Button onClick={handleNext} disabled={Number.isNaN(challengeNo)}>
-                        <ChevronRight size={2} fill="currentColor" />
-                    </Button>
-                </div>
-                <ToggleThemeButton />
-            </Wrapper>
-        </header>
+                    </div>
+                    <ToggleThemeButton />
+                </Wrapper>
+            </header>
+        </>
     );
 };

@@ -13,7 +13,7 @@
 */
 export interface Challenge {
     /** Unique number identifier for the challenge */
-    no: number;
+    number: number;
 
     /** Display title of the challenge */
     title: string;
@@ -85,6 +85,22 @@ export type ResultComparison = {
     columns: string[];
     rows: string[][];
 };
+
+/**
+ * Represents a short version of a challenge with only essential information.
+ * Used for generating challenge lists.
+ * @interface
+ * @property {number} number - Challenge number
+ * @property {string} title - Challenge title
+ * @property {'easy' | 'medium' | 'hard'} difficulty - Challenge difficulty level
+ */
+export interface ShortChallenge {
+    number: number;
+    title: string;
+    difficulty: 'easy' | 'medium' | 'hard';
+    schema: string;
+    erd?: string;
+}
 
 /**
 * Union type defining all possible actions that can modify the app state.
