@@ -8,4 +8,5 @@ declare module 'virtual:sql-hero' {
     export const APP_NAME: string;
     export const COUNT_CHALLENGES: number;
     export const CHALLENGES: ShortChallenge[];
+    export const BREAKPOINTS: Reacord<string, number>;
 }

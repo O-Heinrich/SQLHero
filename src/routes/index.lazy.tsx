@@ -53,7 +53,7 @@ function Index() {
         <Wrapper>
             <title>SQL Hero - Startseite</title>
             <div className="flex justify-center items-center min-h-full flex-wrap">
-                <section className="flex-1 min-w-md z-1">
+                <section className="flex-1 min-w-[360px] z-1">
                     <h2>Teste dein SQL Wissen!</h2>
                     <p>Teste dein SQL Wissen mit SQL Hero, dem SQL Tool mit interaktiven Übungen.</p>
                     <p>

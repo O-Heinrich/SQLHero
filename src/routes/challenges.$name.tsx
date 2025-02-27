@@ -28,6 +28,7 @@
  */
 
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { clsx } from 'clsx';
 import { createFileRoute } from '@tanstack/react-router';
 import { TransformWrapper } from "react-zoom-pan-pinch";
 import { toast } from 'sonner';
@@ -46,12 +47,15 @@ import { ERD, ErdControls } from '@/components/ERD';
 import { useAppState } from '@/hooks/useAppState';
 import { QueryResult, TableDiff } from '@/lib/types';
 import { queryResultToStringArray, ResultSetComparison } from '@/lib/utils';
-import { useChallengNumber } from '@/hooks/useChallengNumber';
+import { useChallengeNumber } from '@/hooks/useChallengeNumber';
+import { IconButton } from '@/components/buttons/IconButton';
+import { BREAKPOINTS } from 'virtual:sql-hero';
 import { BoltIcon, DownloadIcon, TableIcon } from '@/components/icons';
 
 import "allotment/dist/style.css";
-import { IconButton } from '@/components/buttons/IconButton';
-import clsx from 'clsx';
+
+
+
 
 /**
  * Enumeration of available detail view pages
@@ -242,6 +246,13 @@ interface DetailViewProps {
      * @property {string} erd
      */
     erd: string;
+    /**
+     * Indicates whether the current view is on a mobile device
+     * Used to adjust the layout and styling for mobile screens
+     * 
+     * @property {boolean} isMobile
+     */
+    isMobile: boolean;
 }
 
 /**
@@ -296,16 +307,18 @@ function Challenge() {
     const rightColRef = useRef<HTMLDivElement>(null);
     const [editorState, setEditorState] = useState('');
     const [result, setResult] = useState<QueryResult | undefined>();
+    const isMobile = window.innerWidth < BREAKPOINTS.lg;
     const [db, setDb] = useState<string>('');
     const [activeView, setActiveView] = useState(DetailViewPages.ERD);
     const { dispatch } = useAppState();
-    const challengeNo = useChallengNumber();
+    const challengeNo = useChallengeNumber();
     const { theme } = useTheme();
     const isErdActive = useMemo(() => activeView === DetailViewPages.ERD, [activeView]);
     const erdFile = useMemo(
         () => challenge.schema.replace('.sql', theme === 'dark' ? '-dark.svg' : '.svg'),
         [challenge.schema, theme]
     );
+
     useEffect(() => {
         setEditorState(() => challenge.query);
         if (pg && db !== challenge.schema) {
@@ -323,10 +336,11 @@ function Challenge() {
             });
         }
     }, [db, pg, challenge, dispatch]);
+
     useEffect(() => {
         if (rightColRef.current) {
             setActiveView(() => DetailViewPages.ERD);
-            rightColRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+            // rightColRef.current.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }, [challengeNo]);
 
@@ -340,11 +354,11 @@ function Challenge() {
      * @function handleRun
      * @async
      * @returns {Promise<void>} Promise that resolves after query execution and state updates
-     */ 
+     */
     const handleRun = async (): Promise<void> => {
         if (!pg) return;
         try {
-            let query: QueryResult|null = null;
+            let query: QueryResult | null = null;
             const result = await pg.query(editorState) as QueryResult;
             const key = challengeNo.toString();
 
@@ -416,46 +430,90 @@ function Challenge() {
         a.click();
     }
 
-    return (
-        <div className="flex flex-col gap-4 flex-1 inset-0  mt-[calc(var(--spacing)*-20)] mb-[calc(var(--spacing)*-20)]">
-            <Allotment>
+    const RightPane = () => (
+        <div ref={rightColRef} className="px-4 pt-4 pb-22 overflow-auto h-full border-l-4 border-ridge border-white/80 dark:border-slate-900/80">
+            <ChallengeLesson lesson={challenge.description!} />
+        </div>
+    );
+    
+    if (isMobile) {
+        return (
+            <div className="flex flex-col gap-4 flex-1 inset-0  mt-[calc(var(--spacing)*-20)] mb-[calc(var(--spacing)*-20)]  bg-gray-200/50 dark:bg-slate-900/50">
+                <title>SQL Hero - Challenge</title>
                 <TransformWrapper initialScale={2}>
-                    <Allotment vertical={true} className="mt-20 pb-22 overflow-auto h-full bg-gray-200/50 dark:bg-slate-900/50">
-                        <div className="relative h-full flex flex-col mx-4 mt-4 pb-4">
+                    <Allotment vertical={true} className="mt-1 pb-1 lg:mt-20 lg:pb-22 overflow-auto h-full">
+                        <RightPane />
+                        <div className="relative h-full flex flex-col lg:mx-4 mt-4 pb-4">
                             <ChallengeEditor value={editorState} setValue={setEditorState} />
                             <Toolbar className="mx-4 justify-center">
                                 <ErdControls disabled={!isErdActive} />
                                 {isErdActive && <Spacer />}
-                                <IconButton 
-                                    icon={<DownloadIcon size={1.5} />} 
-                                    aria-label="ERD downloaden" 
-                                    title="ERD downloaden" 
+                                <IconButton
+                                    icon={<DownloadIcon size={1.5} />}
+                                    aria-label="ERD downloaden"
+                                    title="ERD downloaden"
                                     onClick={handleDownloadClick}
                                 />
-                                <IconButton 
-                                    icon={<TableIcon size={1.5} />} 
-                                    aria-label="ERD anzeigen" 
-                                    title="ERD anzeigen" 
-                                    disabled={isErdActive}  
+                                <IconButton
+                                    icon={<TableIcon size={1.5} />}
+                                    aria-label="ERD anzeigen"
+                                    title="ERD anzeigen"
+                                    disabled={isErdActive}
                                     onClick={handleErdClick}
                                 />
-                                <IconButton 
-                                    icon={<BoltIcon size={1.5} />} 
-                                    aria-label="SQL ausführen" 
-                                    title="SQL ausführen" 
-                                    disabled={!isErdActive}  
+                                <IconButton
+                                    icon={<BoltIcon size={1.5} />}
+                                    aria-label="SQL ausführen"
+                                    title="SQL ausführen"
+                                    disabled={!isErdActive}
                                     onClick={handleRun}
                                 />
                             </Toolbar>
                         </div>
-                        <DetailViewRoot active={activeView} result={result} erd={erdFile} />
+                        <DetailViewRoot active={activeView} result={result} erd={erdFile} isMobile={isMobile} />
                     </Allotment>
                 </TransformWrapper>
-                <div ref={rightColRef} className="px-4 pt-4 pb-22 overflow-auto h-full border-l-4 border-ridge border-white/80 dark:border-slate-900/80">
-                    <title>SQL Hero - Challenge</title>
-                    <ChallengeLesson lesson={challenge.description!} />
-                </div>
-            </Allotment>
+            </div>
+        )
+    }
+    return (
+        <div className="flex flex-col gap-4 flex-1 inset-0  mt-[calc(var(--spacing)*-20)] mb-[calc(var(--spacing)*-20)]">
+            <title>SQL Hero - Challenge</title>
+            <TransformWrapper initialScale={2}>
+                <Allotment className="overflow-auto h-full">
+                    <Allotment vertical={true} className="mt-20 pb-22 overflow-auto h-full bg-gray-200/50 dark:bg-slate-900/50">
+                        <div className="relative h-full flex flex-col lg:mx-4 mt-4 pb-4">
+                            <ChallengeEditor value={editorState} setValue={setEditorState} />
+                            <Toolbar className="mx-4 justify-center">
+                                <ErdControls disabled={!isErdActive} />
+                                {isErdActive && <Spacer />}
+                                <IconButton
+                                    icon={<DownloadIcon size={1.5} />}
+                                    aria-label="ERD downloaden"
+                                    title="ERD downloaden"
+                                    onClick={handleDownloadClick}
+                                />
+                                <IconButton
+                                    icon={<TableIcon size={1.5} />}
+                                    aria-label="ERD anzeigen"
+                                    title="ERD anzeigen"
+                                    disabled={isErdActive}
+                                    onClick={handleErdClick}
+                                />
+                                <IconButton
+                                    icon={<BoltIcon size={1.5} />}
+                                    aria-label="SQL ausführen"
+                                    title="SQL ausführen"
+                                    disabled={!isErdActive}
+                                    onClick={handleRun}
+                                />
+                            </Toolbar>
+                        </div>
+                        <DetailViewRoot active={activeView} result={result} erd={erdFile} isMobile={isMobile} />
+                    </Allotment>
+                    <RightPane />
+                </Allotment>
+            </TransformWrapper>
         </div>
     );
 }
@@ -473,17 +531,18 @@ function Challenge() {
  * <DetailViewRoot active={DetailViewPages.RESULT} result={result} erd={erd} />
  * ```
  */
-const DetailViewRoot: React.FC<DetailViewProps> = ({ active, result, erd }) => {
+const DetailViewRoot: React.FC<DetailViewProps> = ({ active, result, erd, isMobile }) => {
     const isResult = active === DetailViewPages.RESULT;
     const isErd = active === DetailViewPages.ERD;
     return (
         <div className={clsx(
             isErd && 'cursor-move',
             'h-full',
-            isResult && 'px-4 pb-16 mb-40',
+            isResult && 'lg:px-4 pb-16 mb-40',
             'border-t-4 border-ridge',
             'border-white/20 dark:border-slate-900/20',
-            'overflow-auto'
+            'overflow-auto',
+            isMobile && 'bg-gray-200/50 dark:bg-slate-900/50'
         )}>
             {isResult && <QueryResultTable id="query-result" result={result} />}
             {isErd && <ERD src={erd} />}
