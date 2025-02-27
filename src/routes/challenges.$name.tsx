@@ -53,6 +53,7 @@ import { BREAKPOINTS } from 'virtual:sql-hero';
 import { BoltIcon, DownloadIcon, TableIcon } from '@/components/icons';
 
 import "allotment/dist/style.css";
+import { isFirefox } from '@/lib/agents';
 
 /**
  * Enumeration of available detail view pages
@@ -448,8 +449,43 @@ function Challenge() {
         return (
             <div key="mobile" className="flex flex-col gap-4 flex-1 inset-0  mt-[calc(var(--spacing)*-20)] mb-[calc(var(--spacing)*-20)]">
                 <title>SQL Hero - Challenge</title>
-                <TransformWrapper initialScale={2}>
-                    <Allotment vertical={true} className="mt-1 pb-1 lg:mt-20 lg:pb-22 overflow-auto h-full">
+                {!isFirefox ?
+                    <TransformWrapper initialScale={2}>
+                        <Allotment vertical={true} className="mt-1 pb-1 lg:mt-20 lg:pb-22 overflow-auto h-full">
+                            <div ref={rightColRef} className="px-4 pt-4 pb-22 overflow-auto h-full border-l-4 border-ridge border-white/80 dark:border-slate-900/80">
+                                <ChallengeLesson lesson={challenge.description!} />
+                            </div>
+                            <div className="relative h-full flex flex-col lg:mx-4 mt-4 pb-4 ">
+                                <ChallengeEditor value={editorState} setValue={setEditorState} />
+                                <Toolbar className="mx-4 justify-center">
+                                    <ErdControls disabled={!isErdActive} />
+                                    {isErdActive && <Spacer />}
+                                    <IconButton
+                                        icon={<DownloadIcon size={1.5} />}
+                                        aria-label="ERD downloaden"
+                                        title="ERD downloaden"
+                                        onClick={handleDownloadClick}
+                                    />
+                                    <IconButton
+                                        icon={<TableIcon size={1.5} />}
+                                        aria-label="ERD anzeigen"
+                                        title="ERD anzeigen"
+                                        disabled={isErdActive}
+                                        onClick={handleErdClick}
+                                    />
+                                    <IconButton
+                                        icon={<BoltIcon size={1.5} />}
+                                        aria-label="SQL ausführen"
+                                        title="SQL ausführen"
+                                        disabled={!isErdActive}
+                                        onClick={handleRun}
+                                    />
+                                </Toolbar>
+                            </div>
+                            <DetailViewRoot active={activeView} result={result} erd={erdFile} isMobile={isMobile} />
+                        </Allotment>
+                    </TransformWrapper>
+                    : <Allotment vertical={true} className="mt-1 pb-1 lg:mt-20 lg:pb-22 overflow-auto h-full">
                         <div ref={rightColRef} className="px-4 pt-4 pb-22 overflow-auto h-full border-l-4 border-ridge border-white/80 dark:border-slate-900/80">
                             <ChallengeLesson lesson={challenge.description!} />
                         </div>
@@ -482,15 +518,52 @@ function Challenge() {
                         </div>
                         <DetailViewRoot active={activeView} result={result} erd={erdFile} isMobile={isMobile} />
                     </Allotment>
-                </TransformWrapper>
+                }
             </div>
         )
     }
     return (
         <div key="desktop" className="flex flex-col gap-4 flex-1 inset-0  mt-[calc(var(--spacing)*-20)] mb-[calc(var(--spacing)*-20)]">
             <title>SQL Hero - Challenge</title>
-            <TransformWrapper initialScale={2}>
-                <Allotment className="overflow-auto h-full">
+            {!isFirefox ?
+                <TransformWrapper initialScale={2}>
+                    <Allotment className="overflow-auto h-full">
+                        <Allotment vertical={true} className="mt-20 pb-22 overflow-auto h-full bg-gray-200/50 dark:bg-slate-900/50">
+                            <div className="relative h-full flex flex-col lg:mx-4 mt-4 pb-4">
+                                <ChallengeEditor value={editorState} setValue={setEditorState} />
+                                <Toolbar className="mx-4 justify-center">
+                                    <ErdControls disabled={!isErdActive} />
+                                    {isErdActive && <Spacer />}
+                                    <IconButton
+                                        icon={<DownloadIcon size={1.5} />}
+                                        aria-label="ERD downloaden"
+                                        title="ERD downloaden"
+                                        onClick={handleDownloadClick}
+                                    />
+                                    <IconButton
+                                        icon={<TableIcon size={1.5} />}
+                                        aria-label="ERD anzeigen"
+                                        title="ERD anzeigen"
+                                        disabled={isErdActive}
+                                        onClick={handleErdClick}
+                                    />
+                                    <IconButton
+                                        icon={<BoltIcon size={1.5} />}
+                                        aria-label="SQL ausführen"
+                                        title="SQL ausführen"
+                                        disabled={!isErdActive}
+                                        onClick={handleRun}
+                                    />
+                                </Toolbar>
+                            </div>
+                            <DetailViewRoot active={activeView} result={result} erd={erdFile} isMobile={isMobile} />
+                        </Allotment>
+                        <div ref={rightColRef} className="px-4 pt-4 pb-22 overflow-auto h-full border-l-4 border-ridge border-white/80 dark:border-slate-900/80">
+                            <ChallengeLesson lesson={challenge.description!} />
+                        </div>
+                    </Allotment>
+                </TransformWrapper>
+                : <Allotment className="overflow-auto h-full">
                     <Allotment vertical={true} className="mt-20 pb-22 overflow-auto h-full bg-gray-200/50 dark:bg-slate-900/50">
                         <div className="relative h-full flex flex-col lg:mx-4 mt-4 pb-4">
                             <ChallengeEditor value={editorState} setValue={setEditorState} />
@@ -525,7 +598,7 @@ function Challenge() {
                         <ChallengeLesson lesson={challenge.description!} />
                     </div>
                 </Allotment>
-            </TransformWrapper>
+            }
         </div>
     );
 }

@@ -10,6 +10,7 @@ import React from 'react';
 import { TransformComponent, useControls } from "react-zoom-pan-pinch";
 import { ZoomInIcon, ZoomOutIcon } from '@/components/icons';
 import { IconButton } from './buttons/IconButton';
+import { isFirefox } from '@/lib/agents';
 
 /**
 * ERD zoom control buttons component
@@ -19,7 +20,7 @@ import { IconButton } from './buttons/IconButton';
 * 
 * @returns Zoom control buttons fragment
 */
-export const ErdControls: React.FC<{disabled: boolean}> = ({disabled}) => {
+const ErdCtrls: React.FC<{disabled: boolean}> = ({disabled}) => {
     const { zoomIn, zoomOut } = useControls();
     return (
         <>
@@ -41,6 +42,8 @@ export const ErdControls: React.FC<{disabled: boolean}> = ({disabled}) => {
     );
 };
 
+const FirefoxFix = () => null;
+
 /**
 * ERD viewer component
 * 
@@ -56,8 +59,15 @@ export const ErdControls: React.FC<{disabled: boolean}> = ({disabled}) => {
 * <ERD src="/images/database-schema.png" />
 * ```
 */
-export const ERD: React.FC<{ src: string }> = ({ src }) => (
-    <TransformComponent wrapperStyle={{ width: '100%', height: '100%' }} contentClass="h-full w-full flex justify-center items-stretch">
-        <img src={src} alt="ERD" width="100%" height="100%" className="erd" />
-    </TransformComponent>
-);
+export const ERD: React.FC<{ src: string }> = ({ src }) => {
+    if (isFirefox) {
+        return <img src={src} alt="ERD" width="100%" height="100%" className="erd" />;
+    }
+    return (
+        <TransformComponent wrapperStyle={{ width: '100%', height: '100%' }} contentClass="h-full w-full flex justify-center items-stretch">
+            <img src={src} alt="ERD" width="100%" height="100%" className="erd" />
+        </TransformComponent>
+    );
+};
+
+export const ErdControls = isFirefox ? FirefoxFix : ErdCtrls;
