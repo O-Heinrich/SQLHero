@@ -1,3 +1,8 @@
+/**
+ * Database challenges for SQLHero app
+ * @module challenges
+ * @deprecated
+ */
 import { JSX } from "react";
 
 /**

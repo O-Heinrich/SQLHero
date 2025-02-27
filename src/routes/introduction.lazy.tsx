@@ -1,12 +1,13 @@
+import { JSX } from 'react';
+import { createLazyFileRoute } from '@tanstack/react-router';
 import { InlineCode } from '@/components/InlineCode';
 import { Skeleton } from '@/components/Skeleton';
 import { Wrapper } from '@/components/Wrapper';
-import { createLazyFileRoute } from '@tanstack/react-router';
+import { CheckBadgeIcon } from '@/components/icons';
+import { CheckCircleIcon } from '@/components/icons';
 import firefoxLogo from '@/assets/images/Firefox_logo,_2019.svg';
 import chromeLogo from '@/assets/images/chrome-logo.svg';
 import edgeLogo from '@/assets/images/Microsoft_Edge_logo_(2019).svg';
-import { CheckBadge } from '@/components/icons';
-import { CheckCircle } from '@/components/icons';
 
 /**
  * The `Introduction` component provides an introductory guide to SQL and its various aspects.
@@ -21,7 +22,7 @@ import { CheckCircle } from '@/components/icons';
  *
  * @returns {JSX.Element} The rendered introduction component.
  */
-const Introduction = () => (
+const Introduction = (): JSX.Element => (
     <Wrapper>
         <title>SQL Hero - Einführung</title>
         <article className="space-y-8 my-14">
@@ -220,29 +221,29 @@ const Introduction = () => (
                 <h2 className="text-2xl font-semibold mb-4">Technische Voraussetzungen</h2>
                 <div className="grid md:grid-cols-3 gap-4">
                     <div className="bg-white dark:bg-gray-300/10 p-4 rounded-lg text-center">
-                        <CheckBadge className="w-20 h-20 inline-block dark:fill-green-400/40 fill-green-800/40 float-left mix-blend-multiplay dark:mix-blend-hard-light" />
+                        <CheckBadgeIcon className="w-20 h-20 inline-block dark:fill-green-400/40 fill-green-800/40 float-left mix-blend-multiplay dark:mix-blend-hard-light" />
                         &nbsp;
                         <h3 className="font-semibold dark:text-gray-200">
                             <span className="mr-20">Firefox</span>
-                            <img src={firefoxLogo} alt="Firefox Logo" className="inline-block w-26 h-26 mr-20 mt-5" />
+                            <img src={firefoxLogo} alt="Firefox Logo" className="inline-block w-26 h-26 mr-20 mt-5" loading="lazy" />
                         </h3>
                         <p className="text-sm text-gray-600 dark:text-gray-400">Vollständig getestet</p>
                     </div>
                     <div className="bg-white dark:bg-gray-300/10 p-4 rounded-lg text-center">
-                        <CheckBadge className="w-20 h-20 inline-block dark:fill-green-400/40 fill-green-800/40 float-left mix-blend-multiplay dark:mix-blend-hard-light" />
+                        <CheckBadgeIcon className="w-20 h-20 inline-block dark:fill-green-400/40 fill-green-800/40 float-left mix-blend-multiplay dark:mix-blend-hard-light" />
                         &nbsp;
                         <h3 className="font-semibold dark:text-gray-200">
                             <span className="mr-20">Chrome</span>
-                            <img src={chromeLogo} alt="Firefox Logo" className="inline-block w-26 h-26 mr-20 mt-5" />
+                            <img src={chromeLogo} alt="Firefox Logo" className="inline-block w-26 h-26 mr-20 mt-5" loading="lazy" />
                         </h3>
                         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Vollständig getestet</p>
                     </div>
                     <div className="bg-white dark:bg-gray-300/10 p-4 rounded-lg text-center">
-                        <CheckCircle className="w-20 h-20 inline-block dark:fill-green-200/20 fill-green-800/20 float-left" />
+                        <CheckCircleIcon className="w-20 h-20 inline-block dark:fill-green-200/20 fill-green-800/20 float-left" />
                         &nbsp;
                         <h3 className="font-semibold dark:text-gray-200/50">
                             <span className="mr-20">Edge</span>
-                            <img src={edgeLogo} alt="Firefox Logo" className="inline-block w-26 h-26 mr-20 mt-5" />
+                            <img src={edgeLogo} alt="Firefox Logo" className="inline-block w-26 h-26 mr-20 mt-5" loading="lazy" />
                         </h3>
                         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Unterstützt</p>
                     </div>

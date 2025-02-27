@@ -1,14 +1,35 @@
 /**
- * @module SQLToMermaidParser
+ * @module tools/sql-to-diagram
  * @description
  * A module that converts SQL CREATE TABLE statements into Mermaid.js ER diagram syntax.
  * Handles complex table definitions including columns, data types, constraints, and relationships.
+ * 
+ * @example
+ * ```typescript
+ * const parser = new SQLToErdParser();
+ * const sql = readFileSync('schema.sql', 'utf-8').toString();
+ * const graph = parser.parse(sql).generateDot();
+ * console.log(graph);
+ * const proc = Bun.spawn(["dot", `-Tsvg`, `-o`, `${fileName}.svg`], {
+ *  cwd: "./",
+ *  env: process.env,
+ *  stdin: "pipe",
+ *  onExit(proc: unknown, exitCode: number, signalCode: number, error: ErrorLike | undefined) {
+ *    if (exitCode === 0) {
+ *        console.log(`Generated ${fileName}.svg`);
+ *    } else {
+ *        console.error(`Error generating ${fileName}.svg: ${error}`);
+ *    }
+ *   },
+ * });
+ * 
+ * proc.stdin.write(graph);
+ * proc.stdin.flush();
+ * proc.stdin.end();
+ * ```
  */
 
 import { Parser } from 'node-sql-parser';
-import { readFileSync } from 'fs';
-import { basename } from 'path';
-import { ErrorLike } from 'bun';
 
 /**
  * Represents a database column definition
@@ -17,7 +38,7 @@ import { ErrorLike } from 'bun';
  * @property {string} type - SQL data type of the column
  * @property {string[]} constraints - Array of column constraints (PK, UQ, NOT NULL, etc.)
  */
-type Column = {
+export type Column = {
     name: string;
     type: string;
     constraints: string[];
@@ -30,7 +51,7 @@ type Column = {
  * @property {Column[]} columns - Array of column definitions
  * @property {ForeignKey[]} foreignKeys - Array of foreign key relationships
  */
-type Table = {
+export type Table = {
     name: string;
     columns: Column[];
     foreignKeys: ForeignKey[];
@@ -43,49 +64,11 @@ type Table = {
  * @property {string} toTable - Referenced table name
  * @property {string} toColumn - Referenced column name
  */
-type ForeignKey = {
+export type ForeignKey = {
     fromColumn: string;
     toTable: string;
     toColumn: string;
 };
-
-/**
- * Represents the output format for the ER diagram
- * @type
- */
-type ErdFormat = 'mermaid' | 'dot';
-
-/**
-* Error thrown when an invalid ER diagram format is specified
-* @class
-* @extends {Error}
-* @description
-* Custom error class for handling invalid format specifications
-* in ER diagram generation. Used when a format other than the
-* supported 'mermaid' or 'dot' is requested.
-* 
-* @example
-* ```typescript
-* try {
-*   parser.setFormat('invalid');
-* } catch (error) {
-*   if (error instanceof IllegalFormatError) {
-*     console.error('Invalid format specified:', error.message);
-*   }
-* }
-* ```
-*/
-class IllegalFormatError extends Error {
-    /**
-    * Creates a new IllegalFormatError instance
-    * @constructor
-    * @param {string} message - Error message describing the format violation
-    */
-    constructor(message: string) {
-        super(message);
-        this.name = 'IllegalFormatError';
-    }
-}
 
 /**
  * SQL to ER Diagram Parser
@@ -110,27 +93,29 @@ class IllegalFormatError extends Error {
  * const mermaid = parser.parse(sql);
  * ```
  */
-class SQLToErdParser {
+export class SQLToErdParser {
     private parser: Parser;
     private tables: Map<string, Table>;
-    private format: ErdFormat;
 
     /**
      * Initializes a new SQLToMermaidParser instance
      * @constructor
      */
-    constructor(format: ErdFormat = 'mermaid') {
+    constructor() {
         this.parser = new Parser();
         this.tables = new Map();
-        this.format = format;
     }
 
     /**
      * Parses SQL CREATE TABLE statements into Mermaid.js ER diagram syntax
      * @param {string} sql - SQL CREATE TABLE statement(s)
-     * @returns {string} Mermaid.js ER diagram representation
-     */
-    parse(sql: string): string {
+     * @returns {SQLToErdParser} 
+     * @description
+     * Parses SQL CREATE TABLE statements into an AST and returns the instance 
+     * for method chaining. The parsed tables are stored internally for diagram
+     * generation.
+     */ 
+    parse(sql: string): SQLToErdParser {
         // Parse SQL into AST
         const ast = this.parser.astify(sql, { database: 'postgresql' });
 
@@ -146,9 +131,7 @@ class SQLToErdParser {
             this.processCreateTable(ast);
         }
 
-        return this.format === 'mermaid' 
-            ? this.generateMermaid() 
-            : this.generateDot();
+        return this;
     }
 
     /**
@@ -164,7 +147,6 @@ class SQLToErdParser {
 
         // Process columns
         for (const col of stmt.create_definitions) {
-           
             if (col.resource === 'column') {
                 columns.push({
                     name: col.column.column.expr.value,
@@ -205,7 +187,7 @@ class SQLToErdParser {
      * @private
      * @returns {string} Complete Mermaid.js ER diagram definition
      */
-    private generateMermaid(): string {
+    public generateMermaid(): string {
         let mermaid = 'erDiagram\n';
 
         // Generate entities and their attributes
@@ -254,11 +236,12 @@ class SQLToErdParser {
      * }
      * ```
      */
-    private generateDot(): string {
+    public generateDot(): string {
         let dot = 
 `digraph ERDiagram {
-    rankdir=RL;
-    node [shape=plaintext, fontname="Arial"];
+    rankdir=LR;
+    # graph [splines=ortho, rankdir=TB, overlap];
+    node [shape=none, margin=0];
     edge [dir=both, arrowhead=crow, arrotail=none, fontname="Inter, system-ui, Avenir, Helvetica, Arial, sans-serif"];\n`;
 
         for (const [, table] of this.tables) {
@@ -267,8 +250,9 @@ class SQLToErdParser {
 
         for (const [, table] of this.tables) {
             for (const fk of table.foreignKeys) {
-                dot += `    "${table.name}" -> "${fk.toTable}" `;
-                dot += `[label="${fk.fromColumn} -> ${fk.toColumn}"];\n`;
+                dot += `    ${table.name}:${fk.fromColumn} -> ${fk.toTable}:${fk.toColumn}\n`
+                // dot += `    ${table.name}:${fk.fromColumn} -> Helper_${table.name}_${fk.fromColumn} [dir=none]\n`;
+                // dot += `    Helper_${table.name}_${fk.fromColumn} -> ${fk.toTable}:${fk.toColumn} [arrotail=non, arrowhead=normal]\n`;
             }
         }
 
@@ -302,17 +286,19 @@ class SQLToErdParser {
      */
     private generateTableNode(table: Table): string {
         const columnSelection = 
-            '<tr><td><b>' 
+            `<tr><td PORT="${table.name}" COLSPAN="2"><b>`
             + table.name 
             + '</b></td></tr>\n\t<tr>' 
             + table.columns.map(col => {
                 const constraints =  col.constraints.length > 0
                     ? ` [${col.constraints.join(', ')}]`
                     : '';
-                return `<td>${this.escapeLabel(col.name)}: ${col.type}${constraints}</td>`;
+                return `<td PORT="${this.escapeLabel(col.name)}">${this.escapeLabel(col.name)}: ${col.type}${constraints}</td>`;
             }).join('</tr>\n\t<tr>');
 
-        return `    ${table.name} [label=<<table gradientangle="45" bgcolor="#eeebeb:#bbbbbb" border="0" cellborder="1" cellspacing="0" cellpadding="2">\n\t${columnSelection}</tr>\n</table>>];`;
+        return `    ${table.name} [shape=none, label=<
+        <table gradientangle="45" bgcolor="#eeebeb:#bbbbbb" border="0" cellborder="1" cellspacing="0" cellpadding="2">\n\t${columnSelection}</tr>\n</table>
+        >];\n`;
     }
 
     /**
@@ -335,47 +321,11 @@ class SQLToErdParser {
     }
 
     /**
-     * Sets the output format for the ER diagram
-     * @public
-     * @param {ErdFormat} format - The desired output format ('mermaid' or 'dot')
-     * @throws {IllegalFormatError} If an invalid format is specified
-     * @description
-     * Configures the parser to generate either Mermaid.js or DOT syntax.
-     * Must be called before generating the diagram.
-     * 
-     * @example
-     * ```typescript
-     * parser.setFormat('mermaid'); // Set output to Mermaid.js format
-     * parser.setFormat('dot');     // Set output to DOT format
-     * ```
+     * Gets the current AST representation of the parsed SQL
+     * @readonly
+     * @returns {Map<string, Table>} A map of table names to table objects
      */
-    public setFormat(format: ErdFormat): void {
-        if (format !== 'mermaid' && format !== 'dot') {
-            throw new IllegalFormatError(`Invalid ER diagram format: ${format}`);
-        }
-
-        this.format = format;
+    public get ast(): Map<string, Table>  {
+        return this.tables;
     }
 }
-
-
-const parser = new SQLToErdParser('dot');
-const sql = readFileSync(process.argv[2], 'utf-8').toString();
-const graph = parser.parse(sql);
-const fileName = basename(process.argv[2], '.sql');
-const proc = Bun.spawn(["dot", `-Tsvg`, `-o`, `${fileName}.svg`], {
-    cwd: "./",
-    env: process.env,
-    stdin: "pipe",
-    onExit(proc: unknown, exitCode: number, signalCode: number, error: ErrorLike | undefined) {
-        if (exitCode === 0) {
-            console.log(`Generated ${fileName}.svg`);
-        } else {
-            console.error(`Error generating ${fileName}.svg: ${error}`);
-        }
-    },
-});
-
-proc.stdin.write(graph);
-proc.stdin.flush();
-proc.stdin.end();

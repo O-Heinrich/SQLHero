@@ -1,9 +1,9 @@
 import { ICON_DEFAULT_PROPS, IconProps } from "./IconProps";
 
-export const Ellipses: React.FC<IconProps> = ({ 
+export const EllipsesIcon: React.FC<IconProps> = ({ 
     fill = ICON_DEFAULT_PROPS.fill, 
     size = ICON_DEFAULT_PROPS.size,
- }) => (
+}) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill={fill} viewBox="0 0 24 24" width={`${size}rem`} height={`${size}rem`} strokeWidth={1.5} stroke="none">
         <path fillRule="evenodd" d="M10.5 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm0 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm0 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Z" clipRule="evenodd" />
     </svg>

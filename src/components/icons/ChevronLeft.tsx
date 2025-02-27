@@ -1,6 +1,6 @@
 import { ICON_DEFAULT_PROPS, IconProps } from "./IconProps";
 
-export const ChevronLeft: React.FC<IconProps> = ({
+export const ChevronLeftIcon: React.FC<IconProps> = ({
     fill = ICON_DEFAULT_PROPS.fill,
     size = ICON_DEFAULT_PROPS.size,
 }) => (

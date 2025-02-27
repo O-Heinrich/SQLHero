@@ -12,7 +12,7 @@
 import { createContext, useReducer, useEffect, ReactNode } from 'react';
 import { appReducer } from '@/lib/reducer';
 import { AppState, ChallengeAction } from '@/lib/types';
-import { CHALLENGES } from '@/constants';
+import { CHALLENGES } from 'virtual:sql-hero';
 
 /**
  * The initial state of the application. This includes an empty challenges map,

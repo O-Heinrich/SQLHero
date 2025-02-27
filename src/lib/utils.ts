@@ -213,8 +213,7 @@ export class ResultSetComparison {
         const columnHash = comparison.columns.join('|');
 
         const rowHashes = comparison.rows
-            .map(this.hashRow)
-            .sort();
+            .map(this.hashRow);
 
         return columnHash + '\n' + rowHashes.join('\n');
     }
@@ -281,7 +280,7 @@ export class ResultSetComparison {
         differences.missingColumns = solutionSerialized.columns.filter(col => !studentColumns.has(col));
         differences.extraColumns = studentSerialized.columns.filter(col => !solutionColumns.has(col));
 
-        if (differences.missingColumns.length > 0 || differences.extraColumns.length > 0) {
+        if (differences.missingColumns?.length > 0 || differences.extraColumns?.length > 0) {
             return differences;
         }
 
