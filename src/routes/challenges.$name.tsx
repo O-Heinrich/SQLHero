@@ -346,7 +346,8 @@ function Challenge() {
             const observer = new ResizeObserver((entries) => {
                 for (const entry of entries) {
                     const smDevice = entry.contentRect.width < BREAKPOINTS.lg;
-                    if (smDevice !== isMobile) {	
+                    if (smDevice !== isMobile) {
+                        setActiveView(() => DetailViewPages.ERD);
                         setIsMobile(() => smDevice);
                     }
                 }
