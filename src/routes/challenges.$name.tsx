@@ -345,16 +345,18 @@ function Challenge() {
     }, [challengeNo]);
 
     useEffect(() => {
-        if (rightColRef.current && 'ResizeObserver' in window) {
+        if ('ResizeObserver' in window && rightColRef.current) {
             const observer = new ResizeObserver((entries) => {
                 for (const entry of entries) {
-                    console.log(entry.contentRect.width < BREAKPOINTS.lg);
-                    setIsMobile(() => entry.contentRect.width < BREAKPOINTS.lg);
+                    const smDevice = entry.contentRect.width < BREAKPOINTS.lg;
+                    if (smDevice !== isMobile) {	
+                        setIsMobile(() => smDevice);
+                    }
                 }
             });
+
             observer.observe(window.document.body);
             return () => observer.disconnect();
-
         }
     }, [isMobile, rightColRef]);
 
@@ -453,7 +455,7 @@ function Challenge() {
                         <div ref={rightColRef} className="px-4 pt-4 pb-22 overflow-auto h-full border-l-4 border-ridge border-white/80 dark:border-slate-900/80">
                             <ChallengeLesson lesson={challenge.description!} />
                         </div>
-                        <div className="relative h-full flex flex-col lg:mx-4 mt-4 pb-4">
+                        <div className="relative h-full flex flex-col lg:mx-4 mt-4 pb-4 ">
                             <ChallengeEditor value={editorState} setValue={setEditorState} />
                             <Toolbar className="mx-4 justify-center">
                                 <ErdControls disabled={!isErdActive} />
