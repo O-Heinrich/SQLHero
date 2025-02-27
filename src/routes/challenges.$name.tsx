@@ -307,7 +307,7 @@ function Challenge() {
     const rightColRef = useRef<HTMLDivElement>(null);
     const [editorState, setEditorState] = useState('');
     const [result, setResult] = useState<QueryResult | undefined>();
-    const isMobile = window.innerWidth < BREAKPOINTS.lg;
+    const [isMobile, setIsMobile] = useState(window.innerWidth < BREAKPOINTS.lg);
     const [db, setDb] = useState<string>('');
     const [activeView, setActiveView] = useState(DetailViewPages.ERD);
     const { dispatch } = useAppState();
@@ -340,9 +340,23 @@ function Challenge() {
     useEffect(() => {
         if (rightColRef.current) {
             setActiveView(() => DetailViewPages.ERD);
-            // rightColRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+            rightColRef.current.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }, [challengeNo]);
+
+    useEffect(() => {
+        if (rightColRef.current && 'ResizeObserver' in window) {
+            const observer = new ResizeObserver((entries) => {
+                for (const entry of entries) {
+                    console.log(entry.contentRect.width < BREAKPOINTS.lg);
+                    setIsMobile(() => entry.contentRect.width < BREAKPOINTS.lg);
+                }
+            });
+            observer.observe(window.document.body);
+            return () => observer.disconnect();
+
+        }
+    }, [isMobile, rightColRef]);
 
     /**
      * Handles execution of a SQL query and validation against challenge solution
@@ -430,19 +444,15 @@ function Challenge() {
         a.click();
     }
 
-    const RightPane = () => (
-        <div ref={rightColRef} className="px-4 pt-4 pb-22 overflow-auto h-full border-l-4 border-ridge border-white/80 dark:border-slate-900/80">
-            <ChallengeLesson lesson={challenge.description!} />
-        </div>
-    );
-    
     if (isMobile) {
         return (
-            <div className="flex flex-col gap-4 flex-1 inset-0  mt-[calc(var(--spacing)*-20)] mb-[calc(var(--spacing)*-20)]  bg-gray-200/50 dark:bg-slate-900/50">
+            <div key="mobile" className="flex flex-col gap-4 flex-1 inset-0  mt-[calc(var(--spacing)*-20)] mb-[calc(var(--spacing)*-20)]">
                 <title>SQL Hero - Challenge</title>
                 <TransformWrapper initialScale={2}>
                     <Allotment vertical={true} className="mt-1 pb-1 lg:mt-20 lg:pb-22 overflow-auto h-full">
-                        <RightPane />
+                        <div ref={rightColRef} className="px-4 pt-4 pb-22 overflow-auto h-full border-l-4 border-ridge border-white/80 dark:border-slate-900/80">
+                            <ChallengeLesson lesson={challenge.description!} />
+                        </div>
                         <div className="relative h-full flex flex-col lg:mx-4 mt-4 pb-4">
                             <ChallengeEditor value={editorState} setValue={setEditorState} />
                             <Toolbar className="mx-4 justify-center">
@@ -477,7 +487,7 @@ function Challenge() {
         )
     }
     return (
-        <div className="flex flex-col gap-4 flex-1 inset-0  mt-[calc(var(--spacing)*-20)] mb-[calc(var(--spacing)*-20)]">
+        <div key="desktop" className="flex flex-col gap-4 flex-1 inset-0  mt-[calc(var(--spacing)*-20)] mb-[calc(var(--spacing)*-20)]">
             <title>SQL Hero - Challenge</title>
             <TransformWrapper initialScale={2}>
                 <Allotment className="overflow-auto h-full">
@@ -511,7 +521,9 @@ function Challenge() {
                         </div>
                         <DetailViewRoot active={activeView} result={result} erd={erdFile} isMobile={isMobile} />
                     </Allotment>
-                    <RightPane />
+                    <div ref={rightColRef} className="px-4 pt-4 pb-22 overflow-auto h-full border-l-4 border-ridge border-white/80 dark:border-slate-900/80">
+                        <ChallengeLesson lesson={challenge.description!} />
+                    </div>
                 </Allotment>
             </TransformWrapper>
         </div>
