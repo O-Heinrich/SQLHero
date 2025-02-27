@@ -438,7 +438,7 @@ function Challenge() {
      */
     const handleDownloadClick = (): void => {
         const a = document.createElement('a');
-        const file = challenge.schema.split('/').pop()?.replace('.sql', 'db.pdf') ?? '';
+        const file = challenge.schema.split('/').pop()?.replace('.sql', '.pdf') ?? '';
         a.href = `/databases/pdf/${file}`;
         a.download = file;
         a.click();
