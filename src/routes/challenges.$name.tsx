@@ -54,9 +54,6 @@ import { BoltIcon, DownloadIcon, TableIcon } from '@/components/icons';
 
 import "allotment/dist/style.css";
 
-
-
-
 /**
  * Enumeration of available detail view pages
  * 
