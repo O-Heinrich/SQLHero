@@ -6,9 +6,10 @@
 * 
 * @module components/erd-viewer
 */
-import { Button } from '@headlessui/react';
+import React from 'react';
 import { TransformComponent, useControls } from "react-zoom-pan-pinch";
 import { ZoomInIcon, ZoomOutIcon } from '@/components/icons';
+import { IconButton } from './buttons/IconButton';
 
 /**
 * ERD zoom control buttons component
@@ -22,8 +23,20 @@ export const ErdControls: React.FC<{disabled: boolean}> = ({disabled}) => {
     const { zoomIn, zoomOut } = useControls();
     return (
         <>
-            <Button disabled={disabled} className="icon" aria-label="ERD vergrößern" title="ERD vergrößern"  onClick={() => zoomIn()}><ZoomInIcon size={1.5} /></Button>
-            <Button disabled={disabled} className="icon" aria-label="ERD verkleinern" title="ERD verkleinern" onClick={() => zoomOut()}><ZoomOutIcon size={1.5} /></Button>
+            <IconButton 
+                icon={<ZoomInIcon size={1.5} />}
+                disabled={disabled} 
+                aria-label="ERD vergrößern" 
+                title="ERD vergrößern"  
+                onClick={() => zoomIn()}
+            />
+            <IconButton 
+                icon={<ZoomOutIcon size={1.5} />}
+                disabled={disabled} 
+                aria-label="ERD verkleinern" 
+                title="ERD verkleinern"  
+                onClick={() => zoomOut()}
+            />
         </>
     );
 };

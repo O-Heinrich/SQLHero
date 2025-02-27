@@ -40,7 +40,6 @@ import "ace-builds/src-noconflict/theme-iplastic";
 import "ace-builds/src-noconflict/ext-language_tools";
 import { ChallengeSkeleton } from '@/components/Skeleton';
 import { PGlightContext } from '@/context/PGlightContext';
-import { Button } from '@headlessui/react';
 import { useTheme } from '@/hooks/useTheme';
 import { Table } from '@/components/table';
 import { ERD, ErdControls } from '@/components/ERD';
@@ -51,34 +50,101 @@ import { useChallengNumber } from '@/hooks/useChallengNumber';
 import { BoltIcon, DownloadIcon, TableIcon } from '@/components/icons';
 
 import "allotment/dist/style.css";
+import { IconButton } from '@/components/buttons/IconButton';
+import clsx from 'clsx';
 
-
+/**
+ * Enumeration of available detail view pages
+ * 
+ * Defines the possible display modes for the challenge detail view area.
+ * Used to control which content is shown in the main challenge workspace.
+ * 
+ * @enum {number}
+ */
 enum DetailViewPages {
+    /**
+    * Entity Relationship Diagram view
+    * Displays the database schema visualization
+    */
     ERD,
+    /**
+    * Query Result view
+    * Displays the output of executed SQL queries
+    */
     RESULT,
 }
 
 /**
- * Represents the core structure of SQL challenge data
- * @interface
- * @property {Object} meta - Challenge metadata
- * @property {string} meta.title - Unique identifier for the challenge
- * @property {string} meta.schema - Database schema file path/URL
- * @property {string} title - Display title of the challenge
- * @property {string} solution - Correct SQL query solution
- * @property {string} [lesson] - Optional educational content in HTML format
- * @property {string} task - Challenge requirements/instructions in HTML format
- * @property {string} info - Additional challenge information in HTML format
+ * Represents the structure of a challenge, typically used in coding or database-related challenges.
+ * 
+ * This interface defines the properties required to describe a challenge, including its metadata, 
+ * schema, and expected results.
+ * 
+ * @interface ChallengeData
  */
 interface ChallengeData {
+    /**
+     * @property {number} number
+     * @description A unique identifier or sequence number for the challenge.
+     * @example 1
+     */
     number: number;
+
+    /**
+     * @property {string} title
+     * @description The title or name of the challenge.
+     * @example "Find the highest salary"
+     */
     title: string;
+
+    /**
+     * @property {string} schema
+     * @description The schema or structure of the database/table(s) relevant to the challenge.
+     * This is typically a SQL schema or a JSON representation of the data structure.
+     * @example "CREATE TABLE employees (id INT, name TEXT, salary INT);"
+     */
     schema: string;
+
+    /**
+     * @property {string} description
+     * @description A detailed description of the challenge, including the problem statement and requirements.
+     * @example "Write a query to find the employee with the highest salary."
+     */
     description: string;
+
+    /**
+     * @property {'easy' | 'medium' | 'hard'} difficulty
+     * @description The difficulty level of the challenge.
+     * Possible values: 'easy', 'medium', 'hard'.
+     * @example "medium"
+     */
     difficulty: 'easy' | 'medium' | 'hard';
+    /**
+     * @property {string} query
+     * @description The query or solution to the challenge. This is typically a SQL query or code snippet.
+     * @example "SELECT name, MAX(salary) FROM employees;"
+     */
     query: string;
+    /**
+     * @property {string} hashedResult
+     * @description A hashed representation of the expected result of the challenge.
+     * This is used to verify the correctness of the user's solution.
+     * @example "a1b2c3d4e5f6g7h8i9j0"
+     */
     hashedResult: string;
+    /**
+     * @property {string[]} hints
+     * @description An array of hints to assist the user in solving the challenge.
+     * Each hint is a string that provides guidance or clues.
+     * @example ["Use the MAX() function", "Filter by salary"]
+     */
     hints: string[];
+    /**
+     * @property {string} [erd]
+     * @description Optional property representing an Entity-Relationship Diagram (ERD) for the challenge.
+     * This is typically a URL or base64-encoded image of the ERD.
+     * @example "https://example.com/erd.png"
+     */
     erd?: string;
 };
 
@@ -94,30 +160,87 @@ interface ChallengeHeaderProps {
 }
 
 /**
- * Toolbar component properties
- * @interface
- * @property {React.ReactNode} children - Toolbar content
- * @property {string} [className] - Additional CSS classes
+ * Props interface for Toolbar component
+ * 
+ * Defines the properties for a container component that displays
+ * action buttons and controls in a horizontal bar.
+ * 
+ * @interface ToolbarProps
  */
 interface ToolbarProps {
+    /**
+    * Child elements to render within the toolbar
+    * Typically consists of buttons, dropdowns, and other control elements
+    * 
+    * @property {React.ReactNode} children
+    */
     children: React.ReactNode;
+    /**
+    * Optional additional CSS classes to apply to the toolbar container
+    * Allows for customization of the toolbar's appearance
+    * 
+    * @property {string} [className]
+    */
     className?: string;
 }
 
 /**
- * Query result table properties
- * @interface
- * @extends TableProps
- * @property {QueryResult} result - Query result data
+ * Props interface for QueryResultTable component
+ * 
+ * Defines the properties required for rendering a table that displays
+ * SQL query execution results in a structured format.
+ * 
+ * @interface QueryResultTableProps
  */
 interface QueryResultTableProps {
+    /**
+    * Unique identifier for the result table
+    * Used for DOM identification and accessibility purposes
+    * 
+    * @property {string} id
+    */
     id: string;
+    /**
+    * Query result data to display in the table
+    * Optional as it may not be available before query execution
+    * Contains fields, rows, and metadata from the executed query
+    * 
+    * @property {QueryResult} [result]
+    */
     result?: QueryResult;
 }
 
+/**
+ * Props interface for DetailView component
+ * 
+ * Defines the properties required for rendering the detail view area
+ * of the challenge workspace, which can display either query results
+ * or the database entity relationship diagram.
+ * 
+ * @interface DetailViewProps
+ */
 interface DetailViewProps {
+    /**
+    * Query result data to display when in RESULT view mode
+    * Optional as it may not be available before first query execution
+    * 
+    * @property {QueryResult} [result]
+    */
     result?: QueryResult;
+    /**
+     * Currently active view mode determining what content to display
+     * Controls whether to show the ERD diagram or query results
+     * 
+     * @property {DetailViewPages} active
+     * @see DetailViewPages enum
+     */
     active: DetailViewPages;
+    /**
+     * Source URL for the entity relationship diagram image
+     * Displayed when active view is set to DetailViewPages.ERD
+     * 
+     * @property {string} erd
+     */
     erd: string;
 }
 
@@ -150,8 +273,7 @@ const Spacer: React.FC = () => <span className="inline-block h-12 my-1 w-0.5 sel
 
 /**
  * Main Challenge component that provides a complete SQL learning environment
- * @component
- * @description
+ * 
  * Provides an interactive SQL challenge interface with the following features:
  * - Challenge description and educational content display
  * - SQL editor with syntax highlighting and autocompletion
@@ -160,6 +282,8 @@ const Spacer: React.FC = () => <span className="inline-block h-12 my-1 w-0.5 sel
  * - Progress tracking and success/failure feedback
  * 
  * Uses PGlightContext for database operations and theme context for visual customization.
+ * 
+ * @component Challenge
  * 
  * @example
  * ```tsx
@@ -216,12 +340,8 @@ function Challenge() {
      * @function handleRun
      * @async
      * @returns {Promise<void>} Promise that resolves after query execution and state updates
-     * 
-     * @example
-     * // Connect to handleRun to a button click event
-     * <Button onClick={handleRun}>Run Query</Button>
-     */
-    const handleRun = async () => {
+     */ 
+    const handleRun = async (): Promise<void> => {
         if (!pg) return;
         try {
             let query: QueryResult|null = null;
@@ -268,13 +388,27 @@ function Challenge() {
     }
 
     /**
-     * Handles click event for ERD/Result toggle button
+     * Switches the detail view to display the Entity Relationship Diagram
      * 
-     * This function toggles the active view between ERD and query result display.
+     * Sets the active view state to ERD mode, causing the UI to display
+     * the database schema visualization instead of query results.
+     * 
+     * @function handleErdClick
+     * @returns {void}
      */
-    const handleErdClick = () => setActiveView(() => DetailViewPages.ERD);
+    const handleErdClick = (): void => setActiveView(() => DetailViewPages.ERD);
 
-    const handleDownloadClick = () => {
+    /**
+     * Handles database schema PDF download
+     * 
+     * Creates and triggers a download for the PDF version of the current challenge's 
+     * database schema. Extracts the appropriate filename from the schema path,
+     * replacing the .sql extension with db.pdf.
+     * 
+     * @function handleDownloadClick
+     * @returns {void}
+     */
+    const handleDownloadClick = (): void => {
         const a = document.createElement('a');
         const file = challenge.schema.split('/').pop()?.replace('.sql', 'db.pdf') ?? '';
         a.href = `/databases/pdf/${file}`;
@@ -292,15 +426,26 @@ function Challenge() {
                             <Toolbar className="mx-4 justify-center">
                                 <ErdControls disabled={!isErdActive} />
                                 {isErdActive && <Spacer />}
-                                <Button className="icon" aria-label="ERD downloaden" title="ERD downloaden" onClick={handleDownloadClick}>
-                                    <DownloadIcon size={1.5} />
-                                </Button>
-                                <Button className="icon" aria-label="ERD anzeigen" title="ERD anzeigen" disabled={isErdActive}  onClick={handleErdClick}>
-                                    <TableIcon size={1.5} />
-                                </Button>
-                                <Button className="icon" aria-label="SQL ausführen" title="SQL ausführen" disabled={!isErdActive}  onClick={handleRun}>
-                                    <BoltIcon size={1.5} />
-                                </Button>
+                                <IconButton 
+                                    icon={<DownloadIcon size={1.5} />} 
+                                    aria-label="ERD downloaden" 
+                                    title="ERD downloaden" 
+                                    onClick={handleDownloadClick}
+                                />
+                                <IconButton 
+                                    icon={<TableIcon size={1.5} />} 
+                                    aria-label="ERD anzeigen" 
+                                    title="ERD anzeigen" 
+                                    disabled={isErdActive}  
+                                    onClick={handleErdClick}
+                                />
+                                <IconButton 
+                                    icon={<BoltIcon size={1.5} />} 
+                                    aria-label="SQL ausführen" 
+                                    title="SQL ausführen" 
+                                    disabled={!isErdActive}  
+                                    onClick={handleRun}
+                                />
                             </Toolbar>
                         </div>
                         <DetailViewRoot active={activeView} result={result} erd={erdFile} />
@@ -329,10 +474,19 @@ function Challenge() {
  * ```
  */
 const DetailViewRoot: React.FC<DetailViewProps> = ({ active, result, erd }) => {
+    const isResult = active === DetailViewPages.RESULT;
+    const isErd = active === DetailViewPages.ERD;
     return (
-        <div className="px-4 overflow-auto h-full pb-16 border-t-4 border-ridge border-white/20 dark:border-slate-900/20 mb-40">
-            {active === DetailViewPages.RESULT && <QueryResultTable id="query-result" result={result} />}
-            {active === DetailViewPages.ERD && <ERD src={erd} />}
+        <div className={clsx(
+            isErd && 'cursor-move',
+            'h-full',
+            isResult && 'px-4 pb-16 mb-40',
+            'border-t-4 border-ridge',
+            'border-white/20 dark:border-slate-900/20',
+            'overflow-auto'
+        )}>
+            {isResult && <QueryResultTable id="query-result" result={result} />}
+            {isErd && <ERD src={erd} />}
         </div>
     );
 }
