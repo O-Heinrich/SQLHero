@@ -19,7 +19,7 @@ export const Table: React.FC<TableProps> = ({ id, columns, rows }) => (
             {rows.map((row, index) => (
                 <tr key={index} className={clsx('hover:bg-gray-50', 'dark:hover:bg-gray-700')}>
                     {row.map((cell, index) => (
-                        <td key={index} className={clsx('p-2')}>{cell as string}</td>
+                        <td key={index} className={clsx('p-2', !Number.isNaN(parseFloat(cell as string)) && 'text-right')}>{cell as string}</td>
                     ))}
                 </tr>
             ))}
