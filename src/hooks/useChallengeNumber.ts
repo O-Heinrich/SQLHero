@@ -6,7 +6,7 @@ import { useMemo } from "react";
  * 
  * @returns {number} Challenge number
  */
-export function useChallengNumber(): number {
+export function useChallengeNumber(): number {
     const location = useLocation();
     const challengeNo: number = useMemo(() => {
         const path = location.pathname.split('/').pop();

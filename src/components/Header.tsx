@@ -13,7 +13,7 @@ import { Button } from "@headlessui/react";
 import { COUNT_CHALLENGES, APP_NAME } from "virtual:sql-hero";
 import { useAppState } from "@/hooks/useAppState";
 import { AppState, ChallengeAction } from "@/lib/types";
-import { useChallengNumber } from "@/hooks/useChallengNumber";
+import { useChallengeNumber } from "@/hooks/useChallengeNumber";
 import { isFirefox } from "@/lib/agents";
 
 /**
@@ -69,7 +69,7 @@ const Spacer: React.FC<SpacerProps> = ({classList}: SpacerProps): React.ReactEle
 export const Header: React.FC = (): React.ReactElement => {
     const { theme } = useTheme();
     const navigate = useNavigate();
-    const challengeNo = useChallengNumber();
+    const challengeNo = useChallengeNumber();
     const headerRef = React.useRef<HTMLHeadingElement>(null);
     const { state, dispatch }: { state: AppState, dispatch: React.Dispatch<ChallengeAction> } = useAppState();
 
@@ -128,14 +128,14 @@ export const Header: React.FC = (): React.ReactElement => {
             {isFirefox && <div className="bg-transparent backdrop-blur-md fixed h-[80px] top-0 left-0 right-0 z-10" />}
             <header ref={headerRef} className={clsx('top-header', 'relative', 'sticky', 'top-0', 'z-50', 'dark:bg-red-500/50', 'bg-red-800/50', 'text-white', !isFirefox && 'backdrop-blur-xl', 'transition-all', 'duration-800', 'dark:mix-blend-color-dodge', 'mix-blend-hard-light')}>
                 <Wrapper className={clsx('flex', 'items-center', 'max-w-400')}>
-                    <span className={clsx('flex', 'items-center', 'gap-1', 'flex-grow')}>
-                        <Logo fill={isDarkMode ? '#efefef' : '#343434'} />
+                    <Link to="/" className="flex items-center gap-2">
+                        
+                        <Logo fill={isDarkMode ? '#efefef' : 'rgba(0,0,0,.85)'} />
                         <h1 className={clsx('lg:text-4xl', 'md:text-2xl', 'md:inline', 'hidden', 'dark:text-white/85', 'text-black/85', 'py-4', 'font-light')}>
-                            <Link to="/">
-                                {APP_NAME}
-                            </Link>
+                            {APP_NAME}
                         </h1>
-                    </span>
+                    </Link>
+                    <span className={clsx('flex', 'items-center', 'gap-1', 'flex-grow')}></span>
                     <div className="px-2 flex items-center">
                         <Link to="/overview" className="hidden md:inline">
                             <Button>
