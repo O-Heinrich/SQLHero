@@ -20,7 +20,7 @@ import { isFirefox } from '@/lib/agents';
 * 
 * @returns Zoom control buttons fragment
 */
-const ErdCtrls: React.FC<{disabled: boolean}> = ({disabled}) => {
+export const ErdControls: React.FC<{disabled: boolean}> = ({disabled}) => {
     const { zoomIn, zoomOut } = useControls();
     return (
         <>
@@ -42,8 +42,6 @@ const ErdCtrls: React.FC<{disabled: boolean}> = ({disabled}) => {
     );
 };
 
-const FirefoxFix = () => null;
-
 /**
 * ERD viewer component
 * 
@@ -60,14 +58,21 @@ const FirefoxFix = () => null;
 * ```
 */
 export const ERD: React.FC<{ src: string }> = ({ src }) => {
-    if (isFirefox) {
-        return <img src={src} alt="ERD" width="100%" height="100%" className="erd" />;
-    }
+    const Style =  () => isFirefox ?
+        <style>
+            {`
+            .react-transform-component.transform-component-module_content__FBWxo.h-full.w-full.flex.justify-center.items-stretch {
+                height: auto;
+                width: 30%;
+            }
+            `}
+        </style> : null;
     return (
-        <TransformComponent wrapperStyle={{ width: '100%', height: '100%' }} contentClass="h-full w-full flex justify-center items-stretch">
-            <img src={src} alt="ERD" width="100%" height="100%" className="erd" />
-        </TransformComponent>
+        <>
+            <Style />
+            <TransformComponent wrapperStyle={{ width: '100%', height: '100%' }} contentClass="h-full w-full flex justify-center items-stretch">
+                <img src={src} alt="ERD" width="100%" height="100%" className="erd" />
+            </TransformComponent>
+        </>
     );
 };
-
-export const ErdControls = isFirefox ? FirefoxFix : ErdCtrls;
