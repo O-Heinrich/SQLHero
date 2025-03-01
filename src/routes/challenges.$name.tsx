@@ -379,6 +379,18 @@ function Challenge() {
         }
     }, [challengeNo]);
 
+    /**
+     * Observes changes in the viewport width and updates the UI for mobile responsiveness.
+     * 
+     * This effect:
+     * - Uses the `ResizeObserver` API to monitor changes in the viewport width.
+     * - Updates the `isMobile` state and switches the active view to the ERD (Entity-Relationship Diagram)
+     *   when the viewport width crosses a breakpoint (e.g., for small devices).
+     * - Cleans up the observer when the component unmounts or dependencies change.
+     * 
+     * @effect
+     * @dependencies isMobile, rightColRef
+     */
     useEffect(() => {
         if ('ResizeObserver' in window && rightColRef.current) {
             const observer = new ResizeObserver((entries) => {
