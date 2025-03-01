@@ -471,3 +471,37 @@ export interface TableDiff {
         }>;
     }>;
 }
+
+/**
+ * Enum representing SQL statement types.
+ * 
+ * This enum categorizes SQL statements into their standard classification groups,
+ * providing human-readable values for each category.
+ * 
+ * @enum {string}
+ */
+export enum StatementType {
+    /** 
+     * Data Definition Language - statements that define database structures
+     * (e.g., CREATE, ALTER, DROP)
+     */
+    DDL = 'DataDefinitionLanguage',
+    
+    /** 
+     * Data Manipulation Language - statements that manipulate data within tables
+     * (e.g., SELECT, INSERT, UPDATE, DELETE)
+     */
+    DML = 'DataManipulationLanguage',
+    
+    /** 
+     * Data Control Language - statements that control access permissions
+     * (e.g., GRANT, REVOKE)
+     */
+    DCL = 'DataControlLanguage',
+    
+    /** 
+     * Transaction Control Language - statements that manage transactions
+     * (e.g., BEGIN, COMMIT, ROLLBACK)
+     */
+    TCL = 'TransactionControlLanguage',
+}

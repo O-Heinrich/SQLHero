@@ -4,7 +4,7 @@
  * @module lib/utils
  */
 
-import { PostgresTypeID, QueryResult, ResultComparison, TableDiff } from "@/lib/types";
+import { PostgresTypeID, QueryResult, ResultComparison, StatementType, TableDiff } from "@/lib/types";
 
 /**
  * Converts a JavaScript value to a string representation based on the PostgreSQL type context.
@@ -336,5 +336,67 @@ export class ResultSetComparison {
 
         return differences;
     }
+}
 
+/**
+ * Determines the SQL statement type based on the provided SQL query string.
+ * 
+ * This function analyzes the input SQL statement(s) by splitting on semicolons,
+ * examining each statement, and returning the type of the first valid statement
+ * that matches one of the SQL statement types (DDL, DML, TCL, DCL).
+ *
+ * When multiple statements are present (separated by semicolons), precedence is
+ * given to DDL statements, followed by DML, TCL, and DCL.
+ *
+ * @param stmt - The SQL statement string to analyze (can contain multiple statements)
+ * @returns The identified {@link StatementType} or null if no type can be determined
+ * 
+ * @example
+ * // Returns StatementType.DDL (prioritizes the DROP statement)
+ * getStmtType('SELECT * FROM users WHERE id = 1; DROP TABLE users;');
+ * 
+ * @example
+ * // Returns StatementType.DML
+ * getStmtType('SELECT * FROM users WHERE id = 1;');
+ * 
+ * @example
+ * // Returns null for unrecognized statements
+ * getStmtType('EXPLAIN ANALYZE SELECT * FROM users');
+ */
+export function getStmtType(stmt: string): StatementType|null {
+    const statements = stmt.split(';').map(s => s.trim()).filter(s => s.length > 0);
+    
+    // Check for DDL statements first
+    for (const statement of statements) {
+        const words = statement.toUpperCase().split(' ');
+        if (words.some(word => ['CREATE', 'ALTER', 'DROP'].includes(word))) {
+            return StatementType.DDL;
+        }
+    }
+    
+    // Check for DML statements
+    for (const statement of statements) {
+        const words = statement.toUpperCase().split(' ');
+        if (words.some(word => ['SELECT', 'INSERT', 'UPDATE', 'DELETE'].includes(word))) {
+            return StatementType.DML;
+        }
+    }
+    
+    // Check for TCL statements
+    for (const statement of statements) {
+        const words = statement.toUpperCase().split(' ');
+        if (words.some(word => ['BEGIN', 'COMMIT', 'ROLLBACK'].includes(word))) {
+            return StatementType.TCL;
+        }
+    }
+    
+    // Check for DCL statements
+    for (const statement of statements) {
+        const words = statement.toUpperCase().split(' ');
+        if (words.some(word => ['GRANT', 'REVOKE'].includes(word))) {
+            return StatementType.DCL;
+        }
+    }
+    
+    return null;
 }
