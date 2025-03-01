@@ -318,20 +318,40 @@ function Challenge() {
         [challenge.schema, theme]
     );
 
+    /**
+     * Initializes the challenge and updates the header UI based on the completion status.
+     * 
+     * This effect:
+     * - Dispatches an action to initialize the current challenge.
+     * - Toggles the header success state based on whether the challenge is completed.
+     * 
+     * @effect
+     * @dependencies challengeNo, dispatch, state.challenges, state.headerElement
+     */
     useEffect(() => {
         dispatch({ type: 'INIT_CHALLENGE', payload: { index: challengeNo - 1 } });
         const notCompleted = !state.challenges[challengeNo - 1].completed;
         toggleHeaderSuccess(notCompleted, state.headerElement);
     }, [challengeNo, dispatch, state.challenges, state.headerElement]);
 
+    /**
+     * Loads the challenge query and schema into the editor and database.
+     * 
+     * This effect:
+     * - Sets the editor state to the challenge query.
+     * - Fetches and executes the schema SQL if the database schema has changed.
+     * - Updates the database state once the schema is loaded.
+     * 
+     * @effect
+     * @dependencies db, pg, challenge, dispatch
+     */
     useEffect(() => {
         setEditorState(() => challenge.query);
         if (pg && db !== challenge.schema) {
             fetch(challenge.schema).then(async (response) => {
                 try {
                     const sql = await response.text();
-                    await pg.exec(sql);
-                    // setResult(() => result as QueryResult);                    
+                    await pg.exec(sql);               
                 } catch (error) {
                     const errMsg = typeof error === 'string' ? error : (error as Error).message;
                     toast.error(`Failed to load schema: ${errMsg}`);
@@ -342,10 +362,20 @@ function Challenge() {
         }
     }, [db, pg, challenge, dispatch]);
 
+    /**
+     * Updates the view to show the ERD (Entity-Relationship Diagram) and scrolls to the top of the right column.
+     * 
+     * This effect:
+     * - Sets the active view to the ERD page.
+     * - Scrolls the right column to the top when the challenge number changes.
+     * 
+     * @effect
+     * @dependencies challengeNo
+     */
     useEffect(() => {
         if (rightColRef.current) {
             setActiveView(() => DetailViewPages.ERD);
-            rightColRef.current.scrollTo({ top: 0, behavior: 'smooth' });            
+            rightColRef.current.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }, [challengeNo]);
 
@@ -367,67 +397,90 @@ function Challenge() {
     }, [isMobile, rightColRef]);
 
     /**
-     * Handles execution of a SQL query and validation against challenge solution
+     * Handles the execution of a SQL query or a series of SQL statements for a specific challenge.
      * 
-     * This function executes the current editor content as a SQL query, compares
-     * the result against the expected solution, and manages the application state
-     * based on the outcome (success, failure, error).
+     * This function:
+     * - Executes the SQL query/queries provided in the `editorState`.
+     * - Compares the result with a pre-stored solution (if available).
+     * - Dispatches appropriate actions based on whether the challenge was completed successfully or not.
+     * - Updates the UI to display the result or error messages.
      * 
-     * @function handleRun
      * @async
-     * @returns {Promise<void>} Promise that resolves after query execution and state updates
+     * @function handleRun
+     * @returns {Promise<void>} - A promise that resolves when the function completes.
+     * 
+     * @example
+     * await handleRun();
      */
     const handleRun = async (): Promise<void> => {
+        // If the PostgreSQL client (`pg`) is not available, exit the function.
         if (!pg) return;
+
         try {
             let query: QueryResult | QueryResult[] | null = null;
-            const challengeIndex = challengeNo - 1;
+            const challengeIndex = challengeNo - 1; // Calculate the challenge index.
+
+            // Find the positions of the first and second semicolons in the editor state.
             const firstSemicolon = editorState.indexOf(';');
             const secondSemicolon = editorState.indexOf(';', firstSemicolon + 1);
-            const hasMultipleStmts = secondSemicolon > -1;
-            const key = challengeNo.toString();
+            const hasMultipleStmts = secondSemicolon > -1; // Check if there are multiple SQL statements.
+
+            const key = challengeNo.toString(); // Create a key for the current challenge.
+
+            // Execute the SQL query/queries.
             const result = hasMultipleStmts
                 ? await pg.transaction<QueryResult[]>(async (transact) => {
+                    // Split the editor state into individual SQL statements.
                     const stmts = editorState.split(';').map(s => s.trim()).filter(Boolean);
+                    // Execute all statements in a transaction.
                     const res = await Promise.all(stmts.map(async s => (await transact.query(s)) as QueryResult));
-                    transact.rollback();
+                    transact.rollback(); // Rollback the transaction to avoid side effects.
                     return res;
-                }) : await pg.query(editorState) as QueryResult;
+                })
+                : await pg.query(editorState) as QueryResult; // Execute a single query.
 
-            if (!ResultSetComparison.hasSolution(key)) {
+            // If no solution is stored for the current challenge, execute the solution query/queries.
+            if (!ResultSetComparison.hasSolution(key) && !ResultSetComparison.hasSolution(`${key}-0`)) {
                 if (hasMultipleStmts) {
                     query = await pg.transaction<QueryResult[]>(async (transact) => {
+                        // Split the solution query into individual SQL statements.
                         const stmts = challenge.query.split(';').map(s => s.trim()).filter(Boolean);
+                        // Execute all statements in a transaction.
                         const res = await Promise.all(stmts.map(async s => (await transact.query(s)) as QueryResult));
-                        transact.rollback();
+                        transact.rollback(); // Rollback the transaction to avoid side effects.
                         return res;
                     });
 
+                    // Store the solution hash for each statement.
                     for (let i = 0; i < query.length; i++) {
                         ResultSetComparison.storeSolutionHash(`${key}-${i}`, query[i]);
                     }
                 } else {
+                    // Execute and store the solution hash for a single query.
                     query = await pg.query(challenge.query) as QueryResult;
                     ResultSetComparison.storeSolutionHash(key, query);
                 }
             }
 
-            const isCorrect = Array.isArray(result) ? result.reduce((success, result, i) => {
-                const key = `${challengeNo.toString()}-${i}`;
-                const isCorrect = ResultSetComparison.compareWithSolution(key, result);
-                return success && isCorrect;
-            }, true) : ResultSetComparison.compareWithSolution(key, result);
+            // Compare the result with the stored solution.
+            const isCorrect = Array.isArray(result)
+                ? result.reduce((success, result, i) => {
+                    const key = `${challengeNo.toString()}-${i}`;
+                    const isCorrect = ResultSetComparison.compareWithSolution(key, result);
+                    return success && isCorrect;
+                }, true)
+                : ResultSetComparison.compareWithSolution(key, result);
 
+            // Handle the result of the comparison.
             if (isCorrect) {
-                toast.success('Herausforderung erfolgreich abgeschlossen!');
+                toast.success('Herausforderung erfolgreich abgeschlossen!'); // Success message.
                 dispatch({
                     type: 'COMPLETE_CHALLENGE',
                     payload: { index: challengeIndex, query: editorState }
                 });
             } else {
-                query ??= {} as QueryResult;
-                //const diff = ResultSetComparison.getDifference(query, result);
-                toast.error('Ergebnis nicht korrekt. Bitte versuche es erneut.');
+                query ??= {} as QueryResult; // Default to an empty QueryResult if `query` is null.
+                toast.error('Ergebnis nicht korrekt. Bitte versuche es erneut.'); // Error message.
                 dispatch({
                     type: 'CHALLENGE_FAILED',
                     payload: {
@@ -438,13 +491,15 @@ function Challenge() {
                 });
             }
 
+            // Update the result state with the last query result.
             setResult(() => Array.isArray(result) ? result[result.length - 1] : result as QueryResult);
-            setActiveView(() => DetailViewPages.RESULT);
+            setActiveView(() => DetailViewPages.RESULT); // Switch to the result view.
         } catch (error) {
+            // Handle errors and display an error message.
             const errMsg = typeof error === 'string' ? error : (error as Error).message;
             toast.error(errMsg);
         }
-    }
+    };
 
     /**
      * Switches the detail view to display the Entity Relationship Diagram
