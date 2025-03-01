@@ -15,9 +15,10 @@ import { IndexSkeleton } from '@/components/Skeleton';
 import { Wrapper } from '@/components/Wrapper';
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 import { useTheme } from '@/hooks/useTheme';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { FlashButton } from '@/components/buttons';
 import { DbIllustration } from '@/components/DbIllustration';
+import { useAppState } from '@/hooks/useAppState';
 
 /**
 * Route configuration for home page.
@@ -41,7 +42,14 @@ export const Route = createLazyFileRoute('/')({
 */
 function Index() {
     const navigate = useNavigate();
+    const { state, dispatch } = useAppState();
     const { theme } = useTheme();
+
+    useEffect(() => {
+        if (state === undefined) {
+            dispatch({ type: 'LOAD_STATE', payload: null });
+        }
+    }, [state]);
 
     /**
      * Memoized theme check to prevent unnecessary re-renders

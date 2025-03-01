@@ -28,7 +28,7 @@ const Introduction = (): JSX.Element => (
         <article className="space-y-8 my-14">
             <header className="mb-8">
                 <h1>SQL Hero - Einführung in die Welt der Datenbanken</h1>
-                <div className="h-1 w-20 bg-red-400/50 dark:bg-orange-200/50 mb-4"></div>
+                <div className="h-1 w-20 bg-red-400/50 dark:bg-orange-200/50 mb-4" />
                 <p className="text-lg text-gray-700 dark:text-gray-300">
                     Entdecken Sie die faszinierende Welt der Datenbanksprache SQL - Ihr Weg zum Datenbank-Experten beginnt hier.
                 </p>
@@ -43,20 +43,20 @@ const Introduction = (): JSX.Element => (
                     Ihr persönlicher Bibliothekar, der Ihnen hilft, Informationen zu finden, zu ordnen und zu verwalten.
                 </p>
                 <div className="grid md:grid-cols-2 gap-4 my-4">
-                    <div className="p-4 bg-blue-100/25 dark:bg-blue-400/10 rounded-lg mix-blend-multiply dark:mix-blend-color-dodge">
+                    <div className="p-4 bg-blue-200/25 dark:bg-blue-400/10 rounded-xl shadow shadow-gray-400/25 dark:shadow-gray-800/30">
                         <h3 className="font-semibold mb-2 flex items-center justify-between gap-2">
                             Daten abrufen
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-18 dark:text-gray-500 text-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-18 dark:text-gray-200/25 text-gray-700/25">
                                 <path fillRule="evenodd" d="M10.5 3.75a6 6 0 0 0-5.98 6.496A5.25 5.25 0 0 0 6.75 20.25H18a4.5 4.5 0 0 0 2.206-8.423 3.75 3.75 0 0 0-4.133-4.303A6.001 6.001 0 0 0 10.5 3.75Zm2.25 6a.75.75 0 0 0-1.5 0v4.94l-1.72-1.72a.75.75 0 0 0-1.06 1.06l3 3a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06l-1.72 1.72V9.75Z" clipRule="evenodd" />
                             </svg>
                         </h3>
                         <p className="dark:text-gray-300">Wie ein Bibliothekar, der genau das richtige Buch findet,
                             hilft Ihnen <InlineCode>SELECT</InlineCode>, die gewünschten Informationen aus der Datenbank zu holen.</p>
                     </div>
-                    <div className="p-4 bg-green-50/50 dark:bg-green-400/10 rounded-lg mix-blend-multiply dark:mix-blend-color-dodge">
+                    <div className="p-4 bg-green-200/25 dark:bg-green-400/10 rounded-xl shadow shadow-gray-400/25 dark:shadow-gray-800/30">
                         <h3 className="font-semibold mb-2 flex items-center justify-between gap-2">
                             Daten speichern
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-18 dark:text-gray-500 text-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-18 dark:text-gray-200/25 text-gray-700/25">
                                 <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clipRule="evenodd" />
                             </svg>
                         </h3>
@@ -76,12 +76,12 @@ const Introduction = (): JSX.Element => (
 
                 <div className="space-y-6">
                     {/* DDL Section */}
-                    <div className="bg-slate-50 dark:bg-gray-400/10 p-6 rounded-lg mix-blend-multiply dark:mix-blend-color-dodge">
+                    <div className="bg-slate-50/30 dark:bg-blue-400/10 p-6 rounded-xl shadow shadow-gray-400/25 dark:shadow-gray-800/30">
                         <h3 className="text-xl font-semibold mb-3">1. Data Definition Language (DDL)</h3>
                         <p className="mb-3 dark:text-gray-300">
                             Die DDL ist wie der Architekt Ihrer Datenbank. Mit ihr erstellen Sie die grundlegende Struktur:
                         </p>
-                        <div className="bg-white/50 dark:bg-gray-300/10 p-4 rounded-lg shadow-sm">
+                        <div className="bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm dark:mix-blend-color-dodge">
                             <p className="mb-2 dark:text-gray-200"><InlineCode>CREATE TABLE</InlineCode> - Erstellt neue Tabellen</p>
                             <p className="mb-2 dark:text-gray-200"><InlineCode>ALTER TABLE</InlineCode> - Verändert bestehende Tabellen</p>
                             <p className="dark:text-gray-200"><InlineCode>DROP TABLE</InlineCode> - Löscht Tabellen</p>
@@ -89,12 +89,12 @@ const Introduction = (): JSX.Element => (
                     </div>
 
                     {/* DML Section */}
-                    <div className="bg-slate-50 dark:bg-gray-400/10 p-6 rounded-lg mix-blend-multiply dark:mix-blend-color-dodge">
+                    <div className="bg-slate-50/30 dark:bg-blue-400/10 p-6 rounded-xl shadow shadow-gray-400/25 dark:shadow-gray-800/30">
                         <h3 className="text-xl font-semibold mb-3">2. Data Manipulation Language (DML)</h3>
                         <p className="mb-3 dark:text-gray-300">
                             Die DML ist Ihr wichtigstes Werkzeug für die tägliche Arbeit mit Daten:
                         </p>
-                        <div className="bg-white/50 dark:bg-gray-300/10 p-4 rounded-lg shadow-sm space-y-3">
+                        <div className="bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm space-y-3 dark:mix-blend-color-dodge">
                             <div>
                                 <p className="font-semibold dark:text-gray-200">
                                     <InlineCode>SELECT</InlineCode> - Daten abrufen
@@ -114,12 +114,12 @@ const Introduction = (): JSX.Element => (
                         </div>
                     </div>
                 </div>
-                <div className="bg-slate-50 dark:bg-gray-400/10 p-6 rounded-lg mix-blend-multiply dark:mix-blend-color-dodge">
+                <div className="bg-slate-50/30 dark:bg-blue-400/10 p-6 rounded-xl shadow shadow-gray-400/25 dark:shadow-gray-800/30">
                     <h3 className="text-xl font-semibold mb-3">3. Data Control Language (DCL)</h3>
                     <p className="mb-3 dark:text-gray-300">
                         Die DCL kontrolliert die Zugriffsrechte auf Ihre Datenbank. Sie ist wie ein Sicherheitssystem:
                     </p>
-                    <div className="bg-white/50 dark:bg-gray-300/10 p-4 rounded-lg shadow-sm space-y-3">
+                    <div className="bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm space-y-3 dark:mix-blend-color-dodge">
                         <div>
                             <p className="font-semibold dark:text-gray-200">
                                 <InlineCode>GRANT</InlineCode> - Berechtigungen erteilen
@@ -139,12 +139,12 @@ const Introduction = (): JSX.Element => (
                     </div>
                 </div>
 
-                <div className="bg-slate-50 dark:bg-gray-400/10 p-6 rounded-lg mix-blend-multiply dark:mix-blend-color-dodge">
+                <div className="bg-slate-50/30 dark:bg-blue-400/10 p-6 rounded-xl shadow shadow-gray-400/25 dark:shadow-gray-800/30">
                     <h3 className="text-xl font-semibold mb-3">4. Transaction Control Language (TCL)</h3>
                     <p className="mb-3 dark:text-gray-300">
                         Die TCL steuert Transaktionen - also Gruppen von Datenbankoperationen, die als Einheit behandelt werden:
                     </p>
-                    <div className="bg-white/50 dark:bg-gray-300/10 p-4 rounded-lg shadow-sm space-y-3">
+                    <div className="bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm space-y-3 dark:mix-blend-color-dodge">
                         <div>
                             <p className="font-semibold dark:text-gray-200">
                                 <InlineCode>COMMIT</InlineCode> - Änderungen dauerhaft speichern
@@ -176,7 +176,7 @@ const Introduction = (): JSX.Element => (
             {/* Lernen mit SQL Hero Section */}
             <section className="space-y-4">
                 <h2 className="text-2xl font-semibold">Lernen mit SQL Hero</h2>
-                <div className="bg-blue-50 dark:bg-blue-400/10 p-6 rounded-lg space-y-4 mix-blend-multiply dark:mix-blend-color-dodge">
+                <div className="bg-blue-50/50 dark:bg-blue-400/10 p-6 rounded-xl space-y-4 shadow shadow-gray-400/25 dark:shadow-gray-800/30">
                     <div>
                         <h3 className="font-semibold">Praktische Übungen</h3>
                         <p className="dark:text-gray-300">
@@ -195,15 +195,15 @@ const Introduction = (): JSX.Element => (
             {/* Fehlerbehandlung Section */}
             <section className="space-y-4">
                 <h2 className="text-2xl font-semibold">Fehlerbehandlung und Tipps</h2>
-                <div className="bg-gray-100 dark:bg-gray-400/10 p-6 rounded-lg mix-blend-multiply dark:mix-blend-color-dodge">
+                <div className="bg-gray-100/50 dark:bg-blue-400/10 p-6 rounded-xl shadow shadow-gray-400/25 dark:shadow-gray-800/30">
                     <div className="space-y-3">
-                        <div className="bg-white dark:bg-gray-300/10 p-4 rounded-lg">
+                        <div className="bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm dark:mix-blend-color-dodge">
                             <h4 className="font-semibold text-red-600 dark:text-red-400">Fachliche Fehler</h4>
                             <p className="dark:text-gray-300">
                                 Das SQL ist syntaktisch korrekt, liefert aber nicht das erwartete Ergebnis.
                             </p>
                         </div>
-                        <div className="bg-white dark:bg-gray-300/10 p-4 rounded-lg">
+                        <div className="bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm dark:mix-blend-color-dodge">
                             <h4 className="font-semibold text-red-600 dark:text-red-400">Technische Fehler</h4>
                             <p className="dark:text-gray-300">
                                 Der SQL-Befehl kann nicht ausgeführt werden.
@@ -217,10 +217,10 @@ const Introduction = (): JSX.Element => (
             </section>
 
             {/* Browser Support Section */}
-            <section className="bg-gray-100 dark:bg-gray-400/10 p-6 rounded-lg mt-8 mix-blend-multiply dark:mix-blend-color-dodge">
+            <section className="bg-gray-100/50 dark:bg-blue-400/10 p-6 rounded-xl mt-8 shadow shadow-gray-400/25 dark:shadow-gray-800/30">
                 <h2 className="text-2xl font-semibold mb-4">Technische Voraussetzungen</h2>
                 <div className="grid md:grid-cols-3 gap-4">
-                    <div className="bg-white dark:bg-gray-300/10 p-4 rounded-lg text-center">
+                    <div className="bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl text-center shadow-sm dark:mix-blend-color-dodge">
                         <CheckBadgeIcon className="w-20 h-20 inline-block dark:fill-green-400/40 fill-green-800/40 float-left mix-blend-multiplay dark:mix-blend-hard-light" />
                         &nbsp;
                         <h3 className="font-semibold dark:text-gray-200">
@@ -229,7 +229,7 @@ const Introduction = (): JSX.Element => (
                         </h3>
                         <p className="text-sm text-gray-600 dark:text-gray-400">Vollständig getestet</p>
                     </div>
-                    <div className="bg-white dark:bg-gray-300/10 p-4 rounded-lg text-center">
+                    <div className="bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl text-center shadow-sm dark:mix-blend-color-dodge">
                         <CheckBadgeIcon className="w-20 h-20 inline-block dark:fill-green-400/40 fill-green-800/40 float-left mix-blend-multiplay dark:mix-blend-hard-light" />
                         &nbsp;
                         <h3 className="font-semibold dark:text-gray-200">
@@ -238,7 +238,7 @@ const Introduction = (): JSX.Element => (
                         </h3>
                         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Vollständig getestet</p>
                     </div>
-                    <div className="bg-white dark:bg-gray-300/10 p-4 rounded-lg text-center">
+                    <div className="bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl text-center shadow-sm dark:mix-blend-color-dodge">
                         <CheckCircleIcon className="w-20 h-20 inline-block dark:fill-green-200/20 fill-green-800/20 float-left" />
                         &nbsp;
                         <h3 className="font-semibold dark:text-gray-200/50">
