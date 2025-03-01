@@ -290,7 +290,7 @@ const ChallengeStatistics = ({ challenges }: { challenges: Challenge[]; }): Reac
                     <h3 className="text-sm font-medium text-gray-700/70 dark:text-gray-300/40 mb-2">
                         Fortschritt nach Schwierigkeitsgrad
                     </h3>
-                    <div className="h-48">
+                    <div className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart
                                 data={difficultyCompletionData}
@@ -315,7 +315,7 @@ const ChallengeStatistics = ({ challenges }: { challenges: Challenge[]; }): Reac
                     <h3 className="text-sm font-medium text-gray-700/70 dark:text-gray-300/40 mb-2">
                         Status der Herausforderungen
                     </h3>
-                    <div className="h-48">
+                    <div className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
