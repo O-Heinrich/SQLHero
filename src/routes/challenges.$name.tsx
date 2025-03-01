@@ -41,20 +41,21 @@ import "ace-builds/src-noconflict/theme-one_dark";
 import "ace-builds/src-noconflict/theme-iplastic";
 import "ace-builds/src-noconflict/ext-language_tools";
 import { ChallengeSkeleton } from '@/components/Skeleton';
-import { PGlightContext } from '@/context/PGlightContext';
+import { PgExecEngineContext } from '@/context/PgExecEngineContext';
 import { useTheme } from '@/hooks/useTheme';
 import { Table } from '@/components/table';
 import { ERD, ErdControls } from '@/components/ERD';
 import { useAppState } from '@/hooks/useAppState';
-import { QueryResult, TableDiff } from '@/lib/types';
+import { TableDiff } from '@/lib/types';
 import { queryResultToStringArray, ResultSetComparison } from '@/lib/utils';
 import { useChallengeNumber } from '@/hooks/useChallengeNumber';
 import { IconButton } from '@/components/buttons/IconButton';
 import { BREAKPOINTS } from 'virtual:sql-hero';
+import { toggleHeaderSuccess } from '@/lib/reducer';
+import { QueryResult, SqlExecutionResult } from '@/lib/exec-engine/postgres-engine';
 import { BoltIcon, DownloadIcon, TableIcon } from '@/components/icons';
 
 import "allotment/dist/style.css";
-import { toggleHeaderSuccess } from '@/lib/reducer';
 
 /**
  * Enumeration of available detail view pages
@@ -301,7 +302,7 @@ const Spacer: React.FC = () => <span className="inline-block h-12 my-1 w-0.5 sel
  * ```
  */
 function Challenge() {
-    const { pg } = useContext(PGlightContext);
+    const { pg, updateSchema } = useContext(PgExecEngineContext);
     const challenge = Route.useLoaderData() as ChallengeData;
     const rightColRef = useRef<HTMLDivElement>(null);
     const [editorState, setEditorState] = useState('');
@@ -347,11 +348,11 @@ function Challenge() {
      */
     useEffect(() => {
         setEditorState(() => challenge.query);
-        if (pg && db !== challenge.schema) {
+        if (db !== challenge.schema) {
             fetch(challenge.schema).then(async (response) => {
                 try {
                     const sql = await response.text();
-                    await pg.exec(sql);               
+                    await updateSchema(sql);
                 } catch (error) {
                     const errMsg = typeof error === 'string' ? error : (error as Error).message;
                     toast.error(`Failed to load schema: ${errMsg}`);
@@ -360,7 +361,7 @@ function Challenge() {
                 }
             });
         }
-    }, [db, pg, challenge, dispatch]);
+    }, [db, challenge, dispatch, updateSchema]);
 
     /**
      * Updates the view to show the ERD (Entity-Relationship Diagram) and scrolls to the top of the right column.
@@ -429,70 +430,39 @@ function Challenge() {
         if (!pg) return;
 
         try {
-            let query: QueryResult | QueryResult[] | null = null;
-            const challengeIndex = challengeNo - 1; // Calculate the challenge index.
-
-            // Find the positions of the first and second semicolons in the editor state.
-            const firstSemicolon = editorState.indexOf(';');
-            const secondSemicolon = editorState.indexOf(';', firstSemicolon + 1);
-            const hasMultipleStmts = secondSemicolon > -1; // Check if there are multiple SQL statements.
-
+            let queryResult: SqlExecutionResult | null = null;
             const key = challengeNo.toString(); // Create a key for the current challenge.
+            const challengeIndex = challengeNo - 1; // Calculate the challenge index.
+            const result = await pg.execute(editorState); // Execute the SQL query.
 
-            // Execute the SQL query/queries.
-            const result = hasMultipleStmts
-                ? await pg.transaction<QueryResult[]>(async (transact) => {
-                    // Split the editor state into individual SQL statements.
-                    const stmts = editorState.split(';').map(s => s.trim()).filter(Boolean);
-                    // Execute all statements in a transaction.
-                    const res = await Promise.all(stmts.map(async s => (await transact.query(s)) as QueryResult));
-                    transact.rollback(); // Rollback the transaction to avoid side effects.
-                    return res;
-                })
-                : await pg.query(editorState) as QueryResult; // Execute a single query.
+            if (!result.success) {
+                throw new Error(result.error ?? 'An error occurred while executing the query.');
+            }
 
-            // If no solution is stored for the current challenge, execute the solution query/queries.
             if (!ResultSetComparison.hasSolution(key) && !ResultSetComparison.hasSolution(`${key}-0`)) {
-                if (hasMultipleStmts) {
-                    query = await pg.transaction<QueryResult[]>(async (transact) => {
-                        // Split the solution query into individual SQL statements.
-                        const stmts = challenge.query.split(';').map(s => s.trim()).filter(Boolean);
-                        // Execute all statements in a transaction.
-                        const res = await Promise.all(stmts.map(async s => (await transact.query(s)) as QueryResult));
-                        transact.rollback(); // Rollback the transaction to avoid side effects.
-                        return res;
-                    });
-
-                    // Store the solution hash for each statement.
-                    for (let i = 0; i < query.length; i++) {
-                        ResultSetComparison.storeSolutionHash(`${key}-${i}`, query[i]);
+                queryResult = await pg.execute(challenge.query);
+                if (queryResult.success) {
+                    for (let i = 0; i < queryResult.data!.length; i++) {
+                        ResultSetComparison.storeSolutionHash(`${key}-${i}`, queryResult.data![i]);
                     }
                 } else {
-                    // Execute and store the solution hash for a single query.
-                    query = await pg.query(challenge.query) as QueryResult;
-                    ResultSetComparison.storeSolutionHash(key, query);
+                    throw new Error(result.error ?? 'An error occurred while executing the solution query.');
                 }
             }
 
-            // Compare the result with the stored solution.
-            const isCorrect = Array.isArray(result)
-                ? result.reduce((success, result, i) => {
-                    const key = `${challengeNo.toString()}-${i}`;
-                    const isCorrect = ResultSetComparison.compareWithSolution(key, result);
-                    return success && isCorrect;
-                }, true)
-                : ResultSetComparison.compareWithSolution(key, result);
+            const isCorrect = result.data!.reduce((success, result, i) => {
+                const key = `${challengeNo.toString()}-${i}`;
+                return success && ResultSetComparison.compareWithSolution(key, result);
+            }, true);
 
-            // Handle the result of the comparison.
             if (isCorrect) {
-                toast.success('Herausforderung erfolgreich abgeschlossen!'); // Success message.
+                toast.success('Herausforderung erfolgreich abgeschlossen!');
                 dispatch({
                     type: 'COMPLETE_CHALLENGE',
                     payload: { index: challengeIndex, query: editorState }
                 });
             } else {
-                query ??= {} as QueryResult; // Default to an empty QueryResult if `query` is null.
-                toast.error('Ergebnis nicht korrekt. Bitte versuche es erneut.'); // Error message.
+                toast.error('Ergebnis nicht korrekt. Bitte versuche es erneut.');
                 dispatch({
                     type: 'CHALLENGE_FAILED',
                     payload: {
@@ -503,9 +473,8 @@ function Challenge() {
                 });
             }
 
-            // Update the result state with the last query result.
-            setResult(() => Array.isArray(result) ? result[result.length - 1] : result as QueryResult);
-            setActiveView(() => DetailViewPages.RESULT); // Switch to the result view.
+            setResult(() => result.data!.pop());
+            setActiveView(() => DetailViewPages.RESULT);
         } catch (error) {
             // Handle errors and display an error message.
             const errMsg = typeof error === 'string' ? error : (error as Error).message;

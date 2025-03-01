@@ -4,13 +4,13 @@ import { Header } from '@/components/Header';
 import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { ThemeProvider } from '@/context/ThemeProvider';
 import { Footer } from '@/components/Footer';
-import { PGlightProvider } from '@/context/PGlightProvider';
+import { PgExecEngineProvider } from '@/context/PgExecEngineProvider';
 import { ThemeContext } from '@/context/ThemeContext';
 import { AppStateProvider } from '@/context/AppStateContext';
 
 const Root: React.FC = () => (
     <ThemeProvider>
-        <PGlightProvider>
+        <PgExecEngineProvider>
             <AppStateProvider>
                 <div className="flex flex-col min-h-screen">
                     <Header />
@@ -31,7 +31,7 @@ const Root: React.FC = () => (
                     }}
                 />
             </AppStateProvider>
-        </PGlightProvider>
+        </PgExecEngineProvider>
     </ThemeProvider>
 );
 
