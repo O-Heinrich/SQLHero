@@ -1,9 +1,14 @@
+/**
+ * @module Header
+ * @description 
+ * Provides the application header component with navigation controls, theme switching,
+ * and challenge navigation capabilities. This module implements a responsive header that adapts 
+ * to the current theme and provides navigation between challenges.
+ */
+
 import React from "react";
 import clsx from "clsx";
-import {
-    Link,
-    useNavigate,
-} from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Wrapper } from "@/components/Wrapper";
 import { Logo } from "@/components/Logo";
 import { ToggleThemeButton } from "./buttons/ToggleTheme";
@@ -15,6 +20,7 @@ import { useAppState } from "@/hooks/useAppState";
 import { AppState, ChallengeAction } from "@/lib/types";
 import { useChallengeNumber } from "@/hooks/useChallengeNumber";
 import { isFirefox } from "@/lib/agents";
+import { IconButton } from "./buttons/IconButton";
 
 /**
  * Spacer component properties
@@ -46,25 +52,23 @@ const Spacer: React.FC<SpacerProps> = ({classList}: SpacerProps): React.ReactEle
 } />;
 
 /**
- * Header component with navigation and theme-responsive design
+ * Main application header component
  * 
  * @component
- * @param {HeaderProps} props - Component properties
- * @param {React.Ref<HTMLHeadingElement>} [props.ref] - Optional ref for header element
- * 
  * @description
- * Renders a sticky header with:
- * - Logo and application name
- * - Navigation links
- * - Theme toggle button
- * - Dynamic styling based on current theme
+ * Renders a sticky header with application branding, navigation controls, and theme toggle.
+ * Features:
+ * - Displays app logo and name
+ * - Provides navigation to overview and introduction pages
+ * - Includes challenge navigation controls (previous/next)
+ * - Adapts to the current theme (light/dark)
+ * - Special handling for Firefox browser
+ * - Visual feedback during challenge navigation
  * 
- * @example
- * ```tsx
- * <Header />
- * ```
+ * The header acts as a central navigation hub and provides context for the current application state.
+ * It stores its reference in the application state for success/failure message display.
  * 
- * @returns {React.ReactElement} Themed and responsive header
+ * @returns {React.ReactElement} The application header component
  */
 export const Header: React.FC = (): React.ReactElement => {
     const { theme } = useTheme();
@@ -74,7 +78,13 @@ export const Header: React.FC = (): React.ReactElement => {
     const { state, dispatch }: { state: AppState, dispatch: React.Dispatch<ChallengeAction> } = useAppState();
 
     /**
-     * Sets header reference for handling success messages
+     * Sets header reference in application state
+     * 
+     * Stores the header DOM element reference in the application state
+     * to allow other components to trigger visual feedback on the header.
+     * 
+     * @effect
+     * @dependencies [headerRef, dispatch]
      */
     React.useEffect(() => {
         if (headerRef.current) {
@@ -83,17 +93,20 @@ export const Header: React.FC = (): React.ReactElement => {
     }, [headerRef, dispatch]);
 
     /**
-     * Checks if current theme is dark mode
-     * @type {boolean} True if dark mode, false otherwise
+     * Memoized boolean indicating if dark theme is active
+     * 
+     * @type {boolean}
      * @default false
-     * @see useTheme
      */
     const isDarkMode: boolean = React.useMemo(() => theme === 'dark', [theme]);
 
     /**
-     * Handles navigation to next challenge.
-     * Cycles through challenges 1 to COUNT_CHALLENGES.
-     * If at last challenge, wraps back to challenge 1.
+     * Navigates to the next challenge
+     * 
+     * Calculates the next challenge number, wrapping back to 1 if at the end.
+     * Updates header styling to provide visual feedback during navigation.
+     * 
+     * @function
      */
     const handleNext = () => {
         const next = (challengeNo + 1) % (COUNT_CHALLENGES + 1);
@@ -106,10 +119,14 @@ export const Header: React.FC = (): React.ReactElement => {
             }
         });
     }
+
     /**
-     * Handles navigation to previous challenge.
-     * Goes to previous challenge number.
-     * If at challenge 1, wraps to last challenge.
+     * Navigates to the previous challenge
+     * 
+     * Calculates the previous challenge number, wrapping to the last challenge if at the first.
+     * Updates header styling to provide visual feedback during navigation.
+     * 
+     * @function
      */
     const handlePrev = () => {
         const next = challengeNo - 1;
@@ -125,13 +142,12 @@ export const Header: React.FC = (): React.ReactElement => {
 
     return (
         <>
-            {isFirefox && <div className="bg-transparent backdrop-blur-md fixed h-[80px] top-0 left-0 right-0 z-10" />}
-            <header ref={headerRef} className={clsx('top-header', 'relative', 'sticky', 'top-0', 'z-50', 'dark:bg-red-500/50', 'bg-red-800/50', 'text-white', !isFirefox && 'backdrop-blur-xl', 'transition-all', 'duration-800', 'dark:mix-blend-color-dodge', 'mix-blend-hard-light')}>
+            {isFirefox && <div className="bg-transparent backdrop-blur-md fixed h-15 md:h-16 top-0 left-0 right-0 z-[9998]" />}
+            <header ref={headerRef} className={clsx('top-header', 'relative', 'sticky', 'top-0', 'z-[9999]', 'dark:bg-red-500/50', 'bg-red-800/50', 'text-white', !isFirefox && 'backdrop-blur-xl', 'transition-all', 'duration-800', 'dark:mix-blend-color-dodge', 'mix-blend-hard-light')}>
                 <Wrapper className={clsx('flex', 'items-center', 'max-w-400')}>
                     <Link to="/" className="flex items-center gap-2">
-                        
-                        <Logo fill={isDarkMode ? '#efefef' : 'rgba(0,0,0,.85)'} />
-                        <h1 className={clsx('lg:text-4xl', 'md:text-2xl', 'md:inline', 'hidden', 'dark:text-white/85', 'text-black/85', 'py-4', 'font-light')}>
+                        <Logo fill={isDarkMode ? '#efefef' : 'rgba(0,0,0,.50)'} />
+                        <h1 className={clsx('lg:text-4xl', 'md:text-2xl', 'md:inline', 'hidden', 'dark:text-white/85', 'text-black/50', 'py-2', 'font-light')}>
                             {APP_NAME}
                         </h1>
                     </Link>
@@ -148,12 +164,20 @@ export const Header: React.FC = (): React.ReactElement => {
                             </Button>
                         </Link>
                         {!Number.isNaN(challengeNo) && <Spacer classList="hidden md:inline" />} 
-                        <Button onClick={handlePrev} disabled={Number.isNaN(challengeNo)}>
-                            <ChevronLeftIcon size={2} fill="currentColor" />
-                        </Button>
-                        <Button onClick={handleNext} disabled={Number.isNaN(challengeNo)}>
-                            <ChevronRightIcon size={2} fill="currentColor" />
-                        </Button>
+                        <IconButton
+                            onClick={handlePrev}
+                            disabled={Number.isNaN(challengeNo)}
+                            aria-label="Vorherige Herausforderung"
+                            className="m-0"
+                            icon={<ChevronLeftIcon size={2} fill="currentColor" />}
+                        />
+                        <IconButton
+                            onClick={handleNext}
+                            disabled={Number.isNaN(challengeNo)}
+                            aria-label="Nächste Herausforderung"
+                            className="m-0"
+                            icon={<ChevronRightIcon size={2} fill="currentColor" />}
+                        />
                     </div>
                     <ToggleThemeButton />
                 </Wrapper>

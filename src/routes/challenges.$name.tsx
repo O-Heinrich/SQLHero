@@ -54,6 +54,7 @@ import { BREAKPOINTS } from 'virtual:sql-hero';
 import { BoltIcon, DownloadIcon, TableIcon } from '@/components/icons';
 
 import "allotment/dist/style.css";
+import { toggleHeaderSuccess } from '@/lib/reducer';
 
 /**
  * Enumeration of available detail view pages
@@ -308,7 +309,7 @@ function Challenge() {
     const [isMobile, setIsMobile] = useState(window.innerWidth < BREAKPOINTS.lg);
     const [db, setDb] = useState<string>('');
     const [activeView, setActiveView] = useState(DetailViewPages.ERD);
-    const { dispatch } = useAppState();
+    const { state, dispatch } = useAppState();
     const challengeNo = useChallengeNumber();
     const { theme } = useTheme();
     const isErdActive = useMemo(() => activeView === DetailViewPages.ERD, [activeView]);
@@ -318,13 +319,19 @@ function Challenge() {
     );
 
     useEffect(() => {
+        dispatch({ type: 'INIT_CHALLENGE', payload: { index: challengeNo - 1 } });
+        const notCompleted = !state.challenges[challengeNo - 1].completed;
+        toggleHeaderSuccess(notCompleted, state.headerElement);
+    }, [challengeNo, dispatch, state.challenges, state.headerElement]);
+
+    useEffect(() => {
         setEditorState(() => challenge.query);
         if (pg && db !== challenge.schema) {
             fetch(challenge.schema).then(async (response) => {
                 try {
                     const sql = await response.text();
                     await pg.exec(sql);
-                    // setResult(() => result as QueryResult);
+                    // setResult(() => result as QueryResult);                    
                 } catch (error) {
                     const errMsg = typeof error === 'string' ? error : (error as Error).message;
                     toast.error(`Failed to load schema: ${errMsg}`);
@@ -338,7 +345,7 @@ function Challenge() {
     useEffect(() => {
         if (rightColRef.current) {
             setActiveView(() => DetailViewPages.ERD);
-            rightColRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+            rightColRef.current.scrollTo({ top: 0, behavior: 'smooth' });            
         }
     }, [challengeNo]);
 
@@ -383,27 +390,24 @@ function Challenge() {
             }
 
             const isCorrect = ResultSetComparison.compareWithSolution(key, result);
-
-            dispatch({
-                type: 'ATTEMPT_CHALLENGE',
-                payload: { id: challenge.title }
-            });
+            const challengeIndex = challengeNo - 1;
 
             if (isCorrect) {
-                toast.success('Challenge completed successfully');
+                toast.success('Herausforderung erfolgreich abgeschlossen!');
                 dispatch({
                     type: 'COMPLETE_CHALLENGE',
-                    payload: { id: challenge.title }
+                    payload: { index: challengeIndex, query: editorState }
                 });
             } else {
                 query ??= {} as QueryResult;
                 //const diff = ResultSetComparison.getDifference(query, result);
-                toast.error('Query result does not match the solution');
+                toast.error('Ergebnis nicht korrekt. Bitte versuche es erneut.');
                 dispatch({
                     type: 'CHALLENGE_FAILED',
                     payload: {
-                        id: challenge.title,
-                        difference: {} as TableDiff
+                        index: challengeIndex,
+                        difference: {} as TableDiff,
+                        query: editorState
                     }
                 });
             }

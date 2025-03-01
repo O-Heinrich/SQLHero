@@ -9,63 +9,45 @@
  * @module lib/storage
  */
 
-import { AppState } from "@/lib/types";
-import { toast } from "sonner";
+import { toast } from 'sonner';
+import { AppState, Challenge } from "@/lib/types";
+
+const STORAGE_KEY = 'sql-hero-state';
 
 /**
- * Saves the application state to the browser's local storage.
- * The state is serialized to a JSON string, with the `headerElement` property set to `null`
- * to avoid serialization issues. If an error occurs during the process, a toast notification
- * is displayed to inform the user.
- *
- * @param {AppState} state - The application state to be saved.
- * @returns {void}
- *
- * @example
- * const state = { challenges: {}, currentChallenge: null, headerElement: document.getElementById('header') };
- * saveStateToStorage(state); // Saves the state to local storage
+ * Loads the application state from local storage.
+ * @returns {AppState | undefined} - The loaded state or undefined if not found.
  */
-export const saveStateToStorage = (state: AppState): void => {
+export function loadState(): AppState | undefined {
     try {
-        // Serialize the state, ensuring `headerElement` is set to `null`
-        const serializedState = JSON.stringify({
-            ...state,
-            headerElement: null
-        });
-        localStorage.setItem('appState', serializedState);
-    } catch (error) {
-        // Handle errors and display a toast notification
-        const errMsg = error instanceof Error ? error.message : error;
-        toast.error(`Could not save state: ${errMsg}`);
-    }
-};
+        const serializedState = localStorage.getItem(STORAGE_KEY);
+        
+        if (serializedState === null) {
+            return undefined;
+        }
 
-/**
- * Loads the application state from the browser's local storage.
- * The state is deserialized from a JSON string. If no state is found in local storage,
- * or if an error occurs during the process, a toast notification is displayed to inform
- * the user, and `undefined` is returned.
- *
- * @returns {Partial<AppState> | undefined} - The deserialized application state, or `undefined` if no state is found or an error occurs.
- *
- * @example
- * const state = loadStateFromStorage(); // Loads the state from local storage
- * if (state) {
- *     console.log('Loaded state:', state);
- * }
- */
-export const loadStateFromStorage = (): Partial<AppState> | undefined => {
-    try {
-        // Retrieve the serialized state from local storage
-        const serializedState = localStorage.getItem('appState');
-        if (serializedState === null) return undefined; // Return undefined if no state is found
+        const state = JSON.parse(serializedState);
+        state.challenges = state.challenges.map(Challenge.fromObject);
 
-        // Deserialize the state and return it
-        return JSON.parse(serializedState);
-    } catch (error) {
-        // Handle errors and display a toast notification
-        const errMsg = error instanceof Error ? error.message : error;
-        toast.error(`Could not load state: ${errMsg}`);
+        return state;
+    } catch (err) {
+        const errMsg = typeof err === 'string' ? err : (err as Error).message;
+        toast.error(`Error loading state: ${errMsg}`);
         return undefined;
     }
-};
+}
+
+/**
+ * Saves the application state to local storage.
+ * @param {AppState} state - The state to save.
+ */
+export function saveState(state: AppState): void {
+    try {
+        const storageState = { ...state, headerElement: null };
+        const serializedState = JSON.stringify(storageState);
+        localStorage.setItem(STORAGE_KEY, serializedState);
+    } catch (err) {
+        const errMsg = typeof err === 'string' ? err : (err as Error).message;
+        toast.error(`Error saving state: ${errMsg}`);
+    }
+}

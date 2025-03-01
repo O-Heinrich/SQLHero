@@ -10,8 +10,9 @@
  */
 
 import { AppState, ChallengeAction } from "@/lib/types";
+import { loadState, saveState } from "@/lib/storage";
 
-const toggleHeaderSuccess = (hasFailed: boolean, headerElement: HTMLHeadingElement | null) => {
+export const toggleHeaderSuccess = (hasFailed: boolean, headerElement: HTMLHeadingElement | null) => {
     headerElement?.classList.add(hasFailed ? 'dark:bg-red-500/50' : 'dark:bg-green-500/50');
     headerElement?.classList.add(hasFailed ? 'bg-red-800/50' : 'bg-green-800/50');
     headerElement?.classList.remove(hasFailed ? 'dark:bg-green-500/50' : 'dark:bg-red-500/50');
@@ -27,83 +28,101 @@ const toggleHeaderSuccess = (hasFailed: boolean, headerElement: HTMLHeadingEleme
  * @param {ChallengeAction} action - The action dispatched to the reducer, which contains a type and payload.
  * @returns {AppState} - The new state of the application after applying the action.
  */
-export const appReducer = (state: AppState, action: ChallengeAction): AppState => {
-    console.log(action, state);
+export const appReducer = (state: AppState, action: ChallengeAction): AppState => {    
+    let newState: AppState;
+
     switch (action.type) {
-        case 'COMPLETE_CHALLENGE': {
-            toggleHeaderSuccess(false, state.headerElement);
-            return {
-                ...state,
-                challenges: {
-                    ...state.challenges,
-                    [action.payload.id]: {
-                        ...state.challenges[action.payload.id],
-                        failed: false, // Marks the challenge as failed
-                        completed: true, // Marks the challenge as completed
-                        lastAttempt: new Date() // Updates the last attempt timestamp
-                    }
-                }
-            };
+        case 'INIT_CHALLENGE': {
+            const challenge = state.challenges[action.payload.index];
+
+            if (challenge) {
+                challenge.startAttempt();
+            }
+
+            newState = state;
+            break;
         }
 
-        case 'ATTEMPT_CHALLENGE': {
+        case 'COMPLETE_CHALLENGE': {
             toggleHeaderSuccess(false, state.headerElement);
-            return {
-                ...state,
-                challenges: {
-                    ...state.challenges,
-                    [action.payload.id]: {
-                        ...state.challenges[action.payload.id],
-                        failed: false, // Marks the challenge as failed
-                        attempted: true, // Marks the challenge as attempted
-                        lastAttempt: new Date() // Updates the last attempt timestamp
-                    }
-                }
-            };
+            const challenge = state.challenges[action.payload.index];
+
+            if (challenge) {
+                challenge.completed = true;
+                challenge.failed = false;
+                challenge.endAttempt(true, action.payload.query);
+            }
+
+            newState = state;
+            break;
+        }
+
+        // ToDo: Can be removed, as it is not used anymore.
+        case 'ATTEMPT_CHALLENGE': {
+            return state;
         }
 
         case 'CHALLENGE_FAILED': {
             toggleHeaderSuccess(true, state.headerElement);
-            return {
-                ...state,
-                challenges: {
-                    ...state.challenges,
-                    [action.payload.id]: {
-                        ...state.challenges[action.payload.id],
-                        failed: true, // Marks the challenge as failed
-                        lastAttempt: new Date(), // Updates the last attempt timestamp
-                        difference: action.payload.difference // Stores the difference for the failed attempt
-                    }
-                }
-            };
+            const challenge = state.challenges[action.payload.index];
+
+            if (challenge) {
+                challenge.completed = false;
+                challenge.failed = true;
+                challenge.endAttempt(false, action.payload.query); 
+            }
+
+            newState = state;
+            break;
         }
 
         case 'SET_HEADER_REF':
-            return {
+            newState = {
                 ...state,
-                headerElement: action.payload // Sets the reference to the header element
+                headerElement: action.payload,
             };
+
+            break;
 
         case 'SET_CURRENT_CHALLENGE':
-            return {
+            newState = {
                 ...state,
-                currentChallenge: action.payload // Sets the current challenge
+                currentChallenge: action.payload,
             };
+
+            break;
 
         case 'INIT_CHALLENGES': {
-            // Converts the array of challenges into a map for easier access by challenge number
-            const challengesMap = action.payload.reduce((acc, challenge) => ({
-                ...acc,
-                [challenge.number.toString()]: challenge
-            }), {});
-
-            return {
+            newState = {
                 ...state,
-                challenges: challengesMap // Initializes the challenges map in the state
+                challenges: action.payload,
             };
+
+            break;
+        }
+
+        case 'LOAD_STATE': {
+            const loadedState = loadState();
+
+            if (!loadedState) {
+                return appReducer(state, { 
+                    type: 'INIT_CHALLENGES', 
+                    payload: [],
+                });
+            }
+
+            newState = {
+                ...state,
+                ...loadedState,
+            };
+
+            break;
         }
 
         default:
-            return state; // Returns the current state if the action type is not recognized
+            newState = state; // Returns the current state if the action type is not recognized
     }
+
+    saveState(newState);
+    return newState;
 };
