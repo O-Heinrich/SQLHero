@@ -380,17 +380,43 @@ function Challenge() {
     const handleRun = async (): Promise<void> => {
         if (!pg) return;
         try {
-            let query: QueryResult | null = null;
-            const result = await pg.query(editorState) as QueryResult;
+            let query: QueryResult | QueryResult[] | null = null;
+            const challengeIndex = challengeNo - 1;
+            const firstSemicolon = editorState.indexOf(';');
+            const secondSemicolon = editorState.indexOf(';', firstSemicolon + 1);
+            const hasMultipleStmts = secondSemicolon > -1;
             const key = challengeNo.toString();
+            const result = hasMultipleStmts
+                ? await pg.transaction<QueryResult[]>(async (transact) => {
+                    const stmts = editorState.split(';').map(s => s.trim()).filter(Boolean);
+                    const res = await Promise.all(stmts.map(async s => (await transact.query(s)) as QueryResult));
+                    transact.rollback();
+                    return res;
+                }) : await pg.query(editorState) as QueryResult;
 
-            if (!ResultSetComparison.hasSolution(challengeNo.toString())) {
-                query = await pg.query(challenge.query) as QueryResult;
-                ResultSetComparison.storeSolutionHash(key, query);
+            if (!ResultSetComparison.hasSolution(key)) {
+                if (hasMultipleStmts) {
+                    query = await pg.transaction<QueryResult[]>(async (transact) => {
+                        const stmts = challenge.query.split(';').map(s => s.trim()).filter(Boolean);
+                        const res = await Promise.all(stmts.map(async s => (await transact.query(s)) as QueryResult));
+                        transact.rollback();
+                        return res;
+                    });
+
+                    for (let i = 0; i < query.length; i++) {
+                        ResultSetComparison.storeSolutionHash(`${key}-${i}`, query[i]);
+                    }
+                } else {
+                    query = await pg.query(challenge.query) as QueryResult;
+                    ResultSetComparison.storeSolutionHash(key, query);
+                }
             }
 
-            const isCorrect = ResultSetComparison.compareWithSolution(key, result);
-            const challengeIndex = challengeNo - 1;
+            const isCorrect = Array.isArray(result) ? result.reduce((success, result, i) => {
+                const key = `${challengeNo.toString()}-${i}`;
+                const isCorrect = ResultSetComparison.compareWithSolution(key, result);
+                return success && isCorrect;
+            }, true) : ResultSetComparison.compareWithSolution(key, result);
 
             if (isCorrect) {
                 toast.success('Herausforderung erfolgreich abgeschlossen!');
@@ -412,7 +438,7 @@ function Challenge() {
                 });
             }
 
-            setResult(() => result as QueryResult);
+            setResult(() => Array.isArray(result) ? result[result.length - 1] : result as QueryResult);
             setActiveView(() => DetailViewPages.RESULT);
         } catch (error) {
             const errMsg = typeof error === 'string' ? error : (error as Error).message;
