@@ -74,7 +74,10 @@
     .text-shadow-lg {
       text-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     }
-  }
+    .bg-size-125 {
+      background-size: 125%;
+    }
+}
 
 *::-webkit-scrollbar {
     @apply w-2 h-2 transition-all duration-500;

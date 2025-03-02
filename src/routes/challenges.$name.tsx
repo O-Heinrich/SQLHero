@@ -58,6 +58,12 @@ import { BoltIcon, DownloadIcon, TableIcon } from '@/components/icons';
 import "allotment/dist/style.css";
 
 /**
+ * Background style for the challenge workspace
+ * @constant
+ */
+const BG_STYLE = 'dark:bg-gray-700  dark:bg-blend-overlay bg-blend-multiply dark:to-slate-800 dark:from-gray-700/80 from-white to-gray-200 bg-radial bg-size-125 bg-radial-[at_50%_50%]';
+
+/**
  * Enumeration of available detail view pages
  * 
  * Defines the possible display modes for the challenge detail view area.
@@ -578,11 +584,11 @@ function Challenge() {
     }
 
     return (
-        <div key="desktop" className="flex flex-col gap-4 flex-1 inset-0  mt-[calc(var(--spacing)*-20)] mb-[calc(var(--spacing)*-20)]">
+        <div key="desktop" className={`flex flex-col gap-4 flex-1 inset-0  mt-[calc(var(--spacing)*-20)] mb-[calc(var(--spacing)*-20)] `}>
             <title>SQL Hero - Challenge</title>
             <TransformWrapper initialScale={2}>
                 <Allotment className="overflow-auto h-full">
-                    <Allotment vertical={true} className="mt-20 pb-22 overflow-auto h-full bg-gray-200/50 dark:bg-slate-900/50">
+                    <Allotment vertical={true} className={`mt-20 pb-22 overflow-auto h-full ${BG_STYLE}`}>
                         <div className="relative h-full flex flex-col lg:mx-4 mt-4 pb-4">
                             <ChallengeEditor value={editorState} setValue={setEditorState} />
                             <Toolbar className="mx-4 justify-center">
@@ -645,7 +651,7 @@ const DetailViewRoot: React.FC<DetailViewProps> = ({ active, result, erd, isMobi
             'border-t-4 border-ridge',
             'border-white/20 dark:border-slate-900/20',
             'overflow-auto',
-            isMobile && 'bg-gray-200/50 dark:bg-slate-900/50'
+            isMobile && BG_STYLE
         )}>
             {isResult && <QueryResultTable id="query-result" result={result} />}
             {isErd && <ERD src={erd} />}
