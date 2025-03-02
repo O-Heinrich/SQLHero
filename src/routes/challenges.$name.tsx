@@ -312,6 +312,7 @@ function Challenge() {
     const [activeView, setActiveView] = useState(DetailViewPages.ERD);
     const { state, dispatch } = useAppState();
     const challengeNo = useChallengeNumber();
+    const challengeIndex = useMemo(() => challengeNo - 1, [challengeNo]);
     const { theme } = useTheme();
     const isErdActive = useMemo(() => activeView === DetailViewPages.ERD, [activeView]);
     const erdFile = useMemo(
@@ -330,10 +331,10 @@ function Challenge() {
      * @dependencies challengeNo, dispatch, state.challenges, state.headerElement
      */
     useEffect(() => {
-        dispatch({ type: 'INIT_CHALLENGE', payload: { index: challengeNo - 1 } });
-        const notCompleted = !state.challenges[challengeNo - 1].completed;
+        dispatch({ type: 'INIT_CHALLENGE', payload: { index: challengeIndex } });
+        const notCompleted = !state.challenges[challengeIndex].completed;
         toggleHeaderSuccess(notCompleted, state.headerElement);
-    }, [challengeNo, dispatch, state.challenges, state.headerElement]);
+    }, [challengeIndex, dispatch, state.challenges, state.headerElement]);
 
     /**
      * Loads the challenge query and schema into the editor and database.
@@ -347,10 +348,13 @@ function Challenge() {
      * @dependencies db, pg, challenge, dispatch
      */
     useEffect(() => {
-        // When fast debuging, the editorState is set 
-        // to the challenge query: setEditorState(() => challenge.query);
-        const attempts = state.challenges[challengeNo - 1]?.attempts.filter(attempt => Boolean(attempt.query));
-        setEditorState(() => attempts[attempts.length - 1].query!);
+        const attempts = state.challenges[challengeIndex]?.attempts.filter(attempt => Boolean(attempt.query));
+        const len = attempts?.length ?? 0;
+
+        if (len > 0) {
+            setEditorState(() => attempts[len - 1].query!);
+        }
+
         if (db !== challenge.schema) {
             fetch(challenge.schema).then(async (response) => {
                 try {
@@ -366,7 +370,7 @@ function Challenge() {
                 }
             });
         }
-    }, [db, challenge, dispatch, updateSchema, state.challenges, challengeNo]);
+    }, [db, challenge, dispatch, updateSchema, state.challenges, challengeIndex]);
 
     /**
      * Updates the view to show the ERD (Entity-Relationship Diagram) and scrolls to the top of the right column.
@@ -437,7 +441,6 @@ function Challenge() {
         try {
             let queryResult: SqlExecutionResult | null = null;
             const key = challengeNo.toString(); // Create a key for the current challenge.
-            const challengeIndex = challengeNo - 1; // Calculate the challenge index.
             const result = await pg.execute(editorState); // Execute the SQL query.
 
             if (!result.success) {
