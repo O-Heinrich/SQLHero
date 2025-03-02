@@ -4,7 +4,8 @@
  * @module lib/utils
  */
 
-import { PostgresTypeID, QueryResult, ResultComparison, StatementType, TableDiff } from "@/lib/types";
+import { PostgresTypeID, ResultComparison, StatementType, TableDiff } from "@/lib/types";
+import { QueryResult } from "./exec-engine/postgres-engine";
 
 /**
  * Converts a JavaScript value to a string representation based on the PostgreSQL type context.
