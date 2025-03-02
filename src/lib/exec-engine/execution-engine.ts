@@ -34,24 +34,35 @@ export interface ExecutionResult {
 /**
 * Abstract interface for execution engines.
 */
-export interface ExecutionEngine {
+export abstract class ExecutionEngine {
+    /**
+     * Protected constructor to prevent direct instantiation.
+     */
+    protected constructor() { }
     /**
      * Executes a query or code snippet.
      * @param {string} code - The query or code to execute.
      * @returns {Promise<ExecutionResult>} - The result of the execution.
      */
-    execute(code: string): Promise<ExecutionResult>;
-
+    abstract execute(code: string): Promise<ExecutionResult>
     /**
      * Initializes the execution engine (e.g., loads a database schema).
-     * @param {string} schema - The schema or initialization data.
+     * @param {unknown} data - Optional data to initialize the engine.
      * @returns {Promise<void>}
      */
-    initialize(schema: string): Promise<void>;
-
+    abstract initialize(data?: string): Promise<void>
     /**
      * Resets the execution engine to its initial state.
      * @returns {Promise<void>}
      */
-    reset(): Promise<void>;
+    abstract reset(): Promise<void>
+    /**
+     * Creates a new instance of the execution engine.
+     * @param {unknown[]} _args - Optional arguments to configure the engine.
+     * @returns {Promise<void>}
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    static async create(..._args: unknown[]): Promise<ExecutionEngine> {
+        throw new Error("Method not implemented.");
+    }
 }

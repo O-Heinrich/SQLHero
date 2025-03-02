@@ -67,7 +67,7 @@ export interface SqlExecutionResult extends ExecutionResult {
  * PostgreSQL database using the PGlite library. It supports batched statement execution
  * within transactions and automatic rollback for data safety.
  */
-export class PostgresExecutionEngine implements ExecutionEngine {
+export class PostgresExecutionEngine extends ExecutionEngine {
     /** The PGlite instance for database operations */
     private pg?: PGlite;
 
@@ -78,6 +78,7 @@ export class PostgresExecutionEngine implements ExecutionEngine {
      * Private constructor to enforce creation through factory method.
      */
     private constructor() {
+        super();
         this.pg = undefined;
         this.statements = [];
     }

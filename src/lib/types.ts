@@ -277,33 +277,6 @@ export interface AppState {
 }
 
 /**
- * Represents the field structure of a PostgreSQL table.
- */
-export interface PgField {
-    /** Name of the field */
-    name: string;
-
-    /** Data type ID of the field */
-    dataTypeID: number;
-}
-
-/**
- * Represents a single cell value in a PostgreSQL table.
- */
-export type PgCell = Record<string, unknown>;
-
-/**
- * Represents the structure of a SQL query execution result.
- */
-export interface QueryResult {
-    /** Array of column definitions */
-    fields: PgField[];
-
-    /** Array of result rows */
-    rows: PgCell[];
-}
-
-/**
  * Represents the result of comparing two query results.
  */
 export type ResultComparison = {
