@@ -267,7 +267,7 @@ const ChallengeStatistics = ({ challenges }: { challenges: Challenge[]; }): Reac
     return (
         <section className="bg-slate-50/30 dark:bg-blue-400/10 p-6 rounded-xl shadow shadow-gray-400/25 dark:shadow-gray-800/30">
             
-            <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-6">Fortschrittsübersicht</h2>
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-6">Fortschritt</h2>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Overall completion stats */}
