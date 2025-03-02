@@ -349,8 +349,8 @@ function Challenge() {
     useEffect(() => {
         // When fast debuging, the editorState is set 
         // to the challenge query: setEditorState(() => challenge.query);
-        const index = state.challenges[challengeNo - 1]?.attempts?.length - 1;
-        setEditorState(() => state.challenges[challengeNo - 1]?.attempts[index]?.query ?? '');
+        const query = state.challenges[challengeNo - 1]?.attempts.find(attempt => Boolean(attempt.query))?.query ?? '';
+        setEditorState(() => query);
         if (db !== challenge.schema) {
             fetch(challenge.schema).then(async (response) => {
                 try {
