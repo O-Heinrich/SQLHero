@@ -27,8 +27,7 @@ import { toast } from 'sonner';
 const Introduction = (): JSX.Element => {
     useEffect(() => {
         if (window.scrollY > 0) {
-            const body = document.querySelector('body');
-            body?.scrollTo(0, 0);
+            window.scrollTo(0, 0);
         }
     }, []);
 
