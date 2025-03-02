@@ -96,11 +96,11 @@ export const Header: React.FC = (): React.ReactElement => {
         if (state.headerElement) {
             const handleScroll = () => {
                 if (window.scrollY > 0) {
-                    state.headerElement?.classList.add('shadow-xl');
-                    state.headerElement?.children[0].classList.add('shadow-xl');
+                    state.headerElement?.classList.add('shadow-md');
+                    state.headerElement?.children[0].classList.add('shadow-md');
                 } else {
-                    state.headerElement?.classList.remove('shadow-xl');
-                    state.headerElement?.children[0].classList.remove('shadow-xl');
+                    state.headerElement?.classList.remove('shadow-md');
+                    state.headerElement?.children[0].classList.remove('shadow-md');
                 }
             }
 
