@@ -56,7 +56,25 @@
     --radius-radius: var(--radius-sm);
 
     --animate-pulse: pulse 0.75s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+    --footer-shadow: rgba(0, 0, 0, 0.1);
 }
+
+.dark {
+    --footer-shadow: rgba(0, 0, 0, 0.4);
+}
+
+@layer utilities {
+    .text-shadow-sm {
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    .text-shadow {
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .text-shadow-lg {
+      text-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+  }
 
 *::-webkit-scrollbar {
     @apply w-2 h-2 transition-all duration-500;
