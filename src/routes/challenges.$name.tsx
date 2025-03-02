@@ -364,7 +364,7 @@ function Challenge() {
                 }
             });
         }
-    }, [db, challenge, dispatch, updateSchema]);
+    }, [db, challenge, dispatch, updateSchema, state.challenges, challengeNo]);
 
     /**
      * Updates the view to show the ERD (Entity-Relationship Diagram) and scrolls to the top of the right column.
