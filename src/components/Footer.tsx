@@ -48,7 +48,7 @@ export const Footer: React.FC = (): React.ReactElement => {
 
     return (
         <footer className={`z-50 shadow-xl flex justify-center relative items-center min-h-16 ${!isFirefox && 'backdrop-blur-xl'} z-100 relative bg-slate-50/20 dark:bg-slate-800/20 dark:text-white border-groove border-gray-200 border-t-2 dark:border-slate-700 bottom-0`}>
-            <div className="w-full py-2 z-20" style={{boxShadow: '0 -2px 2px var(--footer-shadow)'}}>
+            <div className="w-full py-2 z-20" style={{boxShadow: isDarkMode ? '0 -2px 2px var(--footer-shadow), 0 0 0.4em rgb(5 5 5)' : '0 -2px 2px var(--footer-shadow), 0 0 0.2em rgb(0 0 0 / 59%)'}}>
                 <Wrapper className="flex justify-between items-center max-w-400 z-20">
                     <span className="text-sm/4 self-end ml-2 text-gray-500 dark:text-gray-400">
                         &copy; {new Date().getFullYear()} Berlin Beta Works Inklusiv
