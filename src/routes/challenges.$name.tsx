@@ -337,24 +337,33 @@ function Challenge() {
     }, [challengeIndex, dispatch, state.challenges, state.headerElement]);
 
     /**
-     * Loads the challenge query and schema into the editor and database.
+     * Updates the SQL editor content based on the current challenge attempt.
      * 
      * This effect:
-     * - Sets the editor state to the challenge query.
-     * - Fetches and executes the schema SQL if the database schema has changed.
-     * - Updates the database state once the schema is loaded.
+     * - Retrieves the latest SQL query attempt for the current challenge.
+     * - Sets the SQL editor content to the latest query attempt.
+     * - When no attempts are available, the editor is cleared.
      * 
      * @effect
-     * @dependencies db, pg, challenge, dispatch
+     * @dependencies challengeIndex, state.challenges
      */
     useEffect(() => {
         const attempts = state.challenges[challengeIndex]?.attempts.filter(attempt => Boolean(attempt.query));
         const len = attempts?.length ?? 0;
+        setEditorState(() => len > 0 ? attempts[len - 1].query! : '');
+    }, [challengeIndex, state.challenges]);
 
-        if (len > 0) {
-            setEditorState(() => attempts[len - 1].query!);
-        }
-
+    /**
+     * Loads the challenge query and schema into the database.
+     * 
+     * This effect:
+     * - Fetches and executes the schema SQL if the database schema has changed.
+     * - Updates the database state once the schema is loaded.
+     * 
+     * @effect
+     * @dependencies db, challenge.schema, dispatch, updateSchema, state.challenges, challengeIndex
+     */
+    useEffect(() => {
         if (db !== challenge.schema) {
             fetch(challenge.schema).then(async (response) => {
                 try {
@@ -370,7 +379,7 @@ function Challenge() {
                 }
             });
         }
-    }, [db, challenge, dispatch, updateSchema, state.challenges, challengeIndex]);
+    }, [db, challenge.schema, dispatch, updateSchema, state.challenges, challengeIndex]);
 
     /**
      * Updates the view to show the ERD (Entity-Relationship Diagram) and scrolls to the top of the right column.
