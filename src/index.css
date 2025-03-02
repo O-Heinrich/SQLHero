@@ -215,6 +215,10 @@ table tbody td {
     @apply py-2 px-4 text-lg text-gray-500 dark:text-gray-300;
 }
 
+table tbody td:nth-child(even) {
+    @apply bg-slate-50 dark:bg-slate-600;
+}
+
 table#query-result thead {
     @apply sticky text-sm top-0 z-10 shadow-sm;
 }
