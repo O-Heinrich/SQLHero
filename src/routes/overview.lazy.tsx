@@ -271,7 +271,7 @@ const ChallengeStatistics = ({ challenges }: { challenges: Challenge[]; }): Reac
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Overall completion stats */}
-                <div className="flex flex-col items-center justify-center bg-white/20 dark:bg-gray-300/5 dark:mix-blend-color-dodge p-4 rounded-xl shadow-sm">
+                <div className="flex flex-col items-center justify-center bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm">
                     <div className="text-5xl font-bold text-gray-800/60 dark:text-white/60 mb-2">
                         {stats.completionPercentage}%
                     </div>
@@ -287,11 +287,11 @@ const ChallengeStatistics = ({ challenges }: { challenges: Challenge[]; }): Reac
                 </div>
 
                 {/* Difficulty completion */}
-                <div className="bg-white/20 dark:bg-gray-300/5 dark:mix-blend-color-dodge rounded-xl shadow-sm p-4">
+                <div className="bg-white/50 dark:bg-gray-300/5 rounded-xl shadow-sm p-4">
                     <h3 className="text-sm font-medium text-gray-700/70 dark:text-gray-300/40 mb-2">
                         Fortschritt nach Schwierigkeitsgrad
                     </h3>
-                    <div className="h-64">
+                    <div className="h-70">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart
                                 data={difficultyCompletionData}
@@ -302,8 +302,8 @@ const ChallengeStatistics = ({ challenges }: { challenges: Challenge[]; }): Reac
                                 <XAxis type="number" domain={[0, 'dataMax']} />
                                 <YAxis dataKey="difficulty" type="category" width={70} />
                                 <Legend />
-                                <Bar dataKey="completed" stackId="a" fill="#10b9515e" name="Abgeschlossen" />
-                                <Bar dataKey="attempted" stackId="a" fill="#f59e0b70" name="In Bearbeitung" />
+                                <Bar dataKey="completed" stackId="a" fill="#00c951" name="Abgeschlossen" />
+                                <Bar dataKey="attempted" stackId="a" fill="#f59e0b" name="In Bearbeitung" />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
@@ -312,11 +312,11 @@ const ChallengeStatistics = ({ challenges }: { challenges: Challenge[]; }): Reac
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Status pie chart */}
-                <div className="mt-8 bg-white/20 dark:bg-gray-300/5 dark:mix-blend-color-dodge rounded-xl shadow-sm p-4 z-10">
+                <div className="mt-8 bg-white/20 dark:bg-gray-300/5 rounded-xl shadow-sm p-4 z-10">
                     <h3 className="text-sm font-medium text-gray-700/70 dark:text-gray-300/40 mb-2">
                         Status der Herausforderungen
                     </h3>
-                    <div className="h-64">
+                    <div className="h-70">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
@@ -339,11 +339,11 @@ const ChallengeStatistics = ({ challenges }: { challenges: Challenge[]; }): Reac
                     </div>
                 </div>
                 {/* Average completion time by difficulty */}
-                <div className="mt-8 bg-white/20 dark:bg-gray-300/5 dark:mix-blend-color-dodge rounded-xl shadow-sm p-4 z-10">
+                <div className="mt-8 bg-white/20 dark:bg-gray-300/5 rounded-xl shadow-sm p-4 z-10">
                     <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Durchschnittliche Bearbeitungszeit
                     </h3>
-                    <div className="h-64">
+                    <div className="h-70">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart
                                 data={stats.timeStats.filter(item => item.count > 0)}
