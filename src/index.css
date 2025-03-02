@@ -57,11 +57,11 @@
 
     --animate-pulse: pulse 0.75s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 
-    --footer-shadow: rgba(0, 0, 0, 0.1);
+    --footer-shadow: #ffffff63;
 }
 
 .dark {
-    --footer-shadow: rgba(0, 0, 0, 0.4);
+    --footer-shadow: #b3b3b326;
 }
 
 @layer utilities {
