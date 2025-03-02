@@ -10,3 +10,4 @@ export { SunIcon } from "@/components/icons/Sun";
 export { ZoomInIcon } from "@/components/icons/ZoomIn";
 export { ZoomOutIcon } from "@/components/icons/ZoomOut";
 export { DownloadIcon } from "@/components/icons/Download";
+export { ArrowRightIcon } from "@/components/icons/ArrowRight";

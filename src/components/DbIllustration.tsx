@@ -55,7 +55,7 @@ export const DbIllustration: React.FC<DbIllustrationProps> = (
         alt="SQL Hero"
         width="400"
         height="auto"
-        className="min-w-[200px] max-w-[400px] flex-1"
+        className="md:min-w-[200px] md:max-w-[400px] flex-1 max-w-[250px]"
         style={{
             // Theme-dependent blend mode for optimal visibility
             mixBlendMode: isDarkMode ? 'color-dodge' : 'multiply',

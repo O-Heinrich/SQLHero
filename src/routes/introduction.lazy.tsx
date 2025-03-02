@@ -220,30 +220,30 @@ const Introduction = (): JSX.Element => (
             <section className="bg-gray-100/50 dark:bg-blue-400/10 p-6 rounded-xl mt-8 shadow shadow-gray-400/25 dark:shadow-gray-800/30">
                 <h2 className="text-2xl font-semibold mb-4">Technische Voraussetzungen</h2>
                 <div className="grid md:grid-cols-3 gap-4">
-                    <div className="bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl text-center shadow-sm dark:mix-blend-color-dodge">
-                        <CheckBadgeIcon className="w-20 h-20 inline-block dark:fill-green-400/40 fill-green-800/40 float-left mix-blend-multiplay dark:mix-blend-hard-light" />
+                    <div className="relative bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl text-center shadow-sm dark:mix-blend-color-dodge">
+                        <CheckBadgeIcon className="w-20 h-20 inline-block dark:fill-green-400/40 fill-green-800/40 absolute left-4 mix-blend-multiplay dark:mix-blend-hard-light" />
                         &nbsp;
-                        <h3 className="font-semibold dark:text-gray-200">
-                            <span className="mr-20">Firefox</span>
-                            <img src={firefoxLogo} alt="Firefox Logo" className="inline-block w-26 h-26 mr-20 mt-5" loading="lazy" />
+                        <h3 className="flex flex-col items-center font-semibold dark:text-gray-200">
+                            <span>Firefox</span>
+                            <img src={firefoxLogo} alt="Firefox Logo" className="inline-block w-26 h-26 mt-5" loading="lazy" />
                         </h3>
                         <p className="text-sm text-gray-600 dark:text-gray-400">Vollständig getestet</p>
                     </div>
-                    <div className="bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl text-center shadow-sm dark:mix-blend-color-dodge">
-                        <CheckBadgeIcon className="w-20 h-20 inline-block dark:fill-green-400/40 fill-green-800/40 float-left mix-blend-multiplay dark:mix-blend-hard-light" />
+                    <div className="relative bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl text-center shadow-sm dark:mix-blend-color-dodge">
+                        <CheckBadgeIcon className="w-20 h-20 inline-block dark:fill-green-400/40 fill-green-800/40 absolute left-4 mix-blend-multiplay dark:mix-blend-hard-light" />
                         &nbsp;
-                        <h3 className="font-semibold dark:text-gray-200">
-                            <span className="mr-20">Chrome</span>
-                            <img src={chromeLogo} alt="Firefox Logo" className="inline-block w-26 h-26 mr-20 mt-5" loading="lazy" />
+                        <h3 className="flex flex-col items-center font-semibold dark:text-gray-200">
+                            <span>Chrome</span>
+                            <img src={chromeLogo} alt="Firefox Logo" className="inline-block w-26 h-26 mt-5" loading="lazy" />
                         </h3>
                         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Vollständig getestet</p>
                     </div>
-                    <div className="bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl text-center shadow-sm dark:mix-blend-color-dodge">
-                        <CheckCircleIcon className="w-20 h-20 inline-block dark:fill-green-200/20 fill-green-800/20 float-left" />
+                    <div className="relative bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl text-center shadow-sm dark:mix-blend-color-dodge">
+                        <CheckCircleIcon className="w-20 h-20 inline-block dark:fill-green-200/20 fill-green-800/20 absolute left-4" />
                         &nbsp;
-                        <h3 className="font-semibold dark:text-gray-200/50">
-                            <span className="mr-20">Edge</span>
-                            <img src={edgeLogo} alt="Firefox Logo" className="inline-block w-26 h-26 mr-20 mt-5" loading="lazy" />
+                        <h3 className="flex-col items-center flex font-semibold dark:text-gray-200/50">
+                            <span>Edge</span>
+                            <img src={edgeLogo} alt="Firefox Logo" className="inline-block w-26 h-26 mt-5" loading="lazy" />
                         </h3>
                         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Unterstützt</p>
                     </div>
