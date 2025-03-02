@@ -68,7 +68,7 @@ interface FlashButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>
      * @type {Function}
      * @default () => {}
      */
-    onClick?: () => void;
+    onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void; 
 }
 
 /**
