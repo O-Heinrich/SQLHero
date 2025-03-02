@@ -96,7 +96,7 @@ const Introduction = (): JSX.Element => {
                             <p className="mb-3 dark:text-gray-300">
                                 Die DDL ist wie der Architekt Ihrer Datenbank. Mit ihr erstellen Sie die grundlegende Struktur:
                             </p>
-                            <div className="bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm">
+                            <div className="bg-white/20 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm">
                                 <p className="mb-2 dark:text-gray-200"><InlineCode>CREATE TABLE</InlineCode> - Erstellt neue Tabellen</p>
                                 <p className="mb-2 dark:text-gray-200"><InlineCode>ALTER TABLE</InlineCode> - Verändert bestehende Tabellen</p>
                                 <p className="dark:text-gray-200"><InlineCode>DROP TABLE</InlineCode> - Löscht Tabellen</p>
@@ -109,7 +109,7 @@ const Introduction = (): JSX.Element => {
                             <p className="mb-3 dark:text-gray-300">
                                 Die DML ist Ihr wichtigstes Werkzeug für die tägliche Arbeit mit Daten:
                             </p>
-                            <div className="bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm space-y-3">
+                            <div className="bg-white/20 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm space-y-3">
                                 <div>
                                     <p className="font-semibold dark:text-gray-200">
                                         <InlineCode>SELECT</InlineCode> - Daten abrufen
@@ -134,7 +134,7 @@ const Introduction = (): JSX.Element => {
                         <p className="mb-3 dark:text-gray-300">
                             Die DCL kontrolliert die Zugriffsrechte auf Ihre Datenbank. Sie ist wie ein Sicherheitssystem:
                         </p>
-                        <div className="bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm space-y-3">
+                        <div className="bg-white/20 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm space-y-3">
                             <div>
                                 <p className="font-semibold dark:text-gray-200">
                                     <InlineCode>GRANT</InlineCode> - Berechtigungen erteilen
@@ -159,7 +159,7 @@ const Introduction = (): JSX.Element => {
                         <p className="mb-3 dark:text-gray-300">
                             Die TCL steuert Transaktionen - also Gruppen von Datenbankoperationen, die als Einheit behandelt werden:
                         </p>
-                        <div className="bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm space-y-3">
+                        <div className="bg-white/20 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm space-y-3">
                             <div>
                                 <p className="font-semibold dark:text-gray-200">
                                     <InlineCode>COMMIT</InlineCode> - Änderungen dauerhaft speichern
@@ -211,7 +211,7 @@ const Introduction = (): JSX.Element => {
                 <section className="bg-gray-100/30 dark:bg-blue-400/10 p-6 rounded-xl mt-8 shadow shadow-gray-400/25 dark:shadow-gray-800/30">
                     <h3 className="text-2xl font-semibold">Fehlerbehandlung und Tipps</h3>
                     <div className="space-y-3">
-                        <div className="bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm">
+                        <div className="bg-white/20 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm">
                             <h4 className="font-semibold text-red-600 dark:text-red-400">Fachliche Fehler</h4>
                             <div className='flex items-center justify-between'>
                                 <p className="dark:text-gray-300">
@@ -220,7 +220,7 @@ const Introduction = (): JSX.Element => {
                                 <Button id="logic" onClick={handleExampleClick} style={{fontSize: '1.2rem', padding: '0.75rem'}}>Beispiel</Button>
                             </div>
                         </div>
-                        <div className="bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm">
+                        <div className="bg-white/20 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm">
                             <h4 className="font-semibold text-red-600 dark:text-red-400">Technische Fehler</h4>
                             <div className='flex items-center justify-between'>
                                 <p className="dark:text-gray-300">
@@ -236,7 +236,7 @@ const Introduction = (): JSX.Element => {
                 <section className="bg-gray-100/50 dark:bg-blue-400/10 p-6 rounded-xl mt-8 shadow shadow-gray-400/25 dark:shadow-gray-800/30">
                     <h3 className="text-2xl font-semibold mb-4">Technische Voraussetzungen</h3>
                     <div className="grid md:grid-cols-3 gap-4">
-                        <div className="relative bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl text-center shadow-sm">
+                        <div className="relative bg-white/20 dark:bg-gray-300/5 p-4 rounded-xl text-center shadow-sm">
                             <CheckBadgeIcon className="w-20 h-20 inline-block dark:fill-green-400/40 fill-green-800/40 absolute left-4 mix-blend-multiplay dark:mix-blend-hard-light" />
                             &nbsp;
                             <h3 className="flex flex-col items-center font-semibold dark:text-gray-200">
@@ -245,7 +245,7 @@ const Introduction = (): JSX.Element => {
                             </h3>
                             <p className="text-sm text-gray-600 dark:text-gray-400">Vollständig getestet</p>
                         </div>
-                        <div className="relative bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl text-center shadow-sm">
+                        <div className="relative bg-white/20 dark:bg-gray-300/5 p-4 rounded-xl text-center shadow-sm">
                             <CheckBadgeIcon className="w-20 h-20 inline-block dark:fill-green-400/40 fill-green-800/40 absolute left-4 mix-blend-multiplay dark:mix-blend-hard-light" />
                             &nbsp;
                             <h3 className="flex flex-col items-center font-semibold dark:text-gray-200">
@@ -254,7 +254,7 @@ const Introduction = (): JSX.Element => {
                             </h3>
                             <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Vollständig getestet</p>
                         </div>
-                        <div className="relative bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl text-center shadow-sm">
+                        <div className="relative bg-white/20 dark:bg-gray-300/5 p-4 rounded-xl text-center shadow-sm">
                             <CheckCircleIcon className="w-20 h-20 inline-block dark:fill-green-200/20 fill-green-800/20 absolute left-4" />
                             &nbsp;
                             <h3 className="flex-col items-center flex font-semibold dark:text-gray-200/50">

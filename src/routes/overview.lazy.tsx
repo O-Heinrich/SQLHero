@@ -271,7 +271,7 @@ const ChallengeStatistics = ({ challenges }: { challenges: Challenge[]; }): Reac
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Overall completion stats */}
-                <div className="flex flex-col items-center justify-center bg-white/50 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm">
+                <div className="flex flex-col items-center justify-center bg-white/20 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm">
                     <div className="text-5xl font-bold text-gray-800/60 dark:text-white/60 mb-2">
                         {stats.completionPercentage}%
                     </div>
@@ -287,7 +287,7 @@ const ChallengeStatistics = ({ challenges }: { challenges: Challenge[]; }): Reac
                 </div>
 
                 {/* Difficulty completion */}
-                <div className="bg-white/50 dark:bg-gray-300/5 rounded-xl shadow-sm p-4">
+                <div className="bg-white/20 dark:bg-gray-300/5 rounded-xl shadow-sm p-4">
                     <h3 className="text-sm font-medium text-gray-700/70 dark:text-gray-300/40 mb-2">
                         Fortschritt nach Schwierigkeitsgrad
                     </h3>
