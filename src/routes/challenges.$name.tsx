@@ -349,7 +349,7 @@ function Challenge() {
     useEffect(() => {
         // When fast debuging, the editorState is set 
         // to the challenge query: setEditorState(() => challenge.query);
-        const query = state.challenges[challengeNo - 1]?.attempts.find(attempt => Boolean(attempt.query))?.query ?? '';
+        const query = state.challenges[challengeNo - 1]?.attempts.filter(attempt => Boolean(attempt.query)).pop()?.query ?? '';
         setEditorState(() => query);
         if (db !== challenge.schema) {
             fetch(challenge.schema).then(async (response) => {
@@ -358,7 +358,9 @@ function Challenge() {
                     await updateSchema(sql);
                 } catch (error) {
                     const errMsg = typeof error === 'string' ? error : (error as Error).message;
-                    toast.error(`Failed to load schema: ${errMsg}`);
+                    toast.error('Failed to load schema', {
+                        description: errMsg
+                    });
                 } finally {
                     setDb(() => challenge.schema);
                 }
@@ -459,13 +461,17 @@ function Challenge() {
             }, true);
 
             if (isCorrect) {
-                toast.success('Herausforderung erfolgreich abgeschlossen!');
+                toast.success('Erfolg', {
+                    description: 'Ergebnis korrekt. Gut gemacht!'
+                });
                 dispatch({
                     type: 'COMPLETE_CHALLENGE',
                     payload: { index: challengeIndex, query: editorState }
                 });
             } else {
-                toast.error('Ergebnis nicht korrekt. Bitte versuche es erneut.');
+                toast.error('Fehler', {
+                    description: 'Die gelieferten Datensätze stimmen nicht überein.'
+                });
                 dispatch({
                     type: 'CHALLENGE_FAILED',
                     payload: {
@@ -481,7 +487,9 @@ function Challenge() {
         } catch (error) {
             // Handle errors and display an error message.
             const errMsg = typeof error === 'string' ? error : (error as Error).message;
-            toast.error(errMsg);
+            toast.error('Fehler beim Ausführen der Abfrage', {
+                description: errMsg
+            });
         }
     };
 
