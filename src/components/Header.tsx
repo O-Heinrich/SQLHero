@@ -6,7 +6,7 @@
  * to the current theme and provides navigation between challenges.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import clsx from "clsx";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Wrapper } from "@/components/Wrapper";
@@ -92,6 +92,24 @@ export const Header: React.FC = (): React.ReactElement => {
         }
     }, [headerRef, dispatch]);
 
+    useEffect(() => {
+        if (state.headerElement) {
+            const handleScroll = () => {
+                if (window.scrollY > 0) {
+                    state.headerElement?.classList.add('shadow-xl');
+                    state.headerElement?.children[0].classList.add('shadow-xl');
+                } else {
+                    state.headerElement?.classList.remove('shadow-xl');
+                    state.headerElement?.children[0].classList.remove('shadow-xl');
+                }
+            }
+
+            window.addEventListener('scroll', handleScroll);
+
+            return () => window.removeEventListener('scroll', handleScroll);
+        }
+    }, [state.headerElement]);
+
     /**
      * Memoized boolean indicating if dark theme is active
      * 
@@ -143,44 +161,46 @@ export const Header: React.FC = (): React.ReactElement => {
     return (
         <>
             {isFirefox && <div className="bg-transparent backdrop-blur-md fixed h-15 md:h-16 top-0 left-0 right-0 z-[9998]" />}
-            <header ref={headerRef} className={clsx('top-header', 'relative', 'sticky', 'top-0', 'z-[9999]', 'dark:bg-red-500/50', 'bg-red-800/50', 'text-white', !isFirefox && 'backdrop-blur-xl', 'transition-all', 'duration-800', 'dark:mix-blend-color-dodge', 'mix-blend-hard-light')}>
-                <Wrapper className={clsx('flex', 'items-center', 'max-w-400')}>
-                    <Link to="/" className="flex items-center gap-2">
-                        <Logo fill={isDarkMode ? '#efefef' : 'rgba(0,0,0,.50)'} />
-                        <h1 className={clsx('lg:text-4xl', 'md:text-2xl', 'md:inline', 'hidden', 'dark:text-white/85', 'text-black/50', 'py-2', 'font-light')}>
-                            {APP_NAME}
-                        </h1>
-                    </Link>
-                    <span className={clsx('flex', 'items-center', 'gap-1', 'flex-grow')}></span>
-                    <div className="px-2 flex items-center">
-                        <Link to="/overview" className="hidden md:inline">
-                            <Button>
-                                Übersicht
-                            </Button>
+            <header ref={headerRef} className={clsx('border-b-1 border-gray-100/40 dark:border-gray-100/50  border-groove', 'top-header', 'relative', 'sticky', 'top-0', 'z-[9999]', 'dark:bg-red-500/50', 'bg-red-800/50', 'text-white', !isFirefox && 'backdrop-blur-xl', 'transition-all', 'duration-800', 'dark:mix-blend-color-dodge', 'mix-blend-hard-light')}>
+                <div className="transition-all duration-300">
+                    <Wrapper className={clsx('flex', 'items-center', 'max-w-400')}>
+                        <Link to="/" className="flex items-center gap-2">
+                            <Logo fill={isDarkMode ? '#efefef' : 'rgba(0,0,0,.50)'} />
+                            <h1 className={clsx('lg:text-4xl', 'md:text-2xl', 'md:inline', 'hidden', 'dark:text-white/85', 'text-black/50', 'py-2', 'font-light')}>
+                                {APP_NAME}
+                            </h1>
                         </Link>
-                        <Link to="/introduction" className="hidden md:inline">
-                            <Button>
-                                Einführung
-                            </Button>
-                        </Link>
-                        {!Number.isNaN(challengeNo) && <Spacer classList="hidden md:inline" />} 
-                        <IconButton
-                            onClick={handlePrev}
-                            disabled={Number.isNaN(challengeNo)}
-                            aria-label="Vorherige Herausforderung"
-                            className="m-0"
-                            icon={<ChevronLeftIcon size={2} fill="currentColor" />}
-                        />
-                        <IconButton
-                            onClick={handleNext}
-                            disabled={Number.isNaN(challengeNo)}
-                            aria-label="Nächste Herausforderung"
-                            className="m-0"
-                            icon={<ChevronRightIcon size={2} fill="currentColor" />}
-                        />
-                    </div>
-                    <ToggleThemeButton />
-                </Wrapper>
+                        <span className={clsx('flex', 'items-center', 'gap-1', 'flex-grow')}></span>
+                        <div className="px-2 flex items-center">
+                            <Link to="/overview" className="hidden md:inline">
+                                <Button>
+                                    Übersicht
+                                </Button>
+                            </Link>
+                            <Link to="/introduction" className="hidden md:inline">
+                                <Button>
+                                    Einführung
+                                </Button>
+                            </Link>
+                            {!Number.isNaN(challengeNo) && <Spacer classList="hidden md:inline" />} 
+                            <IconButton
+                                onClick={handlePrev}
+                                disabled={Number.isNaN(challengeNo)}
+                                aria-label="Vorherige Herausforderung"
+                                className="m-0"
+                                icon={<ChevronLeftIcon size={2} fill="currentColor" />}
+                            />
+                            <IconButton
+                                onClick={handleNext}
+                                disabled={Number.isNaN(challengeNo)}
+                                aria-label="Nächste Herausforderung"
+                                className="m-0"
+                                icon={<ChevronRightIcon size={2} fill="currentColor" />}
+                            />
+                        </div>
+                        <ToggleThemeButton />
+                    </Wrapper>
+                </div>
             </header>
         </>
     );

@@ -78,10 +78,10 @@ const Card: React.FC<CardProps> = ({
     timeTaken
 }) => {
     const difficultyColors = {
-        'easy': 'from-emerald-500/50 to-emerald-700/50 dark:from-emerald-600/20 dark:to-emerald-800/30 border-green-600',
-        'medium': 'from-yellow-500/50 to-yellow-700/50 dark:from-yellow-600/20 dark:to-yellow-800/30 border-yellow-500',
-        'hard': 'from-red-500/50 to-red-700/50 dark:from-red-600/20 dark:to-red-800/30 border-red-600',
-        'default': 'from-blue-500/50 to-blue-700/50 border-blue-600'
+        'easy': 'border-green-600/50 dark:border-green-800/50 from-emerald-400/20 to-emerald-600/60 dark:from-emerald-300/40 dark:to-emerald-600/35',
+        'medium': 'border-yellow-600/50 dark:border-yellow-800/50 from-yellow-400/20 to-yellow-600/60 dark:from-yellow-300/40 dark:to-yellow-600/35',
+        'hard': 'border-red-600/50 dark:border-red-800/50 from-red-400/20 to-red-700/60 dark:from-red-300/40 dark:to-red-600/35',
+        'default': 'from-blue-300/50 to-blue-600/60 border-blue-600'
     };
 
     const colorScheme = difficultyColors[difficulty?.toLowerCase() as keyof typeof difficultyColors] || difficultyColors.default;
@@ -91,24 +91,24 @@ const Card: React.FC<CardProps> = ({
     return (
         <div className={` group h-full flex flex-col rounded-2xl overflow-hidden ${completed ? 'ring-2 ring-green-500 dark:ring-green-400/50' : failed ? 'ring-2 ring-red-500 dark:border-red-400/50' : 'border border-gray-300 dark:border-gray-700'} bg-white/0 dark:bg-gray-800/0 dark:hover:shadow-blue-800/60 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1`}>
             {/* Card header with gradient */}
-            <div className={`px-6 py-3 min-h-20 bg-gradient-to-r ${colorScheme} flex items-center justify-between`}>
-                <span className="font-bold text-white text-lg">{title}</span>
-                <div className="flex items-center gap-2">
+            <div className={`border-b-2 border-ridge px-6 py-3 min-h-20 bg-white/10 dark:bg-black/30 bg-radial-[at_100%_0%]  ${colorScheme} flex items-center justify-between`}>
+                <span className="font-bold text-white text-shadow text-lg text-shadow-lg">{title}</span>
+                <div className="flex ml-2 items-center gap-2">
                     {completed && (
-                        <span className="bg-green-200 text-green-800 p-1 rounded-full">
+                        <span className="bg-green-200 shadow-lg text-green-800 p-1 rounded-full">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                             </svg>
                         </span>
                     )}
-                    <span className="flex items-center justify-center bg-white text-gray-800 h-8 w-8 rounded-full font-bold">
+                    <span className="flex items-center justify-center shadow-lg bg-white/70 text-gray-800 h-8 w-8 rounded-full font-bold">
                         {number}
                     </span>
                 </div>
             </div>
 
             {/* Card body */}
-            <div className="px-6 py-4 flex-1 flex flex-col justify-between bg-zinc-50/50 dark:bg-gray-600/25">
+            <div className="px-6 py-4 flex-1 flex flex-col justify-between bg-zinc-50 dark:bg-gray-600/25">
                 <div className="mb-4">
                     <p className="text-gray-700 dark:text-gray-300">
                         Herausforderung #{number}: Löse die SQL-Probleme zu diesem Thema.

@@ -47,17 +47,19 @@ export const Footer: React.FC = (): React.ReactElement => {
     const isDarkMode: boolean = React.useMemo(() => theme === 'dark', [theme]);
 
     return (
-        <footer className={`flex justify-center relative items-center min-h-16 ${!isFirefox && 'backdrop-blur-xl'} z-100 relative bg-slate-50/20 dark:bg-slate-800/20 dark:text-white border-t border-groove border-gray-200 border-t-2 dark:border-slate-700 py-2 bottom-0`}>
-            <Wrapper className="flex justify-between items-center max-w-400 z-20">
-                <span className="text-sm/4 self-end ml-2 text-gray-500 dark:text-gray-400">
-                    &copy; {new Date().getFullYear()} Berlin Beta Works Inklusiv
-                </span>
-                <img
-                    src={isDarkMode ? '/drk-rki-bbw-3-dark-b.png' : '/drk-rki-bbw-3.png'}
-                    alt="Logo Berlin Beta Works Inklusiv"
-                    className="max-h-16 inline-block"
-                />
-            </Wrapper>
+        <footer className={`z-50 shadow-xl flex justify-center relative items-center min-h-16 ${!isFirefox && 'backdrop-blur-xl'} z-100 relative bg-slate-50/20 dark:bg-slate-800/20 dark:text-white border-groove border-gray-200 border-t-2 dark:border-slate-700 bottom-0`}>
+            <div className="w-full py-2" style={{boxShadow: '0 -2px 2px var(--footer-shadow)'}}>
+                <Wrapper className="flex justify-between items-center max-w-400 z-20">
+                    <span className="text-sm/4 self-end ml-2 text-gray-500 dark:text-gray-400">
+                        &copy; {new Date().getFullYear()} Berlin Beta Works Inklusiv
+                    </span>
+                    <img
+                        src={isDarkMode ? '/drk-rki-bbw-3-dark-b.png' : '/drk-rki-bbw-3.png'}
+                        alt="Logo Berlin Beta Works Inklusiv"
+                        className="max-h-16 inline-block"
+                    />
+                </Wrapper>
+            </div>
             {isFirefox && <div className="bg-transparent backdrop-blur-md absolute h-[81.6px] t-0 l-0 r-0 b-0 z-10 w-full" />}
         </footer>
     );
