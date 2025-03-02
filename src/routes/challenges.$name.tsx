@@ -458,7 +458,7 @@ function Challenge() {
             const isCorrect = result.data!.reduce((success, result, i) => {
                 const key = `${challengeNo.toString()}-${i}`;
                 return success && ResultSetComparison.compareWithSolution(key, result);
-            }, true);
+            }, Boolean(result.data?.length));
 
             if (isCorrect) {
                 toast.success('Erfolg', {
