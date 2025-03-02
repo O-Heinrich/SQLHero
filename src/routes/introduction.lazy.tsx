@@ -1,4 +1,4 @@
-import { JSX } from 'react';
+import { JSX, useEffect } from 'react';
 import { createLazyFileRoute } from '@tanstack/react-router';
 import { InlineCode } from '@/components/InlineCode';
 import { Skeleton } from '@/components/Skeleton';
@@ -25,6 +25,13 @@ import { toast } from 'sonner';
  * @returns {JSX.Element} The rendered introduction component.
  */
 const Introduction = (): JSX.Element => {
+    useEffect(() => {
+        if (window.scrollY > 0) {
+            const body = document.querySelector('body');
+            body?.scrollTo(0, 0);
+        }
+    }, []);
+
     const handleExampleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         const title = event.currentTarget.id === 'logic' ? 'Fehler' : 'Fehler beim Ausführen der Abfrage';
         const msg = event.currentTarget.id === 'logic' ? {

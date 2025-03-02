@@ -6,7 +6,7 @@
  * completion status, and performance metrics.
  */
 
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { createLazyFileRoute, Link } from '@tanstack/react-router';
 import { ResponsiveContainer, PieChart, Pie, Cell, BarChart, XAxis, YAxis, Legend, Bar, LabelList } from 'recharts';
 import { Wrapper } from '@/components/Wrapper';
@@ -427,6 +427,12 @@ function formatDate(date: Date): string {
  */
 function RouteComponent(): React.ReactElement {
     const { state } = useAppState();
+    useEffect(() => {
+        if (window.scrollY > 0) {
+            const body = document.querySelector('body');
+            body?.scrollTo(0, 0);
+        }
+    }, []);
     return (
         <Wrapper>
             <title>SQL Hero - Übersicht</title>
