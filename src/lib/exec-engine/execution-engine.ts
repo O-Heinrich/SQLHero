@@ -10,6 +10,17 @@
 */
 
 /**
+* Error thrown when an operation is attempted on an uninitialized execution engine.
+* This error is thrown when an operation requires the engine to be initialized first.
+*/
+export class NotInitializedError extends Error {
+    constructor(message?: string) {
+        super(`Not initialized: ${message}`);
+        this.name = "NotInitializedError";
+    }
+}
+
+/**
 * Represents the result of an execution.
 * This is a base interface that can be extended by specific execution engines.
 */
@@ -40,23 +51,6 @@ export abstract class ExecutionEngine {
      */
     protected constructor() { }
     /**
-     * Executes a query or code snippet.
-     * @param {string} code - The query or code to execute.
-     * @returns {Promise<ExecutionResult>} - The result of the execution.
-     */
-    abstract execute(code: string): Promise<ExecutionResult>
-    /**
-     * Initializes the execution engine (e.g., loads a database schema).
-     * @param {unknown} data - Optional data to initialize the engine.
-     * @returns {Promise<void>}
-     */
-    abstract initialize(data?: string): Promise<void>
-    /**
-     * Resets the execution engine to its initial state.
-     * @returns {Promise<void>}
-     */
-    abstract reset(): Promise<void>
-    /**
      * Creates a new instance of the execution engine.
      * @param {unknown[]} _args - Optional arguments to configure the engine.
      * @returns {Promise<void>}
@@ -65,4 +59,20 @@ export abstract class ExecutionEngine {
     static async create(..._args: unknown[]): Promise<ExecutionEngine> {
         throw new Error("Method not implemented.");
     }
+    /**
+     * Executes a query or code snippet.
+     * @param {string} code - The query or code to execute.
+     * @returns {Promise<ExecutionResult>} - The result of the execution.
+     */
+    abstract execute(code: string): Promise<ExecutionResult>
+    /**
+     * Resets the execution engine to its initial state.
+     * @returns {Promise<void>}
+     */
+    abstract reset(): Promise<void>
+    /**
+     * Destroys the execution engine and releases any resources.
+     * @returns {Promise<void>}
+     */
+    abstract destroy(): Promise<void>
 }

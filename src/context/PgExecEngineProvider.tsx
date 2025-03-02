@@ -23,8 +23,11 @@ import { PostgresExecutionEngine } from "@/lib/exec-engine/postgres-engine";
 export const PgExecEngineProvider: React.FC<{ children: ReactNode }> = ({ children }: { children: ReactNode; }): React.ReactElement => {
     const [pg, setPg] = useState<PostgresExecutionEngine | undefined>();
     const updateSchema = async (schema: string) => {
-        const instance = await PostgresExecutionEngine.create(schema);
-        setPg(instance);
+        if (pg?.isInitialized()) {
+            await pg.destroy();
+        } 
+
+        setPg(await PostgresExecutionEngine.create(schema));
     };
 
     return (

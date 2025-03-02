@@ -12,16 +12,7 @@
  */
 
 import { PGlite, Transaction } from "@electric-sql/pglite";
-import { ExecutionEngine, ExecutionResult } from "./execution-engine";
-
-/**
- * Error thrown when operations are attempted on an uninitialized PostgreSQL engine.
- */
-class NotInitializedError extends Error {
-    constructor() {
-        super("PostgresExecutionEngine not initialized");
-    }
-}
+import { ExecutionEngine, ExecutionResult, NotInitializedError } from "./execution-engine";
 
 /**
  * Represents the field structure of a PostgreSQL table.
@@ -70,7 +61,8 @@ export interface SqlExecutionResult extends ExecutionResult {
 export class PostgresExecutionEngine extends ExecutionEngine {
     /** The PGlite instance for database operations */
     private pg?: PGlite;
-
+    /** SQL statements, which initializes database */
+    private schema?: string;
     /** Collection of SQL statements to be executed in batch */
     private statements: string[];
 
@@ -89,9 +81,10 @@ export class PostgresExecutionEngine extends ExecutionEngine {
      * @param schema - SQL schema definition to initialize the database
      * @returns Promise that resolves when initialization is complete
      */
-    async initialize(schema: string): Promise<void> {
+    private async initialize(schema: string): Promise<void> {
+        this.schema = schema;
         this.pg = await PGlite.create();
-        await this.pg.exec(schema);
+        await this.pg.exec(this.schema);
     }
 
     /**
@@ -131,7 +124,7 @@ export class PostgresExecutionEngine extends ExecutionEngine {
      */
     async execute(code: string): Promise<SqlExecutionResult> {
         if (!this.pg) {
-            throw new NotInitializedError();
+            throw new NotInitializedError(PostgresExecutionEngine.name);
         }
 
         try {
@@ -178,10 +171,31 @@ export class PostgresExecutionEngine extends ExecutionEngine {
      * @throws NotInitializedError if the engine hasn't been initialized
      */
     async reset(): Promise<void> {
+        await this.destroy();
+        await this.initialize(this.schema!);
+    }
+
+    /**
+     * Destroys the execution engine and releases any resources.
+     * 
+     * @returns Promise that resolves when the engine is destroyed
+     * @throws NotInitializedError if the engine hasn't been initialized
+     */
+    async destroy(): Promise<void> {
         if (!this.pg) {
-            throw new NotInitializedError();
+            throw new NotInitializedError(PostgresExecutionEngine.name);
         }
 
-        await this.pg.exec("ROLLBACK;");
+        await this.pg.close()
+        this.pg = undefined;
+    }
+
+    /**
+     * Evaluates whether the engine has been initialized.
+     * 
+     * @returns True if the engine is initialized, false otherwise
+     */
+    isInitialized(): boolean {
+        return Boolean(this.pg);
     }
 }
