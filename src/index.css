@@ -188,7 +188,6 @@ table {
 
 table#query-result {
     @apply overflow-x-auto my-2 overflow-hidden;
-    height: calc(100% - (var(--spacing) * 4));
 }
 
 table thead {
