@@ -23,7 +23,7 @@
     --color-surface-alt: var(--color-neutral-50);
     --color-on-surface: var(--color-neutral-600);
     --color-on-surface-strong: var(--color-neutral-900);
-    --color-primary: var(--color-black);
+    --color-primary: var(--color-blue-500);
     --color-on-primary: var(--color-neutral-100);
     --color-secondary: var(--color-neutral-800);
     --color-on-secondary: var(--color-white);

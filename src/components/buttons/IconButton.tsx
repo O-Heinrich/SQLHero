@@ -25,10 +25,16 @@ export interface IconButtonProps extends ButtonProps {
     icon: React.ReactNode;
 
     /**
-     * Optional additional CSS classes to apply to the button
-     * Will be merged with the default 'icon' class
+     * Variant of the icon button
+     * @default 'none'
      */
-    className?: string;
+    variant?: 'primary' | 'secondary' | 'danger' | 'warning' | 'success' | 'info' | 'none';
+
+    /**
+     * Size of the icon button
+     * @default 'md'
+     */
+    size?: 'sm' | 'md' | 'lg';
 };
 
 /**
@@ -61,10 +67,52 @@ export interface IconButtonProps extends ButtonProps {
  */
 export const IconButton: React.FC<IconButtonProps> = ({ 
     icon, 
-    className, 
     ...props 
 }: IconButtonProps): React.JSX.Element => (
-    <Button className={clsx('icon', className && className)} {...props}>
+    <Button className={clsx(
+        'p-4!',
+        'group/button',
+        'overflow-hidden',
+        'flex justify-center items-center',
+        'border border-transparent',
+        'shadow-sm',
+        'dark:text-white/85 text-black/85',
+        'font-light',
+        'transition-all',
+        'duration-250',
+        'ease-in-out',
+        'rounded-md',
+        'focus:outline-none',
+        'focus:ring-2',
+        'focus:ring-offset-2',
+        'focus:ring-offset-gray-100',
+        'focus:ring-primary-500',
+        'disabled:opacity-50',
+        'disabled:cursor-not-allowed',
+        'transition',
+        'duration-150',
+        'ease-in-out',
+        'hover:opacity-90',
+        'active:opacity-80',
+        'focus:opacity-80',
+        'focus:ring',
+        'focus:ring-opacity-50',
+        'focus:ring-primary-500',
+        'focus:ring-offset-gray-100',
+        'focus:ring-offset-2',
+        'dark:hover:mix-blend-color-dodge! hover:mix-blend-multiply!',
+        props.className,
+        props.size === 'sm' && 'mx-2 my-4 px-2 py-1 text-xl',
+        props.size === 'md' && 'mx-3 my-6 px-6 py-2 text-2xl',
+        props.size === 'lg' && 'mx-4 my-8 px-8 py-3 text-3xl',
+        props.variant === 'primary' && 'bg-blue-200/60! hover:bg-blue-500/25! active:bg-sky-400/40! focus:bg-blue-300/50! dark:bg-blue-800/30! dark:hover:bg-blue-800/10! dark:active:bg-sky-700/60! dark:focus:bg-blue-800/10!',
+        props.variant === 'secondary' && 'bg-gray-600! hover:bg-gray-700! active:bg-gray-800! focus:bg-gray-800!',
+        props.variant === 'danger' && 'bg-red-600 hover:bg-red-700 active:bg-red-800 focus:bg-red-800',
+        props.variant === 'warning' && 'bg-yellow-600 hover:bg-yellow-700 active:bg-yellow-800 focus:bg-yellow-800',
+        props.variant === 'success' && 'bg-green-600 hover:bg-green-700 active:bg-green-800 focus:bg-green-800',
+        props.variant === 'info' && 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800 focus:bg-blue-800',
+        props.disabled && 'opacity-50 cursor-not-allowed',
+    )} {...props}>
         {icon}
     </Button>
 );

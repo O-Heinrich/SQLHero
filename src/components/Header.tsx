@@ -173,12 +173,12 @@ export const Header: React.FC = (): React.ReactElement => {
                         <span className={clsx('flex', 'items-center', 'gap-1', 'flex-grow')}></span>
                         <div className="px-2 flex items-center">
                             <Link to="/overview" className="hidden md:inline">
-                                <Button>
+                                <Button className="h-20">
                                     Übersicht
                                 </Button>
                             </Link>
                             <Link to="/introduction" className="hidden md:inline">
-                                <Button>
+                                <Button className="h-20">
                                     Einführung
                                 </Button>
                             </Link>

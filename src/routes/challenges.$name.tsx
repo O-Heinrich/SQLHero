@@ -598,6 +598,7 @@ function Challenge() {
                                     icon={<DownloadIcon size={1.5} />}
                                     aria-label="ERD downloaden"
                                     title="ERD downloaden"
+                                    disabled={!isErdActive}
                                     onClick={handleDownloadClick}
                                 />
                                 <IconButton
@@ -611,7 +612,7 @@ function Challenge() {
                                     icon={<BoltIcon size={1.5} />}
                                     aria-label="SQL ausführen"
                                     title="SQL ausführen"
-                                    disabled={!isErdActive}
+                                    variant="primary"
                                     onClick={handleRun}
                                 />
                             </Toolbar>
