@@ -33,6 +33,24 @@ export interface ExecutionOptions {
     testMode?: boolean;
 }
 
+export interface TestResult {
+    /** Total number of tests run */
+    total: number;
+    /** Number of passing tests */
+    passed: number;
+    /** Number of failing tests */
+    failed: number;
+    /** Detailed results for each test */
+    details: Array<{
+        /** Test name or description */
+        name: string;
+        /** Whether the test passed */
+        passed: boolean;
+        /** Error message if the test failed */
+        error?: string;
+    }>;
+}
+
 /**
  * Represents the result of a JavaScript code execution operation.
  * This is a specialized version of the ExecutionResult interface for JavaScript code.
@@ -42,23 +60,7 @@ export interface ExecutionOptions {
  */
 export interface JavaScriptExecutionResult<T> extends ExecutionResult<T> {
     /** Optional test results if executed in test mode */
-    testResults?: {
-        /** Total number of tests run */
-        total: number;
-        /** Number of passing tests */
-        passed: number;
-        /** Number of failing tests */
-        failed: number;
-        /** Detailed results for each test */
-        details: Array<{
-            /** Test name or description */
-            name: string;
-            /** Whether the test passed */
-            passed: boolean;
-            /** Error message if the test failed */
-            error?: string;
-        }>;
-    };
+    testResults?: TestResult[];
 }
 
 /**
@@ -109,7 +111,7 @@ export class JavaScriptExecutionEngine extends ExecutionEngine {
                 
                 // Register a test
                 test: function(name, fn) {
-                    this.tests.push({ name, fn });
+                    TestFramework.tests.push({ name, fn });
                 },
                 
                 // Assert functions
@@ -146,12 +148,12 @@ export class JavaScriptExecutionEngine extends ExecutionEngine {
                 
                 // Run all registered tests
                 runTests: function() {
-                    this.results.total = this.tests.length;
+                    this.results.total = TestFramework.tests.length;
                     this.results.passed = 0;
                     this.results.failed = 0;
                     this.results.details = [];
                     
-                    for (const test of this.tests) {
+                    for (const test of TestFramework.tests) {
                         try {
                             test.fn();
                             this.results.passed++;
@@ -203,9 +205,7 @@ export class JavaScriptExecutionEngine extends ExecutionEngine {
                             \${testSetup}
                             
                             // Execute the provided code
-                            (function() {
-                                \${code}
-                            })();
+                            \${code}
                             
                             // Run tests and return results
                             return TestFramework.runTests();
@@ -231,11 +231,12 @@ export class JavaScriptExecutionEngine extends ExecutionEngine {
                             )
                         ]);
                     } else {
-                        result = new Function(executeCode)();
+                        const exec = new Function(executeCode);
+                        result = exec();
                     }
                     
                     // Send successful result back
-                    if (testMode && result && typeof result === 'object' && 'total' in result) {
+                    if (testMode && result) {
                         self.postMessage({ 
                             success: true, 
                             result: null,
@@ -255,7 +256,7 @@ export class JavaScriptExecutionEngine extends ExecutionEngine {
                 }
             };
         `;
-
+        
         // Create the worker
         this.worker = new Worker(
             URL.createObjectURL(
@@ -340,6 +341,7 @@ export class JavaScriptExecutionEngine extends ExecutionEngine {
                     resolve({
                         success: false,
                         error: event.data.error,
+                        testResults: event.data.testResults,
                         data: {} as T
                     });
                 }
