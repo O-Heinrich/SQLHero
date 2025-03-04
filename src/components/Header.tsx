@@ -160,8 +160,8 @@ export const Header: React.FC = (): React.ReactElement => {
 
     return (
         <>
-            {isFirefox && <div className="bg-transparent backdrop-blur-md fixed h-15 md:h-16 top-0 left-0 right-0 z-[9998]" />}
-            <header ref={headerRef} className={clsx('border-b-1 border-gray-100/40 dark:border-gray-100/50  border-groove', 'top-header', 'relative', 'sticky', 'top-0', 'z-[9999]', 'dark:bg-red-500/50', 'bg-red-800/50', 'text-white', !isFirefox && 'backdrop-blur-xl', 'transition-all', 'duration-800', 'dark:mix-blend-color-dodge', 'mix-blend-hard-light')}>
+            {isFirefox && <div className="bg-transparent backdrop-blur-md fixed h-[80px] top-0 left-0 right-0 z-[9998]" />}
+            <header ref={headerRef} className={clsx('border-b-1 h-[80px] border-gray-100/40 dark:border-gray-100/50  border-groove', 'top-header', 'relative', 'sticky', 'top-0', 'z-[9999]', 'dark:bg-red-500/50', 'bg-red-800/50', 'text-white', !isFirefox && 'backdrop-blur-xl', 'transition-all', 'duration-800', 'dark:mix-blend-color-dodge', 'mix-blend-hard-light')}>
                 <div className="transition-all duration-300">
                     <Wrapper className={clsx('flex', 'max-w-400')}>
                         <Link to="/" className="flex items-center gap-2 items-center">
