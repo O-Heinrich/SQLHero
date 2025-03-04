@@ -277,13 +277,17 @@ button.theme-button {
 }
 
 button.icon, header a button {
-    @apply p-4 ;
+    @apply p-4;
 }
 
 
 button.icon,
 button.primary {
     @apply px-8 py-3 text-xl rounded-xl font-light bg-teal-200 dark:bg-teal-900 shadow-teal-100 dark:shadow-teal-600 border-1 border-gray-300 dark:border-gray-400/50 dark:hover:bg-teal-700 hover:bg-teal-300 cursor-pointer transition duration-250 ease-in-out transform inline-flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none shadow-inner;
+}
+
+button.icon {
+    align-self: normal;
 }
 
 header a button {
