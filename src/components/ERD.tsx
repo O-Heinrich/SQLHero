@@ -8,9 +8,9 @@
 */
 import React from 'react';
 import { TransformComponent, useControls } from "react-zoom-pan-pinch";
-import { ZoomInIcon, ZoomOutIcon } from '@/components/icons';
 import { IconButton } from './buttons/IconButton';
 import { isFirefox } from '@/lib/agents';
+import { MagnifyingGlassMinusIcon, MagnifyingGlassPlusIcon } from '@heroicons/react/24/solid';
 
 /**
 * ERD zoom control buttons component
@@ -25,14 +25,14 @@ export const ErdControls: React.FC<{disabled: boolean}> = ({disabled}) => {
     return (
         <>
             <IconButton 
-                icon={<ZoomInIcon size={1.5} />}
+                icon={<MagnifyingGlassPlusIcon className="size-6" />}
                 disabled={disabled} 
                 aria-label="ERD vergrößern" 
                 title="ERD vergrößern"  
                 onClick={() => zoomIn()}
             />
             <IconButton 
-                icon={<ZoomOutIcon size={1.5} />}
+                icon={<MagnifyingGlassMinusIcon className="size-6" />}
                 disabled={disabled} 
                 aria-label="ERD verkleinern" 
                 title="ERD verkleinern"  
