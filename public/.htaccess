@@ -1,0 +1,12 @@
+RewriteEngine On
+
+# Ausnahme: Bilder (z.B. .jpg, .jpeg, .png, .gif, .svg)
+RewriteCond %{REQUEST_FILENAME} \.(jpg|jpeg|png|gif|svg)$ [NC]
+RewriteRule ^ - [L]
+
+RewriteCond %{REQUEST_FILENAME} \.(wasm|data|sql|json|css|js)$ [NC]
+RewriteRule ^ - [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f [OR]
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]
