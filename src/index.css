@@ -195,7 +195,7 @@ table {
 }
 
 table#query-result {
-    @apply overflow-x-auto my-2 overflow-hidden;
+    @apply h-auto overflow-x-auto my-2 overflow-hidden;
 }
 
 table thead {
