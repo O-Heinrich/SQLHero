@@ -54,8 +54,9 @@ import { BREAKPOINTS } from 'virtual:sql-hero';
 import { toggleHeaderSuccess } from '@/lib/reducer';
 import { QueryResult, SqlExecutionResult } from '@/lib/exec-engine/postgres-engine';
 import { PlayIcon, ArrowLeftIcon, ArrowDownOnSquareStackIcon } from '@heroicons/react/24/solid';
-
+import { useResizeObserver } from '@/hooks/useResizeObserver';
 import "allotment/dist/style.css";
+
 
 /**
  * Background style for the challenge workspace
@@ -321,6 +322,7 @@ function Challenge() {
     const challengeIndex = useMemo(() => challengeNo - 1, [challengeNo]);
     const { theme } = useTheme();
     const isErdActive = useMemo(() => activeView === DetailViewPages.ERD, [activeView]);
+    const resizeObserve = useResizeObserver<HTMLElement>();
     const erdFile = useMemo(
         () => challenge.schema.replace('.sql', theme === 'dark' ? '-dark.svg' : '.svg'),
         [challenge.schema, theme]
@@ -405,20 +407,29 @@ function Challenge() {
     }, [challengeNo]);
 
     /**
-     * Observes changes in the viewport width and updates the UI for mobile responsiveness.
+     * Handles responsive view detection based on window size changes
+     * Switches between mobile and desktop views when breakpoint is crossed
      * 
      * This effect:
-     * - Uses the `ResizeObserver` API to monitor changes in the viewport width.
-     * - Updates the `isMobile` state and switches the active view to the ERD (Entity-Relationship Diagram)
-     *   when the viewport width crosses a breakpoint (e.g., for small devices).
-     * - Cleans up the observer when the component unmounts or dependencies change.
+     * - Observes the window size and updates the view based on the breakpoint.
+     * - Sets the active view to the ERD page when switching to mobile view.
      * 
      * @effect
-     * @dependencies isMobile, rightColRef
+     * @dependencies isMobile, resizeObserve, rightColRef
      */
     useEffect(() => {
-        if ('ResizeObserver' in window && rightColRef.current) {
-            const observer = new ResizeObserver((entries) => {
+        try {
+            /**
+             * Observes window body size and updates mobile view state
+             * Uses the custom useResizeObserver hook to track size changes
+             * 
+             * Switches active view and mobile state when screen width 
+             * crosses the defined large breakpoint
+             * 
+             * @param target - The window.document.body element to observe
+             * @param callback - Resize event handler that checks mobile breakpoint
+             */
+            resizeObserve(window.document.body, (entries) => {
                 for (const entry of entries) {
                     const smDevice = entry.contentRect.width < BREAKPOINTS.lg;
                     if (smDevice !== isMobile) {
@@ -427,11 +438,13 @@ function Challenge() {
                     }
                 }
             });
-
-            observer.observe(window.document.body);
-            return () => observer.disconnect();
+        } catch (error) {
+            const errMsg = typeof error === 'string' ? error : (error as Error).message;
+            toast.error('Failed to observe window resize', {
+                description: errMsg
+            });
         }
-    }, [isMobile, rightColRef]);
+    }, [isMobile, resizeObserve, rightColRef]);
 
     /**
      * Handles the execution of a SQL query or a series of SQL statements for a specific challenge.
