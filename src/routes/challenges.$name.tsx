@@ -560,7 +560,7 @@ function Challenge() {
                 <TransformWrapper initialScale={2}>
                     <Allotment vertical={true} className="mt-1 pb-1 lg:mt-20 lg:pb-22 overflow-auto h-full">
                         <div ref={rightColRef} className="px-4 pt-4 pb-22 overflow-auto h-full border-l-4 border-ridge border-white/80 dark:border-slate-900/80">
-                            <ChallengeLesson lesson={challenge.description!} />
+                            <ChallengeLesson lesson={challenge.description!} difficulty={challenge.difficulty} />
                         </div>
                         <div className="relative h-full flex flex-col lg:mx-4 mt-4 pb-4 ">
                             <ChallengeEditor value={editorState} setValue={setEditorState} />
@@ -634,7 +634,7 @@ function Challenge() {
                         <DetailViewRoot active={activeView} result={result} erd={erdFile} isMobile={isMobile} />
                     </Allotment>
                     <div ref={rightColRef} className="px-4 pt-4 pb-22 overflow-auto h-full border-l-4 border-ridge border-white/80 dark:border-slate-900/80">
-                        <ChallengeLesson lesson={challenge.description!} />
+                        <ChallengeLesson lesson={challenge.description!} difficulty={challenge.difficulty} />
                     </div>
                 </Allotment>
             </TransformWrapper>
@@ -751,15 +751,19 @@ export const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
  * @param {string} props.lesson - HTML lesson content
  */
 const ChallengeLesson: React.FC<{ lesson: string }> = ({
-    lesson
+    lesson,
+    difficulty
 }: {
     lesson: string;
+    difficulty: 'easy' | 'medium' | 'hard' | 'unknown';
 }) => (
-    <div className="mt-24"
-        dangerouslySetInnerHTML={{
-            __html: dompurify.sanitize(lesson)
-        }}
-    />
+    <article className="mt-24">
+        <div 
+            dangerouslySetInnerHTML={{
+                __html: `<span class="float-right inline-block rounded-full px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">${difficulty}</span>\n${dompurify.sanitize(lesson)}`
+            }}
+        />
+    </article>
 );
 
 /**
