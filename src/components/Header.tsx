@@ -187,14 +187,14 @@ export const Header: React.FC = (): React.ReactElement => {
                                 onClick={handlePrev}
                                 disabled={Number.isNaN(challengeNo)}
                                 aria-label="Vorherige Herausforderung"
-                                className="m-0"
+                                className="m-0 p-4!"
                                 icon={<ChevronLeftIcon size={2} fill="currentColor" />}
                             />
                             <IconButton
                                 onClick={handleNext}
                                 disabled={Number.isNaN(challengeNo)}
                                 aria-label="Nächste Herausforderung"
-                                className="m-0"
+                                className="m-0 p-4!"
                                 icon={<ChevronRightIcon size={2} fill="currentColor" />}
                             />
                         </div>
