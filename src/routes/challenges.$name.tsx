@@ -750,7 +750,7 @@ export const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
  * @param {Object} props - Component properties
  * @param {string} props.lesson - HTML lesson content
  */
-const ChallengeLesson: React.FC<{ lesson: string }> = ({
+const ChallengeLesson: React.FC<{ lesson: string, difficulty: 'easy' | 'medium' | 'hard' | 'unknown' }> = ({
     lesson,
     difficulty
 }: {
