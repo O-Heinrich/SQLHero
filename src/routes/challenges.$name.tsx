@@ -56,6 +56,7 @@ import { QueryResult, SqlExecutionResult } from '@/lib/exec-engine/postgres-engi
 import { PlayIcon, ArrowLeftIcon, ArrowDownOnSquareStackIcon } from '@heroicons/react/24/solid';
 import { useResizeObserver } from '@/hooks/useResizeObserver';
 import "allotment/dist/style.css";
+// import { CodeEditor } from '@/components/CodeEditor';
 
 
 /**
@@ -564,33 +565,36 @@ function Challenge() {
                         </div>
                         <div className="relative h-full flex flex-col lg:mx-4 mt-4 pb-4 ">
                             <ChallengeEditor value={editorState} setValue={setEditorState} />
-                            <Toolbar className="mx-4 justify-center">
-                                <ErdControls disabled={!isErdActive} />
-                                {isErdActive && <Spacer />}
-                                <IconButton
-                                    icon={<ArrowDownOnSquareStackIcon className="size-6" />}
-                                    aria-label="ERD downloaden"
-                                    title="ERD downloaden"
-                                    disabled={!isErdActive}
-                                    onClick={handleDownloadClick}
-                                />
-                                <IconButton
-                                    icon={<ArrowLeftIcon className="size-6" />}
-                                    aria-label="ERD anzeigen"
-                                    title="ERD anzeigen"
-                                    disabled={isErdActive}
-                                    onClick={handleErdClick}
-                                />
-                                <IconButton
-                                    icon={<PlayIcon className="size-6" />}
-                                    aria-label="SQL ausführen"
-                                    title="SQL ausführen"
-                                    variant="primary"
-                                    onClick={handleRun}
-                                />
-                            </Toolbar>
+                            {/* <CodeEditor value={editorState} onChange={setEditorState} /> */}
+                            <div className="flex-1">
+                                <Toolbar className="mx-4 justify-center">
+                                    <ErdControls disabled={!isErdActive} />
+                                    {isErdActive && <Spacer />}
+                                    <IconButton
+                                        icon={<ArrowDownOnSquareStackIcon className="size-6" />}
+                                        aria-label="ERD downloaden"
+                                        title="ERD downloaden"
+                                        disabled={!isErdActive}
+                                        onClick={handleDownloadClick}
+                                    />
+                                    <IconButton
+                                        icon={<ArrowLeftIcon className="size-6" />}
+                                        aria-label="ERD anzeigen"
+                                        title="ERD anzeigen"
+                                        disabled={isErdActive}
+                                        onClick={handleErdClick}
+                                    />
+                                    <IconButton
+                                        icon={<PlayIcon className="size-6" />}
+                                        aria-label="SQL ausführen"
+                                        title="SQL ausführen"
+                                        variant="primary"
+                                        onClick={handleRun}
+                                    />
+                                </Toolbar>    
+                                <DetailViewRoot active={activeView} result={result} erd={erdFile} isMobile={isMobile} />
+                            </div>
                         </div>
-                        <DetailViewRoot active={activeView} result={result} erd={erdFile} isMobile={isMobile} />
                     </Allotment>
                 </TransformWrapper>
             </div>
@@ -605,6 +609,7 @@ function Challenge() {
                     <Allotment vertical={true} className={`mt-16 pb-22 overflow-auto h-full ${BG_STYLE}`}>
                         <div className="relative h-full flex flex-col mt-4 pb-4">
                             <ChallengeEditor value={editorState} setValue={setEditorState} />
+                            {/* <CodeEditor value={editorState} onChange={setEditorState} /> */}
                             <Toolbar className="justify-center">
                                 <ErdControls disabled={!isErdActive} />
                                 {isErdActive && <Spacer />}
