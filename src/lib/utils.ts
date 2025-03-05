@@ -150,13 +150,16 @@ export class SolutionHashNotFountError extends Error {
 }
 
 /**
- * Class for comparing PostgreSQL query results with stored solutions.
- * Provides methods to store solution hashes, compare results with solutions,
- * and get detailed differences between solutions and results.
+ * Result Set Comparison Utility Module
  * 
- * @class
- * @static
- * @hideconstructor
+ * This module provides utility methods for comparing and analyzing query result sets,
+ * specifically designed for comparing student submissions against solution sets.
+ * 
+ * Key Features:
+ * - Solution hash storage and retrieval
+ * - Result set comparison
+ * - Detailed difference analysis between result sets
+ * 
  * @example
  * ```ts
  * const solution = {
@@ -188,35 +191,37 @@ export class SolutionHashNotFountError extends Error {
  * ```
  */
 export class ResultSetComparison {
-    private static solutionHashes: Map<string, string> = new Map();
-
-    public static hasSolution(exerciseId: string): boolean {
-        return ResultSetComparison.solutionHashes.has(exerciseId);
-    }
+    /** 
+     * Internal storage for solution hashes, keyed by exercise ID 
+     */
+    private static solutionHashes: Map<string, string[]> = new Map();
 
     /**
-     * Generates a hash for a row by joining its values with a comma.
+     * Checks if a solution hash exists for a given exercise
      * 
-     * @param {string[]} row - The row to hash.
-     * @returns {string} - The hash of the row.
+     * @param exerciseId - Unique identifier for the exercise
+     * @returns Boolean indicating presence of a solution hash
      */
-    private static hashRow(row: string[]): string {
-        return row.join(',');
+    public static hasSolution(exerciseId: string): boolean {
+        return ResultSetComparison.solutionHashes.has(exerciseId);
     }
 
     /**
      * Generates a hash for a result set by hashing its columns and rows.
      * 
      * @param {ResultComparison} comparison - The result set to hash.
-     * @returns {string} - The hash of the result set.
+     * @returns {string[]} - The hashes of the columns and rows.
      */
-    private static hashResultSet(comparison: ResultComparison): string {
-        const columnHash = comparison.columns.join('|');
+    private static hashResultSet(comparison: ResultComparison): string[] {
+        const len = comparison.rows.length + Math.min(1, comparison.rows.length);
+        const hashes = new Array<string>(len);
 
-        const rowHashes = comparison.rows
-            .map(this.hashRow);
+        hashes[0] = comparison.columns.join(',');
+        for (let i = 0; i < comparison.rows.length; i++) {
+            hashes[i + 1] = comparison.rows[i].join(',');
+        }
 
-        return columnHash + '\n' + rowHashes.join('\n');
+        return hashes;
     }
 
     /**
@@ -248,7 +253,13 @@ export class ResultSetComparison {
 
         const serialized = queryResultToStringArray(result);
         const hash = this.hashResultSet(serialized);
-        return hash === solutionHash;
+        for (let i = 0; i < solutionHash.length; i++) {
+            if (solutionHash[i] !== hash[i]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -286,11 +297,11 @@ export class ResultSetComparison {
         }
 
         const solutionRowMap = new Map(
-            solutionSerialized.rows.map(row => [this.hashRow(row), row])
+            solutionSerialized.rows.map(row => [row.join(), row])
         );
 
         studentSerialized.rows.forEach((studentRow, rowIndex) => {
-            const rowHash = this.hashRow(studentRow);
+            const rowHash = studentRow.join();
             if (!solutionRowMap.has(rowHash)) {
                 // Find closest matching row for detailed feedback
                 const mismatchedColumns: Array<{
