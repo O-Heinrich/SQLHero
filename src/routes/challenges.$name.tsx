@@ -53,7 +53,7 @@ import { IconButton } from '@/components/buttons/IconButton';
 import { BREAKPOINTS } from 'virtual:sql-hero';
 import { toggleHeaderSuccess } from '@/lib/reducer';
 import { QueryResult, SqlExecutionResult } from '@/lib/exec-engine/postgres-engine';
-import { BoltIcon, DownloadIcon, TableIcon } from '@/components/icons';
+import { PlayIcon, ArrowLeftIcon, ArrowDownOnSquareStackIcon } from '@heroicons/react/24/solid';
 
 import "allotment/dist/style.css";
 
@@ -555,23 +555,24 @@ function Challenge() {
                                 <ErdControls disabled={!isErdActive} />
                                 {isErdActive && <Spacer />}
                                 <IconButton
-                                    icon={<DownloadIcon size={1.5} />}
+                                    icon={<ArrowDownOnSquareStackIcon className="size-6" />}
                                     aria-label="ERD downloaden"
                                     title="ERD downloaden"
+                                    disabled={!isErdActive}
                                     onClick={handleDownloadClick}
                                 />
                                 <IconButton
-                                    icon={<TableIcon size={1.5} />}
+                                    icon={<ArrowLeftIcon className="size-6" />}
                                     aria-label="ERD anzeigen"
                                     title="ERD anzeigen"
                                     disabled={isErdActive}
                                     onClick={handleErdClick}
                                 />
                                 <IconButton
-                                    icon={<BoltIcon size={1.5} />}
+                                    icon={<PlayIcon className="size-6" />}
                                     aria-label="SQL ausführen"
                                     title="SQL ausführen"
-                                    disabled={!isErdActive}
+                                    variant="primary"
                                     onClick={handleRun}
                                 />
                             </Toolbar>
@@ -588,30 +589,31 @@ function Challenge() {
             <title>SQL Hero - Challenge</title>
             <TransformWrapper initialScale={2}>
                 <Allotment className="overflow-auto h-full">
-                    <Allotment vertical={true} className={`mt-20 pb-22 overflow-auto h-full ${BG_STYLE}`}>
-                        <div className="relative h-full flex flex-col lg:mx-4 mt-4 pb-4">
+                    <Allotment vertical={true} className={`mt-16 pb-22 overflow-auto h-full ${BG_STYLE}`}>
+                        <div className="relative h-full flex flex-col mt-4 pb-4">
                             <ChallengeEditor value={editorState} setValue={setEditorState} />
-                            <Toolbar className="mx-4 justify-center">
+                            <Toolbar className="justify-center">
                                 <ErdControls disabled={!isErdActive} />
                                 {isErdActive && <Spacer />}
                                 <IconButton
-                                    icon={<DownloadIcon size={1.5} />}
+                                    icon={<ArrowDownOnSquareStackIcon className="size-6" />}
                                     aria-label="ERD downloaden"
                                     title="ERD downloaden"
+                                    disabled={!isErdActive}
                                     onClick={handleDownloadClick}
                                 />
                                 <IconButton
-                                    icon={<TableIcon size={1.5} />}
+                                    icon={<ArrowLeftIcon className="size-6" />}
                                     aria-label="ERD anzeigen"
                                     title="ERD anzeigen"
                                     disabled={isErdActive}
                                     onClick={handleErdClick}
                                 />
                                 <IconButton
-                                    icon={<BoltIcon size={1.5} />}
+                                    icon={<PlayIcon className="size-6" />}
                                     aria-label="SQL ausführen"
                                     title="SQL ausführen"
-                                    disabled={!isErdActive}
+                                    variant="primary"
                                     onClick={handleRun}
                                 />
                             </Toolbar>
@@ -703,7 +705,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
     children: React.ReactNode;
     className?: string;
 }) => (
-    <div className={`flex gap-2 justify-end p-2 ${className ?? ''}`}>
+    <div className={`bg-gray-200 dark:bg-slate-900/50 flex gap-2 justify-end p-2 ${className ?? ''}`}>
         {children}
     </div>
 );

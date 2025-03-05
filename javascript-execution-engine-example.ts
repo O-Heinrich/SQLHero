@@ -4,8 +4,8 @@
  * @note Just copy and paste this code to main.tsx and watch the dev console.
  * 
  */
-import { JavaScriptExecutionEngine } from "./src/lib/exec-engine/javascript-engine";
-import { PostgresExecutionEngine } from "./src/lib/exec-engine/postgres-engine";
+import { JavaScriptExecutionEngine } from "@/lib/exec-engine/javascript-engine";
+import { PostgresExecutionEngine } from "@/lib/exec-engine/postgres-engine";
 
 async function jsEngine(): Promise<void> {
     const engine = await JavaScriptExecutionEngine.create();

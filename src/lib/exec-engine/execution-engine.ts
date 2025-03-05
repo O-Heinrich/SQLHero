@@ -21,26 +21,30 @@ export class NotInitializedError extends Error {
 }
 
 /**
-* Represents the result of an execution.
-* This is a base interface that can be extended by specific execution engines.
+* Represents the result of an execution operation.
+* This is a generic interface that can be used across different execution contexts.
+* 
+* @template T - The type of data returned by the execution. Defaults to unknown.
 */
-export interface ExecutionResult {
+export interface ExecutionResult<T = unknown> {
     /**
      * Indicates whether the execution was successful.
+     * True if the operation completed without errors, false otherwise.
      */
     success: boolean;
-
+    
     /**
      * Optional error message if the execution failed.
+     * Present only when success is false.
      */
     error?: string;
-
+    
     /**
-     * Implementation-specific data.
-     * For example, SQL engines might return rows and columns, while JavaScript engines might return a single value.
+     * The data returned by the execution.
+     * The structure depends on the generic type parameter T.
      */
-    data: unknown;
-}
+    data: T;
+ }
 
 /**
 * Abstract interface for execution engines.

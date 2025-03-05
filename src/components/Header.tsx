@@ -160,25 +160,25 @@ export const Header: React.FC = (): React.ReactElement => {
 
     return (
         <>
-            {isFirefox && <div className="bg-transparent backdrop-blur-md fixed h-15 md:h-16 top-0 left-0 right-0 z-[9998]" />}
-            <header ref={headerRef} className={clsx('border-b-1 border-gray-100/40 dark:border-gray-100/50  border-groove', 'top-header', 'relative', 'sticky', 'top-0', 'z-[9999]', 'dark:bg-red-500/50', 'bg-red-800/50', 'text-white', !isFirefox && 'backdrop-blur-xl', 'transition-all', 'duration-800', 'dark:mix-blend-color-dodge', 'mix-blend-hard-light')}>
+            {isFirefox && <div className="bg-transparent backdrop-blur-md fixed h-[80px] top-0 left-0 right-0 z-[9998]" />}
+            <header ref={headerRef} className={clsx('border-b-1 h-[80px] border-gray-100/40 dark:border-gray-100/50  border-groove', 'top-header', 'relative', 'sticky', 'top-0', 'z-[9999]', 'dark:bg-red-500/50', 'bg-red-800/50', 'text-white', !isFirefox && 'backdrop-blur-xl', 'transition-all', 'duration-800', 'dark:mix-blend-color-dodge', 'mix-blend-hard-light')}>
                 <div className="transition-all duration-300">
-                    <Wrapper className={clsx('flex', 'items-center', 'max-w-400')}>
-                        <Link to="/" className="flex items-center gap-2">
+                    <Wrapper className={clsx('flex', 'max-w-400')}>
+                        <Link to="/" className="flex items-center gap-2 items-center">
                             <Logo fill={isDarkMode ? '#efefef' : 'rgba(0,0,0,.50)'} />
                             <h1 className={clsx('lg:text-4xl', 'md:text-2xl', 'md:inline', 'hidden', 'dark:text-white/85', 'text-black/50', 'py-2', 'font-light')}>
                                 {APP_NAME}
                             </h1>
                         </Link>
                         <span className={clsx('flex', 'items-center', 'gap-1', 'flex-grow')}></span>
-                        <div className="px-2 flex items-center">
+                        <div className="px-2 flex">
                             <Link to="/overview" className="hidden md:inline">
-                                <Button>
+                                <Button className="h-20">
                                     Übersicht
                                 </Button>
                             </Link>
                             <Link to="/introduction" className="hidden md:inline">
-                                <Button>
+                                <Button className="h-20">
                                     Einführung
                                 </Button>
                             </Link>

@@ -44,12 +44,12 @@ export interface QueryResult {
 export type PgCell = Record<string, unknown>;
 
 /**
- * Extends the base ExecutionResult interface with PostgreSQL-specific data structure.
+ * Represents the result of a SQL execution operation.
+ * 
+ * This is a specialized version of the ExecutionResult interface for PostgreSQL queries.
+ * It contains an array of QueryResult objects, each representing the result of a single query.
  */
-export interface SqlExecutionResult extends ExecutionResult {
-    /** Array of query results or null if execution failed */
-    data: QueryResult[] | null;
-}
+export type SqlExecutionResult = ExecutionResult<QueryResult[]>;
 
 /**
  * PostgreSQL implementation of the ExecutionEngine interface.
@@ -142,7 +142,7 @@ export class PostgresExecutionEngine extends ExecutionEngine {
             return {
                 success: false,
                 error: msg,
-                data: null,
+                data: [],
             };
         }
     }
