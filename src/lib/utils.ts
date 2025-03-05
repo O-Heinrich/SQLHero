@@ -236,6 +236,10 @@ export class ResultSetComparison {
             ? Math.min(1, comparison.rows.length) 
             : 0;
 
+        if (len === 0) {
+            return [];
+        }
+        
         const hashes = new Array<string>(len);
 
         hashes[0] = comparison.columns.join(',');
