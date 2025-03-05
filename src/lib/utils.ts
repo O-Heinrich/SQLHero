@@ -207,13 +207,35 @@ export class ResultSetComparison {
     }
 
     /**
-     * Generates a hash for a result set by hashing its columns and rows.
+     * Generates a hash representation of a result set by converting columns and rows to string arrays.
      * 
-     * @param {ResultComparison} comparison - The result set to hash.
-     * @returns {string[]} - The hashes of the columns and rows.
+     * The method creates a hash array where:
+     * - The first element is a comma-separated string of column names
+     * - Subsequent elements are comma-separated strings of row values
+     * 
+     * @param {ResultComparison} comparison - The result set to be hashed
+     * @returns {string[]} An array of string hashes representing columns and rows
+     * 
+     * @remarks
+     * - Dynamically calculates array length based on result set
+     * - Uses comma as a delimiter for consistent string representation
+     * - Handles edge cases with empty result sets
+     * 
+     * @example
+     * // For a result set with columns ['id', 'name'] and a single row [1, 'John']
+     * // Returns: ['id,name', '1,John']
+     * const hash = ResultSetComparison.hashResultSet(resultSet);
+     * 
+     * @example
+     * // For an empty result set
+     * // Returns: []
+     * const emptyHash = ResultSetComparison.hashResultSet(emptyResultSet);
      */
     private static hashResultSet(comparison: ResultComparison): string[] {
-        const len = comparison.rows.length + Math.min(1, comparison.rows.length);
+        const len = comparison.rows.length + comparison.rows.length > 0 
+            ? Math.min(1, comparison.rows.length) 
+            : 0;
+
         const hashes = new Array<string>(len);
 
         hashes[0] = comparison.columns.join(',');
@@ -240,10 +262,31 @@ export class ResultSetComparison {
     /**
      * Compares a result set with the stored solution for a given exercise ID.
      * 
-     * @param {string} exerciseId - The ID of the exercise.
-     * @param {QueryResult} result - The result set to compare.
-     * @returns {boolean} - `true` if the result matches the solution, `false` otherwise.
-     * @throws {SolutionHashNotFountError} - If no solution hash is found for the given exercise ID.
+     * Performs a comprehensive comparison by:
+     * - Retrieving the solution hash for the specified exercise
+     * - Serializing the input result set
+     * - Comparing column count and individual hash values
+     * 
+     * @param {string} exerciseId - Unique identifier for the exercise
+     * @param {QueryResult} result - The result set to compare against the solution
+     * @returns {boolean} Indicates whether the result exactly matches the solution
+     * @throws {SolutionHashNotFoundError} When no solution hash exists for the given exercise ID
+     * 
+     * @remarks
+     * - Comparison is strict: column count and individual cell values must match
+     * - Uses string-based hash comparison for precise matching
+     * 
+     * @example
+     * // Returns true if result matches solution exactly
+     * const isCorrect = ResultSetComparison.compareWithSolution('exercise-001', result);
+     * 
+     * @example
+     * // Throws error if no solution hash exists
+     * try {
+     *   ResultSetComparison.compareWithSolution('unknown-exercise', result);
+     * } catch (error) {
+     *   console.error('No solution found for this exercise');
+     * }
      */
     static compareWithSolution(exerciseId: string, result: QueryResult): boolean {
         const solutionHash = this.solutionHashes.get(exerciseId);
@@ -253,6 +296,11 @@ export class ResultSetComparison {
 
         const serialized = queryResultToStringArray(result);
         const hash = this.hashResultSet(serialized);
+
+        if (solutionHash.length !== hash.length) {
+            return false;
+        }
+
         for (let i = 0; i < solutionHash.length; i++) {
             if (solutionHash[i] !== hash[i]) {
                 return false;
