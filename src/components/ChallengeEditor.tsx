@@ -1,9 +1,25 @@
 /**
- * @module Footer
- * @description 
- * Provides the application footer component with responsive theming
- * and branding elements that adapt to the current application theme.
+ * @module SQLEditorModule
+ * @description
+ * Provides a theme-aware SQL code editor component using Ace Editor.
+ * 
+ * This module includes:
+ * - A React component for rendering an interactive SQL editor
+ * - Integration with custom theme hooks
+ * - Advanced editor configurations
+ * 
+ * Key Features:
+ * - Dynamic theme switching (light/dark)
+ * - Syntax highlighting for SQL
+ * - Live autocompletion
+ * - Responsive sizing
+ * 
+ * @requires react
+ * @requires @/hooks/useTheme
+ * @requires react-ace
+ * @requires ace-builds
  */
+
 import React from "react";
 
 import { useTheme } from "@/hooks/useTheme";
@@ -13,6 +29,24 @@ import "ace-builds/src-noconflict/theme-one_dark";
 import "ace-builds/src-noconflict/theme-iplastic";
 import "ace-builds/src-noconflict/ext-language_tools";
 
+/**
+ * Props interface for the ChallengeEditor component
+ * @interface ChallengeEditorProps
+ * @description Defines the shape of props accepted by the ChallengeEditor
+ */
+interface ChallengeEditorProps {
+    /** 
+     * Current SQL query content 
+     * @type {string}
+     */
+    value: string;
+
+    /** 
+     * Function to update the SQL query content 
+     * @type {React.Dispatch<string>}
+     */
+    setValue: React.Dispatch<string>;
+}
 
 /**
  * SQL code editor component with theme awareness
@@ -25,9 +59,8 @@ import "ace-builds/src-noconflict/ext-language_tools";
  * - Line numbers
  * - Live autocompletion
  * 
- * @param {Object} props - Component properties
- * @param {string} props.value - Current SQL query content
- * @param {React.Dispatch<string>} props.setValue - Function to update query content
+ * @param {ChallengeEditorProps} props - Component properties
+ * @returns {React.ReactElement} Rendered SQL editor component
  * 
  * @example
  * ```tsx
@@ -38,13 +71,16 @@ import "ace-builds/src-noconflict/ext-language_tools";
  * />
  * ```
  */
-export const ChallengeEditor: React.FC<{ value: string, setValue: React.Dispatch<string> }> = ({
-    value, setValue
-}: {
-    value: string,
-    setValue: React.Dispatch<string>
+export const ChallengeEditor: React.FC<ChallengeEditorProps> = ({
+    value, 
+    setValue
 }) => {
+    /** 
+     * Retrieve the current theme from the theme hook 
+     * @type {Object}
+     */
     const { theme } = useTheme();
+
     return (
         <AceEditor
             mode="sql"
@@ -53,15 +89,22 @@ export const ChallengeEditor: React.FC<{ value: string, setValue: React.Dispatch
             height='100%'
             className='border-2 border-ridge shadow-lg border-gray-300 dark:border-gray-700 absolute inset-0'
             setOptions={{
+                /** Enable basic autocompletion */
                 enableBasicAutocompletion: true,
+                /** Enable live autocompletion */
                 enableLiveAutocompletion: true,
+                /** Enable code snippets */
                 enableSnippets: true,
+                /** Show line numbers */
                 showLineNumbers: true,
+                /** Set tab size */
                 tabSize: 4,
+                /** Set cursor style */
                 cursorStyle: 'smooth',
             }}
             fontSize={16}
             value={value}
+            /** Handle changes to the editor content */
             onChange={(value: string) => setValue(value)}
             name="editor"
             editorProps={{ $blockScrolling: true }}
