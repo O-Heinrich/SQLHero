@@ -1,8 +1,9 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
-
 import { routeTree } from './routeTree.gen';
+import './hooks/useWorker';
+
 const router = createRouter({ routeTree });
 
 import '@/assets/atom-one-light.css';

@@ -35,11 +35,11 @@ import { TransformWrapper } from "react-zoom-pan-pinch";
 import { toast } from 'sonner';
 import dompurify from 'dompurify';
 import { Allotment } from "allotment";
-import AceEditor from "react-ace";
-import "ace-builds/src-noconflict/mode-sql";
-import "ace-builds/src-noconflict/theme-one_dark";
-import "ace-builds/src-noconflict/theme-iplastic";
-import "ace-builds/src-noconflict/ext-language_tools";
+// import AceEditor from "react-ace";
+// import "ace-builds/src-noconflict/mode-sql";
+// import "ace-builds/src-noconflict/theme-one_dark";
+// import "ace-builds/src-noconflict/theme-iplastic";
+// import "ace-builds/src-noconflict/ext-language_tools";
 import { ChallengeSkeleton } from '@/components/Skeleton';
 import { PgExecEngineContext } from '@/context/PgExecEngineContext';
 import { useTheme } from '@/hooks/useTheme';
@@ -55,8 +55,9 @@ import { toggleHeaderSuccess } from '@/lib/reducer';
 import { QueryResult, SqlExecutionResult } from '@/lib/exec-engine/postgres-engine';
 import { PlayIcon, ArrowLeftIcon, ArrowDownOnSquareStackIcon } from '@heroicons/react/24/solid';
 import { useResizeObserver } from '@/hooks/useResizeObserver';
+import { CodeEditor } from '@/components/CodeEditor';
 import "allotment/dist/style.css";
-// import { CodeEditor } from '@/components/CodeEditor';
+
 
 
 /**
@@ -314,6 +315,7 @@ function Challenge() {
     const challenge = Route.useLoaderData() as ChallengeData;
     const rightColRef = useRef<HTMLDivElement>(null);
     const [editorState, setEditorState] = useState('');
+    const editorRef = useRef<string>('');
     const [result, setResult] = useState<QueryResult | undefined>();
     const [isMobile, setIsMobile] = useState(window.innerWidth < BREAKPOINTS.lg);
     const [db, setDb] = useState<string>('');
@@ -389,6 +391,12 @@ function Challenge() {
             });
         }
     }, [db, challenge.schema, dispatch, updateSchema, state.challenges, challengeIndex]);
+
+    useEffect(() => {
+        if (editorRef.current !== editorState) {
+            setEditorState(() => editorRef.current);
+        }
+    }, [theme, setEditorState, editorState])
 
     /**
      * Updates the view to show the ERD (Entity-Relationship Diagram) and scrolls to the top of the right column.
@@ -470,7 +478,7 @@ function Challenge() {
         try {
             let queryResult: SqlExecutionResult | null = null;
             const key = challengeNo.toString(); // Create a key for the current challenge.
-            const result = await pg.execute(editorState); // Execute the SQL query.
+            const result = await pg.execute(editorRef?.current ?? ''); // Execute the SQL query.
 
             if (!result.success) {
                 throw new Error(result.error ?? 'An error occurred while executing the query.');
@@ -554,52 +562,52 @@ function Challenge() {
         a.click();
     }
 
-    if (isMobile) {
-        return (
-            <div key="mobile" className="flex flex-col gap-4 flex-1 inset-0  mt-[calc(var(--spacing)*-20)] mb-[calc(var(--spacing)*-20)]">
-                <title>SQL Hero - Challenge</title>
-                <TransformWrapper initialScale={2}>
-                    <Allotment vertical={true} className="mt-1 pb-1 lg:mt-20 lg:pb-22 overflow-auto h-full">
-                        <div ref={rightColRef} className="px-4 pt-4 pb-22 overflow-auto h-full border-l-4 border-ridge border-white/80 dark:border-slate-900/80">
-                            <ChallengeLesson lesson={challenge.description!} difficulty={challenge.difficulty} />
-                        </div>
-                        <div className="relative h-full flex flex-col lg:mx-4 mt-4 pb-4 ">
-                            <ChallengeEditor value={editorState} setValue={setEditorState} />
-                            {/* <CodeEditor value={editorState} onChange={setEditorState} /> */}
-                            <div className="flex-1">
-                                <Toolbar className="mx-4 justify-center">
-                                    <ErdControls disabled={!isErdActive} />
-                                    {isErdActive && <Spacer />}
-                                    <IconButton
-                                        icon={<ArrowDownOnSquareStackIcon className="size-6" />}
-                                        aria-label="ERD downloaden"
-                                        title="ERD downloaden"
-                                        disabled={!isErdActive}
-                                        onClick={handleDownloadClick}
-                                    />
-                                    <IconButton
-                                        icon={<ArrowLeftIcon className="size-6" />}
-                                        aria-label="ERD anzeigen"
-                                        title="ERD anzeigen"
-                                        disabled={isErdActive}
-                                        onClick={handleErdClick}
-                                    />
-                                    <IconButton
-                                        icon={<PlayIcon className="size-6" />}
-                                        aria-label="SQL ausführen"
-                                        title="SQL ausführen"
-                                        variant="primary"
-                                        onClick={handleRun}
-                                    />
-                                </Toolbar>    
-                                <DetailViewRoot active={activeView} result={result} erd={erdFile} isMobile={isMobile} />
-                            </div>
-                        </div>
-                    </Allotment>
-                </TransformWrapper>
-            </div>
-        );
-    }
+    // if (isMobile) {
+    //     return (
+    //         <div key="mobile" className="flex flex-col gap-4 flex-1 inset-0  mt-[calc(var(--spacing)*-20)] mb-[calc(var(--spacing)*-20)]">
+    //             <title>SQL Hero - Challenge</title>
+    //             <TransformWrapper initialScale={2}>
+    //                 <Allotment vertical={true} className="mt-1 pb-1 lg:mt-20 lg:pb-22 overflow-auto h-full">
+    //                     <div ref={rightColRef} className="px-4 pt-4 pb-22 overflow-auto h-full border-l-4 border-ridge border-white/80 dark:border-slate-900/80">
+    //                         <ChallengeLesson lesson={challenge.description!} difficulty={challenge.difficulty} />
+    //                     </div>
+    //                     <div className="relative h-full flex flex-col lg:mx-4 mt-4 pb-4 ">
+    //                         {/* <ChallengeEditor value={editorState} setValue={setEditorState} /> */}
+    //                         <CodeEditor value={editorState} onChange={setEditorState} />
+    //                         <div className="flex-1">
+    //                             <Toolbar className="mx-4 justify-center">
+    //                                 <ErdControls disabled={!isErdActive} />
+    //                                 {isErdActive && <Spacer />}
+    //                                 <IconButton
+    //                                     icon={<ArrowDownOnSquareStackIcon className="size-6" />}
+    //                                     aria-label="ERD downloaden"
+    //                                     title="ERD downloaden"
+    //                                     disabled={!isErdActive}
+    //                                     onClick={handleDownloadClick}
+    //                                 />
+    //                                 <IconButton
+    //                                     icon={<ArrowLeftIcon className="size-6" />}
+    //                                     aria-label="ERD anzeigen"
+    //                                     title="ERD anzeigen"
+    //                                     disabled={isErdActive}
+    //                                     onClick={handleErdClick}
+    //                                 />
+    //                                 <IconButton
+    //                                     icon={<PlayIcon className="size-6" />}
+    //                                     aria-label="SQL ausführen"
+    //                                     title="SQL ausführen"
+    //                                     variant="primary"
+    //                                     onClick={handleRun}
+    //                                 />
+    //                             </Toolbar>    
+    //                             <DetailViewRoot active={activeView} result={result} erd={erdFile} isMobile={isMobile} />
+    //                         </div>
+    //                     </div>
+    //                 </Allotment>
+    //             </TransformWrapper>
+    //         </div>
+    //     );
+    // }
 
     return (
         <div key="desktop" className={`flex flex-col gap-4 flex-1 inset-0  mt-[calc(var(--spacing)*-20)] mb-[calc(var(--spacing)*-20)] `}>
@@ -608,8 +616,8 @@ function Challenge() {
                 <Allotment className="overflow-auto h-full">
                     <Allotment vertical={true} className={`mt-16 pb-22 overflow-auto h-full ${BG_STYLE}`}>
                         <div className="relative h-full flex flex-col mt-4 pb-4">
-                            <ChallengeEditor value={editorState} setValue={setEditorState} />
-                            {/* <CodeEditor value={editorState} onChange={setEditorState} /> */}
+                            {/* <ChallengeEditor value={editorState} setValue={setEditorState} /> */}
+                            <CodeEditor ref={editorRef} value={''} />
                             <Toolbar className="justify-center">
                                 <ErdControls disabled={!isErdActive} />
                                 {isErdActive && <Spacer />}
@@ -810,36 +818,36 @@ export const ChallengeTask: React.FC<{ task: string }> = ({ task }: { task: stri
  * />
  * ```
  */
-const ChallengeEditor: React.FC<{ value: string, setValue: React.Dispatch<string> }> = ({
-    value, setValue
-}: {
-    value: string,
-    setValue: React.Dispatch<string>
-}) => {
-    const { theme } = useTheme();
-    return (
-        <AceEditor
-            mode="sql"
-            theme={theme === 'dark' ? 'one_dark' : 'iplastic'}
-            width='100%'
-            height='100%'
-            className='border-2 border-ridge shadow-lg border-gray-300 dark:border-gray-700 absolute inset-0'
-            setOptions={{
-                enableBasicAutocompletion: true,
-                enableLiveAutocompletion: true,
-                enableSnippets: true,
-                showLineNumbers: true,
-                tabSize: 4,
-                cursorStyle: 'smooth',
-            }}
-            fontSize={16}
-            value={value}
-            onChange={(value: string) => setValue(value)}
-            name="editor"
-            editorProps={{ $blockScrolling: true }}
-        />
-    );
-}
+// const ChallengeEditor: React.FC<{ value: string, setValue: React.Dispatch<string> }> = ({
+//     value, setValue
+// }: {
+//     value: string,
+//     setValue: React.Dispatch<string>
+// }) => {
+//     const { theme } = useTheme();
+//     return (
+//         <AceEditor
+//             mode="sql"
+//             theme={theme === 'dark' ? 'one_dark' : 'iplastic'}
+//             width='100%'
+//             height='100%'
+//             className='border-2 border-ridge shadow-lg border-gray-300 dark:border-gray-700 absolute inset-0'
+//             setOptions={{
+//                 enableBasicAutocompletion: true,
+//                 enableLiveAutocompletion: true,
+//                 enableSnippets: true,
+//                 showLineNumbers: true,
+//                 tabSize: 4,
+//                 cursorStyle: 'smooth',
+//             }}
+//             fontSize={16}
+//             value={value}
+//             onChange={(value: string) => setValue(value)}
+//             name="editor"
+//             editorProps={{ $blockScrolling: true }}
+//         />
+//     );
+// }
 
 /**
  * TanStack Router configuration for challenge routes
