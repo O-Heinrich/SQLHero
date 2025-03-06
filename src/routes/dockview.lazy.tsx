@@ -27,5 +27,5 @@ export const Route = createLazyFileRoute('/dockview')({
 })
 
 function AppView() {
-    return <MainView />
+    return <div style={{width: '100vw', flex: '100%', overflow: 'auto'}}><MainView /></div>
 }

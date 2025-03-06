@@ -64,18 +64,29 @@
     --footer-shadow: #b3b3b326;
 }
 
+.dockview-theme-dark {
+    --dv-group-view-background-color: #2d2d2d00;
+}
+.dv-content-container {
+    overflow-y: auto;
+    background: transparent;
+    padding: 0 1em;
+}
 @layer utilities {
     .text-shadow-sm {
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     }
+
     .text-shadow {
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
+
     .text-shadow-lg {
-      text-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        text-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     }
+
     .bg-size-125 {
-      background-size: 125%;
+        background-size: 125%;
     }
 }
 
@@ -176,7 +187,7 @@ ol li {
 }
 
 hr {
-    @apply my-8 mx-auto bg-slate-300  shadow-md h-1 rounded-md max-w-sm dark:bg-slate-400 border-none;
+    @apply my-8 mx-auto bg-slate-300 shadow-md h-1 rounded-md max-w-sm dark:bg-slate-400 border-none;
 }
 
 a:not(a:has(button)):not(header h1 a) {
@@ -256,7 +267,7 @@ table#query-result tbody tr td {
 button {
     @apply px-8 py-3 text-xl font-light text-center cursor-pointer transition duration-250 ease-in-out transform bg-slate-200 border-gray-300 border-1 dark:bg-gray-800 dark:border-gray-800 dark:hover:bg-slate-700 dark:hover:border-white/25 dark:focus:ring-slate-900/40 dark:focus:ring-offset-gray-700 rounded-xl shadow-inner shadow-white dark:shadow-inner dark:shadow-gray-600/80 dark:hover:shadow-gray-100/25 hover:bg-slate-100 hover:shadow-white hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-200 focus:ring-slate-400/50 dark:active:bg-slate-900/50 active:bg-white/30;
 }
-    
+
 
 button:not(header button):disabled {
     @apply hidden;
@@ -276,7 +287,8 @@ button.theme-button {
     align-self: center;
 }
 
-button.icon, header a button {
+button.icon,
+header a button {
     @apply p-4;
 }
 
