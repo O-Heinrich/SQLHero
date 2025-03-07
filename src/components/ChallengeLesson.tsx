@@ -15,32 +15,6 @@
 import React from 'react';
 import dompurify from 'dompurify';
 
-
-/**
- * Challenge task display component with sanitized HTML
- * @component
- * @description Renders HTML task content with XSS protection
- * 
- * @param {ContentProps} props - Component properties
- * @returns {React.ReactElement} Sanitized task content paragraph
- * 
- * @deprecated Use more specific content rendering components
- * @warning Potential future removal
- * 
- * @example
- * ```tsx
- * <ChallengeTask task="<p>Complete the SQL query</p>" />
- * ```
- */
-export const ChallengeTask: React.FC<{ task: string }> = ({ task }: { task: string }): React.ReactElement => (
-    <p
-        dangerouslySetInnerHTML={{
-            // Sanitize HTML to prevent XSS attacks
-            __html: dompurify.sanitize(task)
-        }}
-    />
-);
-
 /**
  * Challenge lesson display component with sanitized HTML
  * @component
@@ -61,12 +35,12 @@ export const ChallengeLesson: React.FC<{ lesson: string, difficulty: 'easy' | 'm
     lesson: string;
     difficulty: 'easy' | 'medium' | 'hard' | 'unknown';
 }) => (
-    <article className="mt-24">
+    <article className="mt-2">
         <div 
             dangerouslySetInnerHTML={{
                 __html: `
                 <span class="float-right inline-block rounded-full px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                    ${difficulty}
+                    ${dompurify.sanitize(difficulty)}
                 </span>\n
                 ${dompurify.sanitize(lesson)}
                 `
