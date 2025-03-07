@@ -45,7 +45,7 @@ async function jsEngine(): Promise<void> {
     console.log(`Passed tests: ${result.testResults?.passed}`);
     console.log(`Failed tests: ${result.testResults?.failed}`);
     console.log(`\n        ======== Test Results ========\n` + result.testResults?.details.map((r: {name: string, passed: boolean, error: string}) => 
-       `        ${r.name} - ${r.passed ? 'Passed' : 'Failed'} ${Boolean(r.error) ? r.error : ''}`
+        `        ${r.name} - ${r.passed ? 'Passed' : 'Failed'} ${r.error ? r.error : ''}`
     ).join('\n'));
 
     engine.destroy();
