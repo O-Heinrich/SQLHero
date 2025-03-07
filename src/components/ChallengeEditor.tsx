@@ -22,12 +22,12 @@
 
 import React from "react";
 
-import { useTheme } from "@/hooks/useTheme";
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-sql";
 import "ace-builds/src-noconflict/theme-one_dark";
 import "ace-builds/src-noconflict/theme-iplastic";
 import "ace-builds/src-noconflict/ext-language_tools";
+import { useTheme } from "@/hooks/useTheme";
 
 /**
  * Props interface for the ChallengeEditor component
@@ -35,17 +35,10 @@ import "ace-builds/src-noconflict/ext-language_tools";
  * @description Defines the shape of props accepted by the ChallengeEditor
  */
 interface ChallengeEditorProps {
-    /** 
-     * Current SQL query content 
-     * @type {string}
+    /** Reference to the editor value
+     * @type {React.RefObject<string>}
      */
-    value: string;
-
-    /** 
-     * Function to update the SQL query content 
-     * @type {React.Dispatch<string>}
-     */
-    setValue: React.Dispatch<string>;
+    valueRef: React.RefObject<string>;
 }
 
 /**
@@ -72,8 +65,7 @@ interface ChallengeEditorProps {
  * ```
  */
 export const ChallengeEditor: React.FC<ChallengeEditorProps> = ({
-    value, 
-    setValue
+    valueRef,
 }) => {
     /** 
      * Retrieve the current theme from the theme hook 
@@ -103,9 +95,12 @@ export const ChallengeEditor: React.FC<ChallengeEditorProps> = ({
                 cursorStyle: 'smooth',
             }}
             fontSize={16}
-            value={value}
+            value={valueRef?.current ?? ''}
+
             /** Handle changes to the editor content */
-            onChange={(value: string) => setValue(value)}
+            onChange={(newValue: string) => {
+                valueRef.current = newValue
+            }}
             name="editor"
             editorProps={{ $blockScrolling: true }}
         />

@@ -6,21 +6,23 @@
  * to the current theme and provides navigation between challenges.
  */
 
-import React, { useEffect } from "react";
-import clsx from "clsx";
-import { Link, useNavigate } from "@tanstack/react-router";
-import { Wrapper } from "@/components/Wrapper";
-import { Logo } from "@/components/Logo";
-import { ToggleThemeButton } from "./buttons/ToggleTheme";
-import { useTheme } from "@/hooks/useTheme";
-import { ChevronLeftIcon, ChevronRightIcon } from "./icons";
-import { Button } from "@headlessui/react";
-import { COUNT_CHALLENGES, APP_NAME } from "virtual:sql-hero";
-import { useAppState } from "@/hooks/useAppState";
-import { AppState, ChallengeAction } from "@/lib/types";
-import { useChallengeNumber } from "@/hooks/useChallengeNumber";
-import { isFirefox } from "@/lib/agents";
-import { IconButton } from "./buttons/IconButton";
+import React, { useEffect } from 'react';
+import clsx from 'clsx';
+import { Link, useNavigate } from '@tanstack/react-router';
+import { Wrapper } from '@/components/Wrapper';
+import { Logo } from '@/components/Logo';
+import { ToggleThemeButton } from './buttons/ToggleTheme';
+import { useTheme } from '@/hooks/useTheme';
+import { Button } from '@headlessui/react';
+import { COUNT_CHALLENGES, APP_NAME } from 'virtual:sql-hero';
+import { useAppState } from '@/hooks/useAppState';
+import { AppState, ChallengeAction } from '@/lib/types';
+import { useChallengeNumber } from '@/hooks/useChallengeNumber';
+import { isFirefox } from '@/lib/agents';
+import { IconButton } from './buttons/IconButton';
+import { useResizeObserver } from '@/hooks/useResizeObserver';
+import { ChevronLeftIcon, ChevronRightIcon, Bars3BottomRightIcon } from '@heroicons/react/24/solid';
+import { motion } from 'motion/react';
 
 /**
  * Spacer component properties
@@ -75,6 +77,8 @@ export const Header: React.FC = (): React.ReactElement => {
     const navigate = useNavigate();
     const challengeNo = useChallengeNumber();
     const headerRef = React.useRef<HTMLHeadingElement>(null);
+    const blurRef = React.useRef<HTMLDivElement>(null);
+    const resizeObserve = useResizeObserver<HTMLDivElement>();
     const { state, dispatch }: { state: AppState, dispatch: React.Dispatch<ChallengeAction> } = useAppState();
 
     /**
@@ -109,6 +113,40 @@ export const Header: React.FC = (): React.ReactElement => {
             return () => window.removeEventListener('scroll', handleScroll);
         }
     }, [state.headerElement]);
+
+    /**
+     * Sets up header blur effect for Firefox browser
+     * 
+     * If the browser is Firefox, sets up a polyfill for the backdrop-blur CSS property
+     * to create a frosted glass effect. The blur effect is updated on resize.
+     * 
+     * @effect
+     * @dependencies [isFirefox, headerRef, blurRef, resizeObserve, isMobile]
+     */
+    useEffect(() => {
+        /**
+         * Firefox-specific header height synchronization
+         * 
+         * This effect handles:
+         * - Setting initial blur element height to match header
+         * - Dynamically updating blur element height on header resize
+         * 
+         * Only applies when running in Firefox to address browser-specific rendering issues
+         * 
+         * @remarks
+         * - Uses custom resizeObserve hook for tracking header element changes
+         * - Synchronizes blur element height with header element
+         */
+        if (isFirefox && headerRef.current && blurRef.current) {
+            const height = headerRef.current.offsetHeight;
+            blurRef.current.style.height = `${height}px`;
+            resizeObserve(headerRef.current, (entries: ResizeObserverEntry[]) => {
+                const { height } = entries[0].contentRect;
+                blurRef.current?.style.setProperty('height', `${height}px`);
+            });
+        }
+    }, [headerRef, blurRef, resizeObserve]);
+
 
     /**
      * Memoized boolean indicating if dark theme is active
@@ -160,11 +198,11 @@ export const Header: React.FC = (): React.ReactElement => {
 
     return (
         <>
-            {isFirefox && <div className="bg-transparent backdrop-blur-md fixed h-[80px] top-0 left-0 right-0 z-[9998]" />}
-            <header ref={headerRef} className={clsx('border-b-1 h-[80px] border-gray-100/40 dark:border-gray-100/50  border-groove', 'top-header', 'relative', 'sticky', 'top-0', 'z-[9999]', 'dark:bg-red-500/50', 'bg-red-800/50', 'text-white', !isFirefox && 'backdrop-blur-xl', 'transition-all', 'duration-800', 'dark:mix-blend-color-dodge', 'mix-blend-hard-light')}>
+            {isFirefox && <div ref={blurRef} className="bg-transparent backdrop-blur-md fixed top-0 left-0 right-0 z-[9998]" />}
+            <header ref={headerRef} className={clsx('border-b-1 border-gray-100/40 dark:border-gray-100/50  border-groove', 'top-header', 'relative', 'sticky', 'top-0', 'z-[9999]', 'dark:bg-red-500/50', 'bg-red-800/50', 'text-white', !isFirefox && 'backdrop-blur-xl', 'transition-all', 'duration-800', 'dark:mix-blend-color-dodge', 'mix-blend-hard-light')}>
                 <div className="transition-all duration-300">
                     <Wrapper className={clsx('flex', 'max-w-400')}>
-                        <Link to="/" className="flex items-center gap-2 items-center">
+                        <Link to="/" className="flex items-center gap-2">
                             <Logo fill={isDarkMode ? '#efefef' : 'rgba(0,0,0,.50)'} />
                             <h1 className={clsx('lg:text-4xl', 'md:text-2xl', 'md:inline', 'hidden', 'dark:text-white/85', 'text-black/50', 'py-2', 'font-light')}>
                                 {APP_NAME}
@@ -187,18 +225,25 @@ export const Header: React.FC = (): React.ReactElement => {
                                 onClick={handlePrev}
                                 disabled={Number.isNaN(challengeNo)}
                                 aria-label="Vorherige Herausforderung"
-                                className="m-0 p-4!"
-                                icon={<ChevronLeftIcon size={2} fill="currentColor" />}
+                                className="m-0 px-8!"
+                                icon={<ChevronLeftIcon className="size-6" />}
                             />
                             <IconButton
                                 onClick={handleNext}
                                 disabled={Number.isNaN(challengeNo)}
                                 aria-label="Nächste Herausforderung"
-                                className="m-0 p-4!"
-                                icon={<ChevronRightIcon size={2} fill="currentColor" />}
+                                className="m-0 px-8!"
+                                icon={<ChevronRightIcon className="size-6" />}
                             />
                         </div>
                         <ToggleThemeButton />
+                        <motion.button 
+                            onClick={() => navigate({to: '/dockview'})} 
+                            className="theme-button m-0! p-2! transition-duration-200! md:hidden"
+                            whileTap={{ scale: 0.75 }}
+                        >
+                            {theme === 'dark' ? <Bars3BottomRightIcon className="size-6 text-white/75!"  /> : <Bars3BottomRightIcon className="size-6 text-black/75"  />}
+                        </motion.button>
                     </Wrapper>
                 </div>
             </header>

@@ -15,18 +15,6 @@
 import React from 'react';
 import dompurify from 'dompurify';
 
-/**
- * Props interface for content rendering components
- * @interface ContentProps
- * @description Defines the shape of props for HTML content components
- */
-interface ContentProps {
-    /** 
-     * HTML content to be rendered and sanitized
-     * @type {string}
-     */
-    content: string;
-}
 
 /**
  * Challenge task display component with sanitized HTML
@@ -44,7 +32,7 @@ interface ContentProps {
  * <ChallengeTask task="<p>Complete the SQL query</p>" />
  * ```
  */
-export const ChallengeTask: React.FC<{ task: string }> = ({ task }: { task: string }) => (
+export const ChallengeTask: React.FC<{ task: string }> = ({ task }: { task: string }): React.ReactElement => (
     <p
         dangerouslySetInnerHTML={{
             // Sanitize HTML to prevent XSS attacks
@@ -66,15 +54,23 @@ export const ChallengeTask: React.FC<{ task: string }> = ({ task }: { task: stri
  * <ChallengeLesson lesson="<h2>SQL Basics</h2><p>Learn about databases...</p>" />
  * ```
  */
-export const ChallengeLesson: React.FC<{ lesson: string }> = ({
-    lesson
+export const ChallengeLesson: React.FC<{ lesson: string, difficulty: 'easy' | 'medium' | 'hard' | 'unknown' }> = ({
+    lesson,
+    difficulty
 }: {
     lesson: string;
+    difficulty: 'easy' | 'medium' | 'hard' | 'unknown';
 }) => (
-    <div className="mt-24"
-        dangerouslySetInnerHTML={{
-            // Sanitize HTML to prevent XSS attacks
-            __html: dompurify.sanitize(lesson)
-        }}
-    />
+    <article className="mt-24">
+        <div 
+            dangerouslySetInnerHTML={{
+                __html: `
+                <span class="float-right inline-block rounded-full px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                    ${difficulty}
+                </span>\n
+                ${dompurify.sanitize(lesson)}
+                `
+            }}
+        />
+    </article>
 );

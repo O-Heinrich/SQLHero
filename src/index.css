@@ -60,22 +60,85 @@
     --footer-shadow: #ffffff63;
 }
 
-.dark {
-    --footer-shadow: #b3b3b326;
+.dockview-theme-abyss {
+    --dv-paneview-active-outline-color: dodgerblue;
+    --dv-tabs-and-actions-container-font-size: 13px;
+    --dv-tabs-and-actions-container-height: 35px;
+    --dv-drag-over-background-color: rgba(83, 89, 93, 0.5);
+    --dv-drag-over-border-color: white;
+    --dv-tabs-container-scrollbar-color: #888;
+    --dv-icon-hover-background-color: rgba(90, 93, 94, 0.31);
+    --dv-floating-box-shadow: 8px 8px 8px 0px rgba(83, 89, 93, 0.5);
+    --dv-overlay-z-index: 999;
+    --dv-active-sash-transition-duration: 0.1s;
+    --dv-active-sash-transition-delay: 0.5s;
+    --dv-group-view-background-color: transparent !important;
+    --dv-tabs-and-actions-container-background-color: #1c1c2a;
+    --dv-activegroup-visiblepanel-tab-background-color: #000c18;
+    --dv-activegroup-hiddenpanel-tab-background-color: #10192c;
+    --dv-inactivegroup-visiblepanel-tab-background-color: #000c18;
+    --dv-inactivegroup-hiddenpanel-tab-background-color: #10192c;
+    --dv-tab-divider-color: #2b2b4a;
+    --dv-activegroup-visiblepanel-tab-color: white;
+    --dv-activegroup-hiddenpanel-tab-color: rgba(255, 255, 255, 0.5);
+    --dv-inactivegroup-visiblepanel-tab-color: rgba(255, 255, 255, 0.5);
+    --dv-inactivegroup-hiddenpanel-tab-color: rgba(255, 255, 255, 0.25);
+    --dv-separator-border: #8d9dff47;
+    --dv-paneview-header-border-color: #2b2b4a;
+    --dv-paneview-active-outline-color: #596f99;
 }
 
+.dark .dockview-theme-abyss {
+    --dv-paneview-active-outline-color: dodgerblue;
+    --dv-tabs-and-actions-container-font-size: 13px;
+    --dv-tabs-and-actions-container-height: 35px;
+    --dv-drag-over-background-color: rgba(83, 89, 93, 0.5);
+    --dv-drag-over-border-color: white;
+    --dv-tabs-container-scrollbar-color: #888;
+    --dv-icon-hover-background-color: rgba(90, 93, 94, 0.31);
+    --dv-floating-box-shadow: 8px 8px 8px 0px rgba(83, 89, 93, 0.5);
+    --dv-overlay-z-index: 999;
+    --dv-active-sash-transition-duration: 0.1s;
+    --dv-active-sash-transition-delay: 0.5s;
+    --dv-group-view-background-color: transparent;
+    --dv-tabs-and-actions-container-background-color: #1c1c2a;
+    --dv-activegroup-visiblepanel-tab-background-color: #000c18;
+    --dv-activegroup-hiddenpanel-tab-background-color: #10192c;
+    --dv-inactivegroup-visiblepanel-tab-background-color: #000c18;
+    --dv-inactivegroup-hiddenpanel-tab-background-color: #10192c;
+    --dv-tab-divider-color: #2b2b4a;
+    --dv-activegroup-visiblepanel-tab-color: white;
+    --dv-activegroup-hiddenpanel-tab-color: rgba(255, 255, 255, 0.5);
+    --dv-inactivegroup-visiblepanel-tab-color: rgba(255, 255, 255, 0.5);
+    --dv-inactivegroup-hiddenpanel-tab-color: rgba(255, 255, 255, 0.25);
+    --dv-separator-border: #8d9dff47;
+    --dv-paneview-header-border-color: #2b2b4a;
+    --dv-paneview-active-outline-color: #596f99;
+}
+
+.dockview-theme-dark {
+    --dv-group-view-background-color: #2d2d2d00;
+}
+.dv-content-container {
+    overflow-y: auto;
+    background: transparent;
+    padding: 0 1em;
+}
 @layer utilities {
     .text-shadow-sm {
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     }
+
     .text-shadow {
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
+
     .text-shadow-lg {
-      text-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        text-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     }
+
     .bg-size-125 {
-      background-size: 125%;
+        background-size: 125%;
     }
 }
 
@@ -148,7 +211,7 @@ h2.text-2xl {
 }
 
 h3 {
-    @apply text-2xl lg:text-3xl pt-4 font-light text-slate-800 dark:text-slate-300;
+    @apply text-2xl lg:text-3xl pt-4 pb-2 font-light text-slate-800 dark:text-slate-300;
 }
 
 h4 {
@@ -176,7 +239,7 @@ ol li {
 }
 
 hr {
-    @apply my-8 mx-auto bg-slate-300  shadow-md h-1 rounded-md max-w-sm dark:bg-slate-400 border-none;
+    @apply my-8 mx-auto bg-slate-300 shadow-md h-1 rounded-md max-w-sm dark:bg-slate-400 border-none;
 }
 
 a:not(a:has(button)):not(header h1 a) {
@@ -195,7 +258,7 @@ table {
 }
 
 table#query-result {
-    @apply overflow-x-auto my-2 overflow-hidden;
+    @apply h-auto overflow-x-auto my-2 overflow-hidden;
 }
 
 table thead {
@@ -203,7 +266,7 @@ table thead {
 }
 
 table thead th {
-    @apply py-2 px-4 text-left text-lg font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider;
+    @apply py-2 px-4 text-left text-lg font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider h-10;
 }
 
 table tbody {
@@ -256,7 +319,7 @@ table#query-result tbody tr td {
 button {
     @apply px-8 py-3 text-xl font-light text-center cursor-pointer transition duration-250 ease-in-out transform bg-slate-200 border-gray-300 border-1 dark:bg-gray-800 dark:border-gray-800 dark:hover:bg-slate-700 dark:hover:border-white/25 dark:focus:ring-slate-900/40 dark:focus:ring-offset-gray-700 rounded-xl shadow-inner shadow-white dark:shadow-inner dark:shadow-gray-600/80 dark:hover:shadow-gray-100/25 hover:bg-slate-100 hover:shadow-white hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-200 focus:ring-slate-400/50 dark:active:bg-slate-900/50 active:bg-white/30;
 }
-    
+
 
 button:not(header button):disabled {
     @apply hidden;
@@ -276,7 +339,8 @@ button.theme-button {
     align-self: center;
 }
 
-button.icon, header a button {
+button.icon,
+header a button {
     @apply p-4;
 }
 

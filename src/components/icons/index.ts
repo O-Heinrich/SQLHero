@@ -1,13 +1,14 @@
-export { ChevronRightIcon } from "@/components/icons/ChevronRight";
-export { ChevronLeftIcon } from "@/components/icons/ChevronLeft";
+/**
+ * This file is used to export all the icons in the icons folder
+ * so that they can be easily imported from a single location.
+ * 
+ * @module components/icons
+ * @deprecated 
+ * This file is deprecated and will be removed in a future release.
+ * All icons that were previously exported from this file and not in this file
+ * anymore can be removed from the project.
+ */
 export { ExclamationIcon } from "@/components/icons/Exclamation";
 export { CheckBadgeIcon } from "@/components/icons/CheckBadge";
 export { CheckCircleIcon } from "@/components/icons/CheckCircle";
-export { TableIcon } from "@/components/icons/Table";
-export { MoonIcon } from "@/components/icons/Moon";
-export { BoltIcon } from "@/components/icons/Bolt";
-export { SunIcon } from "@/components/icons/Sun";
-export { ZoomInIcon } from "@/components/icons/ZoomIn";
-export { ZoomOutIcon } from "@/components/icons/ZoomOut";
-export { DownloadIcon } from "@/components/icons/Download";
 export { ArrowRightIcon } from "@/components/icons/ArrowRight";
