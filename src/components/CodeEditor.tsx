@@ -7,7 +7,7 @@
 
 import { useResizeObserver } from '@/hooks/useResizeObserver';
 import { useTheme } from '@/hooks/useTheme';
-import { useEffect, useCallback, useRef, JSX, useState } from 'react';
+import { useEffect, useCallback, useRef, JSX, useState, useMemo } from 'react';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { SqlToken } from '@/lib/token';
 
@@ -46,7 +46,7 @@ export interface CodeEditorProps {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditorProps): JSX.Element => {
     /** Current theme from the theme hook */
-    const { theme } = useTheme();
+    const { theme: heroTheme } = useTheme();
     /** Reference to the container div element */
     const containerRef = useRef<HTMLDivElement>(null);
     /** Reference to the Monaco editor instance */
@@ -56,6 +56,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
     /** Flag to track if this is the initial mount */
     const isInitialMount = useRef(true);
     const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | null>(null);
+
+    const theme = useMemo(() => heroTheme, [heroTheme]);
 
     /**
      * Handles resize events for the editor container
@@ -156,14 +158,10 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
                 tokenizer: SqlToken.tokenizer,
             });
 
-            // Apply the current theme
-            monaco.editor.setTheme(theme);
-
             const instance = monaco.editor.create(containerRef.current!, {
                 value,
                 language: 'sql',
-                theme,
-                automaticLayout: true,
+                automaticLayout: false,
                 minimap: {
                     enabled: false,
                 },
@@ -185,7 +183,12 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
             setEditor(instance);
             return () => editor?.dispose();
         }
-    }, [theme, value, ref, editor]);
+    }, [value, ref, editor]);
+
+
+    useEffect(() => {
+        monaco.editor.setTheme(theme);
+    }, [theme]);
 
     return (
         <div ref={containerRef} className="w-full" style={{ height: 'calc(100% - 76px)' }} />
