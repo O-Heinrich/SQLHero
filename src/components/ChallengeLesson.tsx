@@ -28,15 +28,22 @@ import dompurify from 'dompurify';
  * <ChallengeLesson lesson="<h2>SQL Basics</h2><p>Learn about databases...</p>" />
  * ```
  */
-export const ChallengeLesson: React.FC<{ lesson: string, difficulty: 'easy' | 'medium' | 'hard' | 'unknown' }> = ({
+export const ChallengeLesson: React.FC<{ 
+    lesson: string, 
+    difficulty: 'easy' | 'medium' | 'hard' | 'unknown',
+    ref?: React.RefObject<HTMLDivElement|null>
+}> = ({
     lesson,
-    difficulty
+    difficulty,
+    ref,
 }: {
     lesson: string;
     difficulty: 'easy' | 'medium' | 'hard' | 'unknown';
-}) => (
-    <article className="mt-2">
+    ref?: React.RefObject<HTMLDivElement|null>
+}): React.ReactElement => (
+    <article className="mt-24">
         <div 
+            ref={ref}
             dangerouslySetInnerHTML={{
                 __html: `
                 <span class="float-right inline-block rounded-full px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">

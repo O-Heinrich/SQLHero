@@ -403,3 +403,11 @@ text.recharts-text.recharts-cartesian-axis-tick-value,
 text.recharts-text.recharts-pie-label-text {
     @apply fill-gray-500/70 dark:fill-gray-300/50;
 }
+
+main > div {
+    height: auto !important;
+}
+
+.dv-content-container {
+    padding: 0;
+}

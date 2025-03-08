@@ -6,6 +6,7 @@ import { useTheme } from '@/hooks/useTheme';
 
 import 'dockview/dist/styles/dockview.css';
 import { useRef } from 'react';
+import { RightControls, LeftControls, PrefixHeaderControls } from './dockview/Controls';
 
 interface MainViewProps {
     theme?: string;
@@ -56,34 +57,34 @@ export const MainView: React.FC<MainViewProps> = (props: MainViewProps) => {
     const valueRef = useRef<string>('');
     // const valueRef = useRef<string>(CHALLENGE.query);
     const onReady = (event: DockviewReadyEvent) => {
-        event.api.addPanel({
+        const idEditor = event.api.addPanel({
             id: 'editor',
             component: 'editorPanel',
             title: 'Editor',
         });
 
-        const lesson = event.api.addPanel({
+        const idLesson = event.api.addPanel({
             id: 'lesson',
             component: 'lessonPanel',
             title: CHALLENGE.title,
-            position: { referencePanel: '', direction: 'left' },
+            position: { referencePanel: idEditor, direction: 'left' },
         });
 
-        const erd = event.api.addPanel({
+        event.api.addPanel({
             id: 'erd',
             component: 'erdPanel',
             title: 'Entity Relationship Diagram',
-            position: { referencePanel: 'lesson', direction: 'right' },
+            position: { referencePanel: idLesson, direction: 'bottom' },
         });
 
 
         
 
-        event.api.addPopoutGroup(event.api.addGroup({
-            id: 'group',
-            panels: [lesson, erd],
-            direction: 'within',
-        }));
+        // event.api.addPopoutGroup(event.api.addGroup({
+        //     id: 'group',
+        //     panels: [lesson, erd],
+        //     direction: 'within',
+        // }));
     };
 
     const components = {
@@ -102,6 +103,11 @@ export const MainView: React.FC<MainViewProps> = (props: MainViewProps) => {
             components={components}
             onReady={onReady}
             className={props.theme || 'dockview-theme-abyss'}
+            rightHeaderActionsComponent={RightControls}
+            leftHeaderActionsComponent={LeftControls}
+            prefixHeaderActionsComponent={
+                PrefixHeaderControls
+            }
         />
     );
 }

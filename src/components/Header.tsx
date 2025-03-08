@@ -169,9 +169,9 @@ export const Header: React.FC = (): React.ReactElement => {
         state.headerElement?.classList.remove('dark:bg-green-500/50', 'bg-green-800/50');
         state.headerElement?.classList.add('dark:bg-red-500/50', 'bg-red-800/50');
         navigate({
-            to: '/challenges/$name',
+            to: '/sql/$number',
             params: {
-                name: (next <= 0 ? 1 : next).toString()
+                number: (next <= 0 ? 1 : next).toString()
             }
         });
     }
@@ -189,9 +189,9 @@ export const Header: React.FC = (): React.ReactElement => {
         state.headerElement?.classList.remove('dark:bg-green-500/50', 'bg-green-800/50');
         state.headerElement?.classList.add('dark:bg-red-500/50', 'bg-red-800/50');
         navigate({
-            to: '/challenges/$name',
+            to: '/sql/$number',
             params: {
-                name: (next <= 0 ? COUNT_CHALLENGES : next).toString()
+                number: (next <= 0 ? COUNT_CHALLENGES : next).toString()
             }
         });
     }
