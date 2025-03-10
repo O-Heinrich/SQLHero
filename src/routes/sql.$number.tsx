@@ -194,7 +194,7 @@ function View() {
                         alt="ERD"
                         width="100%"
                         height="100%"
-                        className="erd"
+                        className="erd max-h-full max-w-full"
                     />
                 </div>
             )
@@ -543,7 +543,7 @@ function View() {
             popoutUrl="/popout.html"
             components={components}
             onReady={onReady}
-            className={theme === 'dark' ? 'dockview-theme-dracula' : 'dockview-theme-light'}
+            className={theme === 'dark' ? 'dockview-theme-abyss' : 'dockview-theme-light'}
             rightHeaderActionsComponent={RightControls}
             leftHeaderActionsComponent={LeftControls}
             // prefixHeaderActionsComponent={
