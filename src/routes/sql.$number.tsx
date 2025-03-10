@@ -158,27 +158,30 @@ function View() {
                 />
             </div>
         ),
-        editorPanel: (props: IDockviewPanelProps<{ onExecuteClick: () => Promise<void> }>) => (
-            <div className={BG_STYLE}>
-                <CodeEditor value={challenge.query} ref={valueRef} />
-                <Toolbar className="justify-center">
-                    <IconButton
-                        icon={<ArrowDownOnSquareStackIcon className="size-6" />}
-                        aria-label="ERD downloaden"
-                        title="ERD downloaden"
-                        onClick={handleDownloadClick}
-                    />
-                    <IconButton
-                        icon={<PlayIcon className="size-6" />}
-                        aria-label="SQL ausführen"
-                        title="SQL ausführen"
-                        variant="primary"
-                        onClick={() => console.log(value)}
-                    />
-                </Toolbar>
-            </div>
-        ),
-        erdPanel: function() {
+        editorPanel: function Editor(props: IDockviewPanelProps<{ onExecuteClick: () => Promise<void>, ref: React.RefObject<string> }>) {
+            const { onExecuteClick, ref } = props.params;
+            return (
+                <div className={BG_STYLE}>
+                    <CodeEditor value={ref?.current ?? ''} ref={ref} />
+                    <Toolbar className="justify-center">
+                        <IconButton
+                            icon={<ArrowDownOnSquareStackIcon className="size-6" />}
+                            aria-label="ERD downloaden"
+                            title="ERD downloaden"
+                            onClick={handleDownloadClick}
+                        />
+                        <IconButton
+                            icon={<PlayIcon className="size-6" />}
+                            aria-label="SQL ausführen"
+                            title="SQL ausführen"
+                            variant="primary"
+                            onClick={onExecuteClick}
+                        />
+                    </Toolbar>
+                </div>
+            )
+        },
+        erdPanel: function ErdPanel() {
             const { theme } = useTheme();
             return (
                 <div className={clsx('w-full h-full flex items-center justify-center p-4', BG_STYLE)}>
@@ -368,8 +371,49 @@ function View() {
                 return;
             }
 
-            defaultConfig(api, handleRun, theme);
+            const editor = api.addPanel({
+                id: `editor-${nextId()}`,
+                title: 'SQL Editor',
+                component: 'editorPanel',
+                params: {
+                    ref: valueRef,
+                    handleExecute: handleRun,
+                },
+            });
+        
+            const erd = api.addPanel({
+                id: 'erd',
+                component: 'erdPanel',
+                title: 'ER Diagram',
+                position: {
+                    referencePanel: editor,
+                    direction: 'left',
+                },
+            });
+        
+            api.addPanel({
+                id: 'lesson',
+                component: 'lessonPanel',
+                title: 'Aufgabenstellung',
+                position: {
+                    referencePanel: editor,
+                    direction: 'below',
+                },
+            });
 
+            api.addPanel({
+                id: 'result',
+                component: 'resultPanel',
+                title: 'Ergebnis',
+                position: {
+                    referencePanel: erd,
+                    direction: 'whitin',
+                },
+            });
+
+            
+            erd.api.setActive();
+            editor.api.setActive();
             isInitialized.current = true;
         };
 
@@ -378,7 +422,7 @@ function View() {
         return () => {
             disposables.forEach((disposable) => disposable?.dispose());
         };
-    }, [api, challenge, challengeIndex, challengeNumber, dispatch, pg, theme]);
+    }, [api, challenge, challengeIndex, challengeNumber, dispatch, pg, theme, valueRef]);
 
     /**
      * Loads the challenge query and schema into the database.
@@ -496,7 +540,7 @@ function View() {
 
     return (
         <DockviewReact
-            popoutUrl="about:blank"
+            popoutUrl="/popout.html"
             components={components}
             onReady={onReady}
             className={theme === 'dark' ? 'dockview-theme-dracula' : 'dockview-theme-light'}
