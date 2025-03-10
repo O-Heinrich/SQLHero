@@ -6,13 +6,15 @@ export const nextId = (() => {
     return () => counter++;
 })();
 
-export function defaultConfig(api: DockviewApi) {
+export function defaultConfig(api: DockviewApi, handleExecuteClick: () => void) {
 
     const editorPanel = api.addPanel({
         id: `editor-${nextId()}`,
         title: 'SQL Editor',
         component: 'editorPanel',
-
+        params: {
+            handleExecuteClick,
+        },
     });
 
     api.addPanel({
