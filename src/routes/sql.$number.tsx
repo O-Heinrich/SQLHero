@@ -211,7 +211,7 @@ function View() {
     }
 
     useEffect(() => {
-        if (!isInitialized.current) {
+        if (isInitialized.current) {
             return;
         }
 
