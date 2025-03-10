@@ -41,7 +41,7 @@ export const ChallengeLesson: React.FC<{
     difficulty: 'easy' | 'medium' | 'hard' | 'unknown';
     ref?: React.RefObject<HTMLDivElement|null>
 }): React.ReactElement => (
-    <article className="mt-24">
+    <article className="mt-4">
         <div 
             ref={ref}
             dangerouslySetInnerHTML={{
