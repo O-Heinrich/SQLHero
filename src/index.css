@@ -58,6 +58,8 @@
     --animate-pulse: pulse 0.75s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 
     --footer-shadow: #ffffff63;
+    --dv-group-view-background-color: transparent !important;
+
 }
 
 .dockview-theme-abyss {
@@ -116,14 +118,20 @@
     --dv-paneview-active-outline-color: #596f99;
 }
 
-.dockview-theme-dark {
-    --dv-group-view-background-color: #2d2d2d00;
+.dockview-theme-light,
+.dockview-theme-dark,
+.dockview-theme-dracula,
+.dockview-theme-abyss,
+.dockview-theme-vscode {
+    --dv-group-view-background-color: transparent !important;
 }
+
 .dv-content-container {
     overflow-y: auto;
     background: transparent;
-    padding: 0 1em;
+    padding: 0;
 }
+
 @layer utilities {
     .text-shadow-sm {
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
@@ -404,10 +412,6 @@ text.recharts-text.recharts-pie-label-text {
     @apply fill-gray-500/70 dark:fill-gray-300/50;
 }
 
-main > div {
+main>div {
     height: auto !important;
-}
-
-.dv-content-container {
-    padding: 0;
 }
