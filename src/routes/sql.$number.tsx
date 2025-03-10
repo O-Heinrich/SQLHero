@@ -8,7 +8,7 @@ import { ChallengeSkeleton } from '@/components/Skeleton';
 import { PgExecEngineContext } from '@/context/PgExecEngineContext';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppState } from '@/hooks/useAppState';
-import { TableDiff } from '@/lib/types';
+import { TableDiff, ChallengeData } from '@/lib/types';
 import { ResultSetComparison } from '@/lib/utils';
 import { useChallengeNumber } from '@/hooks/useChallengeNumber';
 import { IconButton } from '@/components/buttons/IconButton';
@@ -29,79 +29,6 @@ import { LeftControls, PrefixHeaderControls, RightControls } from '@/components/
 const BG_STYLE =
     'w-full h-full dark:bg-gray-700 dark:bg-blend-overlay bg-blend-multiply dark:to-slate-800 dark:from-gray-700/80 from-white to-gray-200 bg-radial bg-size-125 bg-radial-[at_50%_50%]';
 
-/**
- * Represents the structure of a challenge, typically used in coding or database-related challenges.
- *
- * This interface defines the properties required to describe a challenge, including its metadata,
- * schema, and expected results.
- *
- * @interface ChallengeData
- */
-interface ChallengeData {
-    /**
-     * @property {number} number
-     * @description A unique identifier or sequence number for the challenge.
-     * @example 1
-     */
-    number: number
-
-    /**
-     * @property {string} title
-     * @description The title or name of the challenge.
-     * @example "Find the highest salary"
-     */
-    title: string
-
-    /**
-     * @property {string} schema
-     * @description The schema or structure of the database/table(s) relevant to the challenge.
-     * This is typically a SQL schema or a JSON representation of the data structure.
-     * @example "CREATE TABLE employees (id INT, name TEXT, salary INT);"
-     */
-    schema: string
-
-    /**
-     * @property {string} description
-     * @description A detailed description of the challenge, including the problem statement and requirements.
-     * @example "Write a query to find the employee with the highest salary."
-     */
-    description: string
-
-    /**
-     * @property {'easy' | 'medium' | 'hard'} difficulty
-     * @description The difficulty level of the challenge.
-     * Possible values: 'easy', 'medium', 'hard'.
-     * @example "medium"
-     */
-    difficulty: 'easy' | 'medium' | 'hard'
-    /**
-     * @property {string} query
-     * @description The query or solution to the challenge. This is typically a SQL query or code snippet.
-     * @example "SELECT name, MAX(salary) FROM employees;"
-     */
-    query: string
-    /**
-     * @property {string} hashedResult
-     * @description A hashed representation of the expected result of the challenge.
-     * This is used to verify the correctness of the user's solution.
-     * @example "a1b2c3d4e5f6g7h8i9j0"
-     */
-    hashedResult: string
-    /**
-     * @property {string[]} hints
-     * @description An array of hints to assist the user in solving the challenge.
-     * Each hint is a string that provides guidance or clues.
-     * @example ["Use the MAX() function", "Filter by salary"]
-     */
-    hints: string[]
-    /**
-     * @property {string} [erd]
-     * @description Optional property representing an Entity-Relationship Diagram (ERD) for the challenge.
-     * This is typically a URL or base64-encoded image of the ERD.
-     * @example "https://example.com/erd.png"
-     */
-    erd?: string
-}
 
 /**
  * Props interface for Toolbar component
@@ -194,12 +121,18 @@ function View() {
     const [value, setValue] = useState<string>('');
     const valueRef = useRef<string>('');
     const lessonRef = useRef<HTMLDivElement>();
+    const isInitialized = useRef<boolean>(false);
     const [result, setResult] = useState<QueryResult | undefined>();
     const [db, setDb] = useState<string>('');
     const { state, dispatch } = useAppState();
     const challengeNumber = useChallengeNumber();
     const challengeIndex = useMemo(() => challengeNumber - 1, [challengeNumber]);
     const { theme } = useTheme();
+    const [svgTheme, setSvgTheme] = useState<string>(theme === 'dark' ? '-dark.svg' : '.svg');
+
+    useEffect(() => {
+        setSvgTheme(() => (theme === 'dark' ? '-dark.svg' : '.svg'));
+    }, [theme]);
 
     /**
      * Initializes the challenge and updates the header UI based on the completion status.
@@ -250,9 +183,10 @@ function View() {
         erdPanel: () => (
             <div className={clsx('w-full h-full flex items-center justify-center p-4', BG_STYLE)}>
                 <img
+                    key={`erd-${svgTheme}`}
                     src={challenge.schema?.replace(
                         '.sql',
-                        theme === 'dark' ? '-dark.svg' : '.svg',
+                        svgTheme,
                     )}
                     alt="ERD"
                     width="100%"
@@ -277,8 +211,12 @@ function View() {
     }
 
     useEffect(() => {
+        if (!isInitialized.current) {
+            firstRender.current = false;
+            return;
+        }
         if (!api) {
-            dispatch({ type: 'SET_CURRENT_CHALLENGE', payload: challengeNumber});
+            dispatch({ type: 'SET_CURRENT_CHALLENGE', payload: challenge });
             return;
         }
 
@@ -543,11 +481,7 @@ function View() {
     }
 
     const onReady = (event: DockviewReadyEvent) => {
-        event.api.addPanel({
-            id: `editor-${nextId()}`,
-            component: 'editorPanel',
-
-        });
+        
         setApi(() => event.api);
     }
 

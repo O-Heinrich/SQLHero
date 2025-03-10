@@ -75,10 +75,84 @@ export class Attempt implements AttemptData {
 }
 
 /**
+ * Represents the structure of a challenge, typically used in coding or database-related challenges.
+ * 
+ * This interface defines the properties required to describe a challenge, including its metadata, 
+ * schema, and expected results.
+ * 
+ * @interface ChallengeData
+ */
+export interface ChallengeData {
+    /**
+     * @property {number} number
+     * @description A unique identifier or sequence number for the challenge.
+     * @example 1
+     */
+    number: number;
+
+    /**
+     * @property {string} title
+     * @description The title or name of the challenge.
+     * @example "Find the highest salary"
+     */
+    title: string;
+
+    /**
+     * @property {string} schema
+     * @description The schema or structure of the database/table(s) relevant to the challenge.
+     * This is typically a SQL schema or a JSON representation of the data structure.
+     * @example "CREATE TABLE employees (id INT, name TEXT, salary INT);"
+     */
+    schema: string;
+
+    /**
+     * @property {string} description
+     * @description A detailed description of the challenge, including the problem statement and requirements.
+     * @example "Write a query to find the employee with the highest salary."
+     */
+    description: string;
+
+    /**
+     * @property {'easy' | 'medium' | 'hard'} difficulty
+     * @description The difficulty level of the challenge.
+     * Possible values: 'easy', 'medium', 'hard'.
+     * @example "medium"
+     */
+    difficulty: 'easy' | 'medium' | 'hard';
+    /**
+     * @property {string} query
+     * @description The query or solution to the challenge. This is typically a SQL query or code snippet.
+     * @example "SELECT name, MAX(salary) FROM employees;"
+     */
+    query: string;
+    /**
+     * @property {string} hashedResult
+     * @description A hashed representation of the expected result of the challenge.
+     * This is used to verify the correctness of the user's solution.
+     * @example "a1b2c3d4e5f6g7h8i9j0"
+     */
+    hashedResult: string;
+    /**
+     * @property {string[]} hints
+     * @description An array of hints to assist the user in solving the challenge.
+     * Each hint is a string that provides guidance or clues.
+     * @example ["Use the MAX() function", "Filter by salary"]
+     */
+    hints: string[];
+    /**
+     * @property {string} [erd]
+     * @description Optional property representing an Entity-Relationship Diagram (ERD) for the challenge.
+     * This is typically a URL or base64-encoded image of the ERD.
+     * @example "https://example.com/erd.png"
+     */
+    erd?: string;
+};
+
+/**
  * Represents the structure of a challenge, including its metadata, status, and attempts.
  * Provides methods to track and manage user attempts on the challenge.
  */
-export interface ChallengeData {
+export interface IChallenge {
     /** Position of the challenge */
     number: number;
 
@@ -132,11 +206,13 @@ export interface ChallengeData {
     endAttempt(success: boolean, query?: string): void;
 }
 
+
+
 /**
  * Implementation of the `ChallengeData` interface with additional static factory methods
  * for creating challenges from different data sources.
  */
-export class Challenge implements ChallengeData {
+export class Challenge implements IChallenge {
     number: number;
     title: string;
     completed: boolean;
