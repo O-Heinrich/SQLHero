@@ -212,9 +212,9 @@ function View() {
 
     useEffect(() => {
         if (!isInitialized.current) {
-            firstRender.current = false;
             return;
         }
+
         if (!api) {
             dispatch({ type: 'SET_CURRENT_CHALLENGE', payload: challenge });
             return;
@@ -271,6 +271,8 @@ function View() {
             }
 
             defaultConfig(api);
+            
+            isInitialized.current = true;
         };
 
         loadLayout();
