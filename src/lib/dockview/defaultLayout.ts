@@ -7,38 +7,33 @@ export const nextId = (() => {
 })();
 
 export function defaultConfig(api: DockviewApi) {
+
     const editorPanel = api.addPanel({
-        id: 'editor',
+        id: `editor-${nextId()}`,
+        title: 'SQL Editor',
         component: 'editorPanel',
-        renderer: 'always',
-        title: 'Editor',
+
     });
 
-    const lessonPanel = api.addPanel({
-        id: 'lesson',
-        component: 'lessonPanel',
-        title: 'Aufgabenstellung',
-    });
-
-    const erdPanel = api.addPanel({
+    api.addPanel({
         id: 'erd',
         component: 'erdPanel',
         title: 'ER Diagram',
+        position: {
+            referencePanel: editorPanel,
+            direction: 'left',
+        },
     });
 
-    api.addGroup({
-        id: 'devGrp',
-        panels: [editorPanel, lessonPanel],
-        direction: 'within',
-
+    api.addPanel({
+        id: 'lesson',
+        component: 'lessonPanel',
+        title: 'Aufgabenstellung',
+        position: {
+            referencePanel: editorPanel,
+            direction: 'below',
+        },
     });
 
-    api.addGroup({
-        id: 'erdGrp',
-        panels: [erdPanel],
-        direction: 'within',
-
-    });
-
-    editorPanel.api.setActive(lessonPanel);
+    editorPanel.api.setActive();
 }
