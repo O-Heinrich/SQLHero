@@ -10,7 +10,7 @@ const Icon = (props: {
     onClick?: (event: React.MouseEvent) => void;
 }) => {
     return (
-        <div title={props.title} className="action" onClick={props.onClick}>
+        <div title={props.title} role="button" className="action" onClick={props.onClick}>
             <span
                 style={{ fontSize: 'inherit' }}
             >
@@ -58,7 +58,7 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
         };
     }, [props.api, props.containerApi]);
 
-    const onClick = () => {
+    const handleToggleMaxMin = () => {
         if (props.containerApi.hasMaximizedGroup()) {
             props.containerApi.exitMaximizedGroup();
         } else {
@@ -66,7 +66,7 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
         }
     };
 
-    const onClick2 = () => {
+    const handlePopout = () => {
         if (props.api.location.type !== 'popout') {
             props.containerApi.addPopoutGroup(props.group);
         } else {
@@ -81,6 +81,7 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
                 display: 'flex',
                 alignItems: 'center',
                 padding: '0px 8px',
+                gap: '8px',
                 height: '100%',
                 color: 'var(--dv-activegroup-hiddenpanel-tab-color)',
             }}
@@ -90,13 +91,13 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
             <Icon
                 title={isPopout ? 'Fenster schliessen' : 'In neuen Fenster öffnen'}
                 icon={isPopout ? <XMarkIcon className="size-4" /> : <ArrowTopRightOnSquareIcon className="size-4" />}
-                onClick={onClick2}
+                onClick={handlePopout}
             />
             {!isPopout && (
                 <Icon
                     title={isMaximized ? 'Minimieren' : 'Maximieren'}
                     icon={isMaximized ? <ArrowsPointingInIcon className="size-4" /> : <ArrowsPointingOutIcon className="size-4" />}
-                    onClick={onClick}
+                    onClick={handleToggleMaxMin}
                 />
             )}
         </div>
