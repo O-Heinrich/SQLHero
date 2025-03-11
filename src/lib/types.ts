@@ -118,7 +118,7 @@ export interface ChallengeData {
      * Possible values: 'easy', 'medium', 'hard'.
      * @example "medium"
      */
-    difficulty: 'easy' | 'medium' | 'hard';
+    difficulty: 'easy' | 'medium' | 'hard' | 'unknown';
     /**
      * @property {string} query
      * @description The query or solution to the challenge. This is typically a SQL query or code snippet.
@@ -181,7 +181,7 @@ export interface IChallenge {
     difference?: TableDiff;
 
     /** Difficulty level of the challenge */
-    difficulty: 'easy' | 'medium' | 'hard' | 'unrated';
+    difficulty: 'easy' | 'medium' | 'hard' | 'unknown';
 
     /** Schema or structure of the database/table(s) relevant to the challenge */
     schema: string;
@@ -212,7 +212,7 @@ export interface IChallenge {
  * Implementation of the `ChallengeData` interface with additional static factory methods
  * for creating challenges from different data sources.
  */
-export class Challenge implements IChallenge {
+export class Challenge implements IChallenge, ChallengeData {
     number: number;
     title: string;
     completed: boolean;
@@ -220,9 +220,14 @@ export class Challenge implements IChallenge {
     failed: boolean;
     totalDurartion?: number | undefined;
     difference?: TableDiff | undefined;
-    difficulty: 'easy' | 'medium' | 'hard' | 'unrated';
+    difficulty: 'easy' | 'medium' | 'hard' | 'unknown';
     attempts: Attempt[];
     schema: string;
+    description: string;
+    query: string;
+    hashedResult: string;
+    hints: string[];
+    erd?: string | undefined;
 
     /**
      * Creates a new challenge instance.
@@ -237,9 +242,14 @@ export class Challenge implements IChallenge {
         this.attempted = false;
         this.failed = false;
         this.attempts = [];
-        this.difficulty = 'unrated';
+        this.difficulty = 'unknown';
         this.schema = '';
+        this.description = '';
+        this.query = '';
+        this.hashedResult = '';
+        this.hints = [];
     }
+
 
     /**
      * Creates a `Challenge` instance from a `ShortChallenge` object.
@@ -247,7 +257,7 @@ export class Challenge implements IChallenge {
      * @param shortChallenge - Simplified challenge object containing basic information.
      * @returns A new `Challenge` instance with default status values.
      */
-    static fromShortChallenge(shortChallenge: ShortChallenge): ChallengeData {
+    static fromShortChallenge(shortChallenge: ShortChallenge): Challenge {
         const challenge = new Challenge(shortChallenge.number, shortChallenge.title);
         challenge.difficulty = shortChallenge.difficulty;
         challenge.schema = shortChallenge.schema;
@@ -260,7 +270,7 @@ export class Challenge implements IChallenge {
      * @param obj - Record containing challenge properties.
      * @returns A fully populated `Challenge` instance with all available properties.
      */
-    static fromObject(obj: Record<string, unknown>): ChallengeData {
+    static fromObject(obj: Record<string, unknown>): Challenge {
         const challenge = new Challenge(obj.number as number, obj.title as string);
         challenge.completed = obj.completed as boolean;
         challenge.attempted = obj.attempted as boolean;
@@ -349,7 +359,7 @@ export interface AppState {
     headerElement: HTMLHeadingElement | null;
 
     /** ID of the currently active challenge, if any */
-    currentChallenge?: string;
+    currentChallenge?: Challenge;
 }
 
 /**
@@ -405,7 +415,7 @@ export type ChallengeAction =
     | { type: 'SET_HEADER_REF'; payload: HTMLHeadingElement }
 
     /** Sets the currently active challenge */
-    | { type: 'SET_CURRENT_CHALLENGE'; payload: string }
+    | { type: 'SET_CURRENT_CHALLENGE'; payload: Challenge }
 
     /** Initializes the challenges list */
     | { type: 'INIT_CHALLENGES'; payload: Challenge[] }

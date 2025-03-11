@@ -11,7 +11,7 @@
 
 import { createContext, useReducer, useEffect, ReactNode } from 'react';
 import { appReducer } from '@/lib/reducer';
-import { AppState, ChallengeAction, Challenge } from '@/lib/types';
+import { AppState, ChallengeAction, Challenge, ChallengeData } from '@/lib/types';
 import { CHALLENGES } from 'virtual:sql-hero';
 import { loadState } from '@/lib/storage';
 
@@ -55,7 +55,7 @@ const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     // Initialize challenges on component mount
     useEffect(() => {
         // Map the predefined challenges to include completion and attempt status
-        const initialChallenges = loadState()?.challenges || CHALLENGES.map(Challenge.fromShortChallenge) as Challenge[];
+        const initialChallenges = loadState()?.challenges || CHALLENGES.map(Challenge.fromShortChallenge);
 
         // Dispatch the INIT_CHALLENGES action to set up the initial state
         dispatch({ type: 'INIT_CHALLENGES', payload: initialChallenges });

@@ -5,22 +5,18 @@ import { clsx } from 'clsx';
 import { createFileRoute } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { ChallengeSkeleton } from '@/components/Skeleton';
-import { PgExecEngineContext } from '@/context/PgExecEngineContext';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppState } from '@/hooks/useAppState';
-import { TableDiff, ChallengeData } from '@/lib/types';
-import { ResultSetComparison } from '@/lib/utils';
+import { Challenge } from '@/lib/types';
 import { useChallengeNumber } from '@/hooks/useChallengeNumber';
-import { IconButton } from '@/components/buttons/IconButton';
 import { toggleHeaderSuccess } from '@/lib/reducer';
-import { QueryResult, SqlExecutionResult } from '@/lib/exec-engine/postgres-engine';
-import { PlayIcon, ArrowDownOnSquareStackIcon } from '@heroicons/react/24/solid';
-import { CodeEditor } from '@/components/CodeEditor';
+import { QueryResult } from '@/lib/exec-engine/postgres-engine';
 import { ChallengeLesson } from '@/components/ChallengeLesson';
 import { QueryResultTable } from '@/components/QueryResultTable';
-import { defaultConfig, nextId } from '@/lib/dockview/defaultLayout';
-import { LeftControls, PrefixHeaderControls, RightControls } from '@/components/dockview/Controls';
-
+import { nextId } from '@/lib/dockview/defaultLayout';
+import { LeftControls, RightControls } from '@/components/dockview/Controls';
+import { EditorPanel } from '@/components/dockview/components';
+import { PgExecEngineContext } from "@/context/PgExecEngineContext";
 import '../../node_modules/dockview/dist/styles/dockview.css';
 
 /**
@@ -28,33 +24,8 @@ import '../../node_modules/dockview/dist/styles/dockview.css';
  * @constant
  */
 const BG_STYLE =
-    'w-full h-full dark:bg-gray-700 dark:bg-blend-overlay bg-blend-multiply dark:to-slate-800 dark:from-gray-700/80 from-white to-gray-200 bg-radial bg-size-125 bg-radial-[at_50%_50%]';
+'w-full h-full dark:bg-gray-700 dark:bg-blend-overlay bg-blend-multiply dark:to-slate-800 dark:from-gray-700/80 from-white to-gray-200 bg-radial bg-size-125 bg-radial-[at_50%_50%]';
 
-
-/**
- * Props interface for Toolbar component
- *
- * Defines the properties for a container component that displays
- * action buttons and controls in a horizontal bar.
- *
- * @interface ToolbarProps
- */
-interface ToolbarProps {
-    /**
-     * Child elements to render within the toolbar
-     * Typically consists of buttons, dropdowns, and other control elements
-     *
-     * @property {React.ReactNode} children
-     */
-    children: React.ReactNode
-    /**
-     * Optional additional CSS classes to apply to the toolbar container
-     * Allows for customization of the toolbar's appearance
-     *
-     * @property {string} [className]
-     */
-    className?: string
-}
 
 /**
  * Fetches challenge data from the API
@@ -72,24 +43,6 @@ const fetchChallenge = async (name: string): Promise<object> => {
     return response.json()
 }
 
-/**
- * Toolbar component for challenge actions
- * @component
- * @param {Object} props - Component properties
- * @param {React.ReactNode} props.children - Toolbar content
- * @param {string} [props.className] - Additional CSS classes
- */
-const Toolbar: React.FC<ToolbarProps> = ({
-    children,
-    className,
-}: {
-    children: React.ReactNode;
-    className?: string;
-}) => (
-    <div className={`bg-gray-200 dark:bg-slate-900/50 flex gap-2 justify-end p-2 ${className ?? ''}`}>
-        {children}
-    </div>
-);
 /**
  * Main Challenge component that provides a complete SQL learning environment
  *
@@ -116,19 +69,22 @@ function View() {
 
     const [, setActivePanel] = useState<string>();
     const [, setActiveGroup] = useState<string>();
-
-    const { pg, updateSchema } = useContext(PgExecEngineContext)
-    const challenge = Route.useLoaderData() as ChallengeData;
+    const challenge = Route.useLoaderData() as Challenge;
     const [value, setValue] = useState<string>('');
     const valueRef = useRef<string>('');
     const lessonRef = useRef<HTMLDivElement>(null);
     const isInitialized = useRef<boolean>(false);
-    const [result, setResult] = useState<QueryResult | undefined>();
-    const [db, setDb] = useState<string>('');
     const { state, dispatch } = useAppState();
+    const { updateSchema } = useContext(PgExecEngineContext);
     const challengeNumber = useChallengeNumber();
     const challengeIndex = useMemo(() => challengeNumber - 1, [challengeNumber]);
+    const [result, setResult] = useState<QueryResult | undefined>();
+    const [db, setDb] = useState<string>('');
     const { theme } = useTheme();
+
+    useEffect(() => {
+        dispatch({ type: 'SET_CURRENT_CHALLENGE', payload: challenge });
+    }, [challenge, dispatch]);
 
     /**
      * Initializes the challenge and updates the header UI based on the completion status.
@@ -158,29 +114,12 @@ function View() {
                 />
             </div>
         ),
-        editorPanel: function Editor(props: IDockviewPanelProps<{ onExecuteClick: () => Promise<void>, ref: React.RefObject<string> }>) {
-            const { onExecuteClick, ref } = props.params;
-            return (
-                <div className={BG_STYLE}>
-                    <CodeEditor value={ref?.current ?? ''} ref={ref} />
-                    <Toolbar className="justify-center">
-                        <IconButton
-                            icon={<ArrowDownOnSquareStackIcon className="size-6" />}
-                            aria-label="ERD downloaden"
-                            title="ERD downloaden"
-                            onClick={handleDownloadClick}
-                        />
-                        <IconButton
-                            icon={<PlayIcon className="size-6" />}
-                            aria-label="SQL ausführen"
-                            title="SQL ausführen"
-                            variant="primary"
-                            onClick={onExecuteClick}
-                        />
-                    </Toolbar>
-                </div>
-            )
-        },
+        editorPanel: (props: IDockviewPanelProps) => <EditorPanel 
+            initialContent={challenge.query} 
+            api={props.api} 
+            containerApi={props.containerApi} 
+            params={props.params} 
+        />,
         erdPanel: function ErdPanel() {
             const { theme } = useTheme();
             return (
@@ -215,110 +154,8 @@ function View() {
     }
 
     useEffect(() => {
-        if (isInitialized.current) {
-            return;
-        }
-
         if (!api) {
-            dispatch({ type: 'SET_CURRENT_CHALLENGE', payload: challenge.number.toString() });
             return;
-        }
-
-        /**
-         * Handles the execution of a SQL query or a series of SQL statements for a specific challenge.
-         *
-         * This function:
-         * - Executes the SQL query/queries provided in the `editorRef`.
-         * - Compares the result with a pre-stored solution (if available).
-         * - Dispatches appropriate actions based on whether the challenge was completed successfully or not.
-         * - Updates the UI to display the result or error messages.
-         *
-         * @async
-         * @function handleRun
-         * @returns {Promise<void>} - A promise that resolves when the function completes.
-         *
-         * @example
-         * await handleRun();
-         */
-        const handleRun = async (): Promise<void> => {
-            console.log('handleRun');
-            console.log('valueRef.current', valueRef.current);
-            console.log('challenge.query', challenge.query);
-            console.log('challengeNumber', challengeNumber);
-            console.log('challengeIndex', challengeIndex);
-            console.log('pg', pg);
-            // If the PostgreSQL client (`pg`) is not available, exit the function.
-            if (!pg) return
-
-            try {
-                let queryResult: SqlExecutionResult | null = null
-                const key = challengeNumber.toString() // Create a key for the current challenge.
-                const result = await pg.execute(valueRef.current ?? '') // Execute the SQL query.
-
-                if (!result.success) {
-                    throw new Error(
-                        result.error ?? 'An error occurred while executing the query.',
-                    );
-                }
-
-                if (
-                    !ResultSetComparison.hasSolution(key) &&
-                    !ResultSetComparison.hasSolution(`${key}-0`)
-                ) {
-                    queryResult = await pg.execute(challenge.query)
-                    if (queryResult.success) {
-                        for (let i = 0; i < queryResult.data!.length; i++) {
-                            ResultSetComparison.storeSolutionHash(
-                                `${key}-${i}`,
-                                queryResult.data![i],
-                            );
-                        }
-                    } else {
-                        throw new Error(
-                            result.error ??
-                            'An error occurred while executing the solution query.',
-                        );
-                    }
-                }
-
-                const isCorrect = result.data!.reduce((success, result, i) => {
-                    const key = `${challengeNumber.toString()}-${i}`;
-                    return success && ResultSetComparison.compareWithSolution(key, result);
-                }, Boolean(result.data?.length))
-
-                setResult(result.data ? result.data[0] : undefined);
-
-                if (isCorrect) {
-                    toast.success('Erfolg', {
-                        description: 'Ergebnis korrekt. Gut gemacht!',
-                    });
-                    dispatch({
-                        type: 'COMPLETE_CHALLENGE',
-                        payload: { index: challengeIndex, query: valueRef.current },
-                    });
-                } else {
-                    toast.error('Fehler', {
-                        description: 'Die gelieferten Datensätze stimmen nicht überein.',
-                    });
-                    dispatch({
-                        type: 'CHALLENGE_FAILED',
-                        payload: {
-                            index: challengeIndex,
-                            difference: {} as TableDiff,
-                            query: valueRef.current,
-                        },
-                    });
-                }
-
-                setResult(() => result.data ? result.data.pop() : undefined);
-            } catch (error) {
-                // Handle errors and display an error message.
-                const errMsg =
-                    typeof error === 'string' ? error : (error as Error).message
-                toast.error('Fehler beim Ausführen der Abfrage', {
-                    description: errMsg,
-                })
-            }
         }
 
         const disposables = [
@@ -375,14 +212,10 @@ function View() {
                 id: `editor-${nextId()}`,
                 title: 'SQL Editor',
                 component: 'editorPanel',
-                params: {
-                    ref: valueRef,
-                    handleExecute: handleRun,
-                },
             });
         
             const erd = api.addPanel({
-                id: 'erd',
+                id: `erd-${nextId()}`,
                 component: 'erdPanel',
                 title: 'ER Diagram',
                 position: {
@@ -392,7 +225,7 @@ function View() {
             });
         
             api.addPanel({
-                id: 'lesson',
+                id: `lesson-${nextId()}`,
                 component: 'lessonPanel',
                 title: 'Aufgabenstellung',
                 position: {
@@ -402,7 +235,7 @@ function View() {
             });
 
             api.addPanel({
-                id: 'result',
+                id: `result-${nextId()}`,
                 component: 'resultPanel',
                 title: 'Ergebnis',
                 position: {
@@ -420,9 +253,10 @@ function View() {
         loadLayout();
 
         return () => {
+            api.clear();
             disposables.forEach((disposable) => disposable?.dispose());
         };
-    }, [api, challenge, challengeIndex, challengeNumber, dispatch, pg, theme, valueRef]);
+    }, [api, challenge, challengeIndex, challengeNumber, dispatch, theme, valueRef]);
 
     /**
      * Loads the challenge query and schema into the database.
@@ -514,24 +348,7 @@ function View() {
         }
     }, [api])
 
-    /**
-     * Handles database schema PDF download
-     *
-     * Creates and triggers a download for the PDF version of the current challenge's
-     * database schema. Extracts the appropriate filename from the schema path,
-     * replacing the .sql extension with db.pdf.
-     *
-     * @function handleDownloadClick
-     * @returns {void}
-     */
-    const handleDownloadClick = (): void => {
-        const a = document.createElement('a')
-        const file =
-            challenge.schema.split('/').pop()?.replace('.sql', '.pdf') ?? ''
-        a.href = `/databases/pdf/${file}`
-        a.download = file
-        a.click()
-    }
+    
 
     const onReady = (event: DockviewReadyEvent) => {
 
@@ -564,4 +381,5 @@ export const Route = createFileRoute('/sql/$number')({
     errorComponent: ({ error }) => <div>Error: {error.message}</div>,
     pendingComponent: ChallengeSkeleton,
     notFoundComponent: () => <div>Challenge not found</div>,
-})
+});
+
