@@ -1,3 +1,11 @@
+/**
+ * @module EditorPanel
+ * @description A code editor panel component for SQL challenges with execution capabilities
+ * and integration with a postgres execution engine. This module provides functionality for
+ * executing SQL queries, comparing results with expected solutions, and providing feedback
+ * to users working through SQL challenges.
+ */
+
 import { CodeEditor } from "@/components/CodeEditor";
 import { IDockviewPanelProps } from "dockview";
 import { Toolbar } from "../Controls";
@@ -12,12 +20,30 @@ import { toast } from "sonner";
 import { TableDiff } from "@/lib/types";
 import { PgExecEngineContext } from "@/context/PgExecEngineContext";
 
+/**
+ * Props interface for the EditorPanel component
+ * @interface EditorPanelProps
+ * @extends {IDockviewPanelProps} - Base properties from dockview panel
+ */
 export interface EditorPanelProps extends IDockviewPanelProps {
+    /** Initial SQL content to display in the editor */
     initialContent: string;
+    /** Optional callback function triggered when SQL is executed successfully */
     onExecuted?: (result: QueryResult) => void;
+    /** Optional source path for the entity relationship diagram (ERD) */
     erdSrc?: string;
 }
 
+/**
+ * EditorPanel component for SQL challenges
+ * 
+ * Provides an interface for users to write and execute SQL queries as part of
+ * database challenges, with execution handling, result comparison, and feedback.
+ * 
+ * @component
+ * @param {EditorPanelProps} props - Component properties
+ * @returns {JSX.Element} Rendered component
+ */
 export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) => {
     const { state, dispatch } = useAppState();
     const { pg } = useContext(PgExecEngineContext)
@@ -139,6 +165,10 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
         a.click()
     }
 
+    /**
+     * Renders the editor panel with code editor and toolbar controls
+     * @returns {JSX.Element} The rendered component
+     */
     return (
         <div className={BG_STYLE}>
             <CodeEditor value={props.initialContent} ref={contentRef} />
