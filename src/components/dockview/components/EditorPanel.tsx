@@ -6,7 +6,7 @@ import { ArrowDownOnSquareStackIcon, PlayIcon } from "@heroicons/react/24/solid"
 import { useContext, useMemo, useRef } from "react";
 import { useChallengeNumber } from "@/hooks/useChallengeNumber";
 import { useAppState } from "@/hooks/useAppState";
-import { SqlExecutionResult } from "@/lib/exec-engine/postgres-engine";
+import { QueryResult, SqlExecutionResult } from "@/lib/exec-engine/postgres-engine";
 import { ResultSetComparison } from "@/lib/utils";
 import { toast } from "sonner";
 import { TableDiff } from "@/lib/types";
@@ -14,6 +14,7 @@ import { PgExecEngineContext } from "@/context/PgExecEngineContext";
 
 export interface EditorPanelProps extends IDockviewPanelProps {
     initialContent: string;
+    onExecuted?: (result: QueryResult) => void;
     erdSrc?: string;
 }
 
@@ -86,7 +87,9 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
                 return success && ResultSetComparison.compareWithSolution(key, result);
             }, Boolean(result.data?.length))
 
-            //setResult(result.data ? result.data[0] : undefined);
+            if (props.onExecuted && result.data?.length > 0) {
+                props.onExecuted(result.data[result.data?.length - 1]);
+            }
 
             if (isCorrect) {
                 toast.success('Erfolg', {
@@ -109,14 +112,12 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
                     },
                 });
             }
-
-            //setResult(() => result.data ? result.data.pop() : undefined);
         } catch (error) {
             // Handle errors and display an error message.
             const errMsg = typeof error === 'string' ? error : (error as Error).message
             toast.error('Fehler beim Ausführen der Abfrage', {
                 description: errMsg,
-            })
+            });
         }
     }
 

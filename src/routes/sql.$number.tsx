@@ -1,5 +1,4 @@
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
-// import { createPortal } from 'react-dom'
 import { DockviewApi, DockviewReact, DockviewReadyEvent, IDockviewPanelProps } from 'dockview-react';
 import { clsx } from 'clsx';
 import { createFileRoute } from '@tanstack/react-router';
@@ -66,7 +65,6 @@ function View() {
     const [, setPanels] = useState<string[]>([]);
     const [, setGroups] = useState<string[]>([]);
     const [api, setApi] = useState<DockviewApi | undefined>();
-
     const [, setActivePanel] = useState<string>();
     const [, setActiveGroup] = useState<string>();
     const challenge = Route.useLoaderData() as Challenge;
@@ -78,7 +76,6 @@ function View() {
     const { updateSchema } = useContext(PgExecEngineContext);
     const challengeNumber = useChallengeNumber();
     const challengeIndex = useMemo(() => challengeNumber - 1, [challengeNumber]);
-    const [result, setResult] = useState<QueryResult | undefined>();
     const [db, setDb] = useState<string>('');
     const { theme } = useTheme();
 
@@ -115,9 +112,24 @@ function View() {
             </div>
         ),
         editorPanel: (props: IDockviewPanelProps) => <EditorPanel 
+            onExecuted={(result: QueryResult) => {
+                const erdPanel = api?.panels[1];
+                api?.addPanel({
+                    id: `result-${nextId()}`,
+                    component: 'resultPanel',
+                    title: 'Ergebnis',
+                    params: {
+                        result: result,
+                    },
+                    position: {
+                        direction: 'within',
+                        referencePanel: erdPanel,
+                    },
+                });
+            }}
+            containerApi={props.containerApi} 
             initialContent={challenge.query} 
             api={props.api} 
-            containerApi={props.containerApi} 
             params={props.params} 
         />,
         erdPanel: function ErdPanel() {
@@ -138,19 +150,21 @@ function View() {
                 </div>
             )
         },
-        resultPanel: () => (
-            <div
-                className={clsx(
-                    'h-full',
-                    'lg:px-4 pb-16 mb-40',
-                    'border-t-4 border-ridge',
-                    'border-white/20 dark:border-slate-900/20',
-                    'overflow-auto',
-                )}
-            >
-                <QueryResultTable id="query-result" result={result} />
-            </div>
-        ),
+        resultPanel: (props: IDockviewPanelProps<{result: QueryResult}>) => {
+            return (
+                <div
+                    className={clsx(
+                        'h-full',
+                        'lg:px-4 pb-16 mb-40',
+                        'border-t-4 border-ridge',
+                        'border-white/20 dark:border-slate-900/20',
+                        'overflow-auto',
+                    )}
+                >
+                    <QueryResultTable id="query-result" result={props.params.result} />
+                </div>
+            );
+        },
     }
 
     useEffect(() => {
@@ -213,7 +227,7 @@ function View() {
                 title: 'SQL Editor',
                 component: 'editorPanel',
             });
-        
+
             const erd = api.addPanel({
                 id: `erd-${nextId()}`,
                 component: 'erdPanel',
@@ -228,26 +242,15 @@ function View() {
                 id: `lesson-${nextId()}`,
                 component: 'lessonPanel',
                 title: 'Aufgabenstellung',
+                api: api,
                 position: {
                     referencePanel: editor,
                     direction: 'below',
                 },
             });
 
-            api.addPanel({
-                id: `result-${nextId()}`,
-                component: 'resultPanel',
-                title: 'Ergebnis',
-                position: {
-                    referencePanel: erd,
-                    direction: 'whitin',
-                },
-            });
-
-            
             erd.api.setActive();
             editor.api.setActive();
-            isInitialized.current = true;
         };
 
         loadLayout();
