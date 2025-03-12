@@ -43,6 +43,7 @@ export const ChallengeLesson: React.FC<{
 }): React.ReactElement => (
     <article className="mt-4">
         <div 
+            className="pb-4"
             ref={ref}
             dangerouslySetInnerHTML={{
                 __html: `

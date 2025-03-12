@@ -141,7 +141,7 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
 
     return (
         <div className={BG_STYLE}>
-            <CodeEditor value={contentRef.current} ref={contentRef} />
+            <CodeEditor value={props.initialContent} ref={contentRef} />
             <Toolbar className="justify-center">
                 <IconButton
                     icon={<ArrowDownOnSquareStackIcon className="size-6" />}

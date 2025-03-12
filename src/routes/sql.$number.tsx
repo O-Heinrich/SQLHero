@@ -17,6 +17,8 @@ import { LeftControls, RightControls } from '@/components/dockview/Controls';
 import { EditorPanel } from '@/components/dockview/components';
 import { PgExecEngineContext } from "@/context/PgExecEngineContext";
 import '../../node_modules/dockview/dist/styles/dockview.css';
+import { ERD } from '@/components/ERD';
+import { clearState } from '@/lib/storage';
 
 /**
  * Background style for the challenge workspace
@@ -41,6 +43,15 @@ const fetchChallenge = async (name: string): Promise<object> => {
     }
     return response.json()
 }
+
+enum PanelTypes {
+    LESSON = 'lesson',
+    EDITOR = 'editor',
+    ERD = 'erd',
+    RESULT = 'result',
+}
+
+const PANEL_TYPES = Object.values(PanelTypes);
 
 /**
  * Main Challenge component that provides a complete SQL learning environment
@@ -68,20 +79,28 @@ function View() {
     const [, setActivePanel] = useState<string>();
     const [, setActiveGroup] = useState<string>();
     const challenge = Route.useLoaderData() as Challenge;
-    const [value, setValue] = useState<string>('');
     const valueRef = useRef<string>('');
     const lessonRef = useRef<HTMLDivElement>(null);
+    const [query, setQuery] = useState<string>('');
     const isInitialized = useRef<boolean>(false);
     const { state, dispatch } = useAppState();
     const { updateSchema } = useContext(PgExecEngineContext);
     const challengeNumber = useChallengeNumber();
-    const challengeIndex = useMemo(() => challengeNumber - 1, [challengeNumber]);
+    const challengeIndex =  challengeNumber - 1;
     const [db, setDb] = useState<string>('');
     const { theme } = useTheme();
 
     useEffect(() => {
         dispatch({ type: 'SET_CURRENT_CHALLENGE', payload: challenge });
     }, [challenge, dispatch]);
+
+    useEffect(() => {
+        if (!api || !state.dockviewState) {
+            return;
+        }
+
+        api?.fromJSON(JSON.parse(JSON.parse(state.dockviewState)));
+    }, [api, state.dockviewState]);
 
     /**
      * Initializes the challenge and updates the header UI based on the completion status.
@@ -100,22 +119,29 @@ function View() {
     }, [challengeIndex, dispatch, state.challenges, state.headerElement]);
 
 
-
     const components = {
-        lessonPanel: () => (
-            <div className={clsx('p-4 w-full h-full')}>
+        lessonPanel: (props: IDockviewPanelProps<{
+            description: string;
+            difficulty: 'easy' | 'medium' | 'hard' | 'unknown'; 
+            lessonRef: React.RefObject<HTMLDivElement>
+        }>) => {
+            const [content, setContent] = useState<string>('');
+            useEffect(() => {
+                setContent(props.params.description);
+            }, [props.params.description]);
+            return <div className={clsx('p-4 w-full h-full')}>
                 <ChallengeLesson
-                    lesson={challenge.description}
-                    difficulty={challenge.difficulty}
-                    ref={lessonRef}
+                    lesson={content}
+                    difficulty={props.params.difficulty}
+                    ref={props.params.lessonRef}
                 />
-            </div>
-        ),
-        editorPanel: (props: IDockviewPanelProps) => <EditorPanel 
+            </div>;
+        },
+        editorPanel: (props: IDockviewPanelProps<{query: string}>) => <EditorPanel 
             onExecuted={(result: QueryResult) => {
                 const erdPanel = api?.panels[1];
                 api?.addPanel({
-                    id: `result-${nextId()}`,
+                    id: `${PanelTypes.RESULT}-${nextId()}`,
                     component: 'resultPanel',
                     title: 'Ergebnis',
                     params: {
@@ -128,15 +154,17 @@ function View() {
                 });
             }}
             containerApi={props.containerApi} 
-            initialContent={challenge.query} 
+            initialContent={props.params.query} 
             api={props.api} 
             params={props.params} 
         />,
-        erdPanel: function ErdPanel() {
+        erdPanel: (props: IDockviewPanelProps<{src: string}>) => {
             const { theme } = useTheme();
             return (
-                <div className={clsx('w-full h-full flex items-center justify-center p-4', BG_STYLE)}>
-                    <img
+                
+                <div className={clsx('cursor-move h-full', BG_STYLE)}>
+                    
+                    {/* <img
                         key={`erd-${theme}`}
                         src={challenge.schema?.replace(
                             '.sql',
@@ -146,7 +174,11 @@ function View() {
                         width="100%"
                         height="100%"
                         className="erd max-h-full max-w-full"
-                    />
+                    /> */}
+                        <ERD src={props.params.src?.replace(
+                            '.sql',
+                            theme === 'dark' ? '-dark.svg' : '.svg',
+                        ) ?? ''} />
                 </div>
             )
         },
@@ -155,7 +187,6 @@ function View() {
                 <div
                     className={clsx(
                         'h-full',
-                        'lg:px-4 pb-16 mb-40',
                         'border-t-4 border-ridge',
                         'border-white/20 dark:border-slate-900/20',
                         'overflow-auto',
@@ -170,16 +201,38 @@ function View() {
     useEffect(() => {
         if (!api) {
             return;
+        } else if (isInitialized.current) {
+            api.panels.forEach((panel) => {
+                const [type] = PANEL_TYPES.filter(type => type === panel.id.split('-')[0] as PanelTypes);
+                switch (type) {
+                    case PanelTypes.EDITOR:
+                        panel.api.updateParameters({ content: query });
+                        break;
+                    case PanelTypes.ERD:
+                        panel.api.updateParameters({ src: challenge.schema });
+                        break;
+                    case PanelTypes.LESSON:
+                        panel.api.updateParameters({ description: challenge.description, difficulty: challenge.difficulty });
+                        break;
+                    default:
+                        break;
+                }
+
+            });
+            return;
         }
 
         const disposables = [
             api.onDidAddPanel((event) => {
-                setPanels((_) => [..._, event.id]);
+                /* dispatch({ type: 'SAVE_DOCKVIEW_STATE', payload: JSON.stringify(api.toJSON()) }); */
+                setPanels((_) => [..._, event.id]);                
             }),
             api.onDidActivePanelChange((event) => {
                 setActivePanel(event?.id);
+                /* dispatch({ type: 'SAVE_DOCKVIEW_STATE', payload: JSON.stringify(api.toJSON()) }); */
             }),
             api.onDidRemovePanel((event) => {
+                /* dispatch({ type: 'SAVE_DOCKVIEW_STATE', payload: JSON.stringify(api.toJSON()) }); */
                 setPanels((_) => {
                     const next = [..._];
                     next.splice(
@@ -191,9 +244,11 @@ function View() {
                 });
             }),
             api.onDidAddGroup((event) => {
+                /* dispatch({ type: 'SAVE_DOCKVIEW_STATE', payload: JSON.stringify(api.toJSON()) }); */
                 setGroups((_) => [..._, event.id]);
             }),
             api.onDidRemoveGroup((event) => {
+                /* dispatch({ type: 'SAVE_DOCKVIEW_STATE', payload: JSON.stringify(api.toJSON()) }); */
                 setGroups((_) => {
                     const next = [..._];
                     next.splice(
@@ -205,33 +260,38 @@ function View() {
                 });
             }),
             api.onDidActiveGroupChange((event) => {
+                /* dispatch({ type: 'SAVE_DOCKVIEW_STATE', payload: JSON.stringify(api.toJSON()) }); */
                 setActiveGroup(event?.id);
             }),
         ];
 
         const loadLayout = () => {
-            const serialized = localStorage.getItem('dv-state');
-
-            if (serialized) {
+            if (state.dockviewState) {
                 try {
-                    api.fromJSON(JSON.parse(serialized));
+     /*                api.fromJSON(JSON.parse(JSON.parse(state.dockviewState))); */
                     return;
                 } catch {
-                    localStorage.removeItem('dv-state');
+                   clearState();
                 }
                 return;
             }
 
             const editor = api.addPanel({
-                id: `editor-${nextId()}`,
+                id: `${PanelTypes.EDITOR}-${nextId()}`,
                 title: 'SQL Editor',
                 component: 'editorPanel',
+                params: {
+                    query: valueRef.current,
+                },
             });
 
             const erd = api.addPanel({
-                id: `erd-${nextId()}`,
+                id: `${PanelTypes.ERD}-${nextId()}`,
                 component: 'erdPanel',
-                title: 'ER Diagram',
+                title: 'ER Diagram',                
+                params: {
+                    src: challenge.schema.replace('.sql', '.svg'),
+                },
                 position: {
                     referencePanel: editor,
                     direction: 'left',
@@ -239,10 +299,14 @@ function View() {
             });
         
             api.addPanel({
-                id: `lesson-${nextId()}`,
+                id: `${PanelTypes.LESSON}-${nextId()}`,
                 component: 'lessonPanel',
                 title: 'Aufgabenstellung',
-                api: api,
+                params: {
+                    description: challenge.description,
+                    difficulty: challenge.difficulty,
+                    lessonRef,
+                },
                 position: {
                     referencePanel: editor,
                     direction: 'below',
@@ -254,9 +318,9 @@ function View() {
         };
 
         loadLayout();
-
+        isInitialized.current = true;
         return () => {
-            api.clear();
+           /*  api.clear(); */            
             disposables.forEach((disposable) => disposable?.dispose());
         };
     }, [api, challenge, challengeIndex, challengeNumber, dispatch, theme, valueRef]);
@@ -328,12 +392,11 @@ function View() {
         const attempts = state.challenges[challengeIndex]?.attempts.filter(
             (attempt) => Boolean(attempt.query),
         )
-        const len = attempts?.length ?? 0
-        valueRef.current = len > 0 ? attempts[len - 1].query! : ''
-        if (value !== valueRef.current) {
-            setValue(() => valueRef.current);
-        }
-    }, [challengeIndex, state.challenges, value])
+        const len = attempts?.length ?? 0;
+        console.log('attempts', len > 0 ? attempts[len - 1].query : '');
+        setQuery(len > 0 ? attempts[len - 1]?.query ?? '' : '')
+        api?.panels[0]?.api.updateParameters({ query: len > 0 ? attempts[len - 1].query : '' });
+    }, [challengeIndex, state.challenges, query])
 
     /**
      * Updates the view to show the ERD (Entity-Relationship Diagram) and scrolls to the top of the right column.
@@ -354,7 +417,6 @@ function View() {
     
 
     const onReady = (event: DockviewReadyEvent) => {
-
         setApi(() => event.api);
     }
 
@@ -370,7 +432,7 @@ function View() {
             //     PrefixHeaderControls
             // }
         />
-    )
+    );
 }
 
 /**

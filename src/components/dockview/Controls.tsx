@@ -108,7 +108,7 @@ export const LeftControls = (props: IDockviewHeaderActionsProps) => {
     const onClick = () => {
         props.containerApi.addPanel({
             id: `id_${Date.now().toString()}`,
-            component: 'default',
+            component: 'editorPanel',
             title: `Tab ${nextId()}`,
             position: {
                 referenceGroup: props.group,
@@ -127,7 +127,7 @@ export const LeftControls = (props: IDockviewHeaderActionsProps) => {
                 color: 'var(--dv-activegroup-visiblepanel-tab-color)',
             }}
         >
-            <Icon onClick={onClick} icon={<PlusCircleIcon className="size-4" />} />
+            {/* <Icon onClick={onClick} icon={<PlusCircleIcon className="size-4" />} /> */}
         </div>
     );
 };
