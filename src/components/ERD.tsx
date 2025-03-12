@@ -70,7 +70,7 @@ export const ERD: React.FC<{ src: string }> = ({ src }) => {
     return (
         <>
             <Style />
-            <TransformComponent wrapperStyle={{ width: '100%', height: '100%' }} contentClass="h-full w-full flex justify-center items-stretch">
+            <TransformComponent wrapperStyle={{ width: '100%', height: '100%' }} contentClass="h-full w-full">
                 <img src={src} alt="ERD" width="100%" height="100%" className="erd" />
             </TransformComponent>
         </>

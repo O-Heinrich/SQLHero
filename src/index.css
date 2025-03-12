@@ -262,11 +262,11 @@ a:not(a:has(button)):not(header h1 a):hover {
 }
 
 table {
-    @apply min-w-full divide-y divide-gray-200 dark:divide-gray-700 shadow-lg rounded-lg overflow-hidden;
+    @apply min-w-full divide-y my-4 divide-gray-200 dark:divide-gray-700 shadow-lg rounded-lg overflow-hidden;
 }
 
 table#query-result {
-    @apply h-auto overflow-x-auto my-2 overflow-hidden;
+    @apply h-auto overflow-x-auto my-0 overflow-hidden;
 }
 
 table thead {

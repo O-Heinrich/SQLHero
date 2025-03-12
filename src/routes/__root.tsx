@@ -7,18 +7,25 @@ import { Footer } from '@/components/Footer';
 import { PgExecEngineProvider } from '@/context/PgExecEngineProvider';
 import { ThemeContext } from '@/context/ThemeContext';
 import { AppStateProvider } from '@/context/AppStateContext';
+import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 
 const Root: React.FC = () => (
     <ThemeProvider>
         <PgExecEngineProvider>
             <AppStateProvider>
-                <div className="flex flex-col min-h-screen">
-                    <Header />
-                    <main className="flex flex-1 flex-wrap">
-                        <Outlet />
-                    </main>
-                    <Footer />
-                </div>
+                <TransformWrapper initialScale={3}>
+                    <div className="flex flex-col min-h-screen">
+                        <Header />
+                        <main className="flex flex-1 flex-wrap">
+                            <Outlet />
+                        </main>
+                        <Footer />
+                    </div>
+                    {/* Workaround for mounting issue */}
+                    <TransformComponent contentClass="hidden">
+                        <img src="" />
+                    </TransformComponent>
+                </TransformWrapper>
                 <Toaster 
                     offset={{right: '8vw'}} 
                     theme={use(ThemeContext).theme as 'light' | 'dark'}
