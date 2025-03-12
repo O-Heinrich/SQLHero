@@ -238,7 +238,7 @@ export const Header: React.FC = (): React.ReactElement => {
                         </div>
                         <ToggleThemeButton />
                         <motion.button 
-                            onClick={() => navigate({to: '/dockview'})} 
+                            onClick={() => navigate({to: '/overview'})} 
                             className="theme-button m-0! p-2! transition-duration-200! md:hidden"
                             whileTap={{ scale: 0.75 }}
                         >
