@@ -7,7 +7,7 @@
 
 import { useResizeObserver } from '@/hooks/useResizeObserver';
 import { useTheme } from '@/hooks/useTheme';
-import { useEffect, useCallback, useRef, JSX, useState, useMemo } from 'react';
+import { useEffect, useCallback, useRef, JSX, useMemo } from 'react';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { SqlToken } from '@/lib/token';
 
@@ -20,8 +20,8 @@ import { SqlToken } from '@/lib/token';
 export interface CodeEditorProps {
     /** The current value to display in the editor */
     value: string;
-    /** Callback function that receives the updated editor content when changes occur */
-    ref: React.RefObject<string>;
+
+    ref?: React.RefObject<monaco.editor.IStandaloneCodeEditor>;
 }
 
 /**
@@ -49,14 +49,9 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
     const { theme: heroTheme } = useTheme();
     /** Reference to the container div element */
     const containerRef = useRef<HTMLDivElement>(null);
-    /** Reference to the Monaco editor instance */
-    // const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
-    /** Custom resize observer hook */
+    /** Resize Observer instance */
     const resizeOberve = useResizeObserver();
-    /** Flag to track if this is the initial mount */
-    const isInitialMount = useRef(true);
-    const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | null>(null);
-
+    /** Memorized theme name */
     const theme = useMemo(() => heroTheme, [heroTheme]);
 
     /**
@@ -66,49 +61,11 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
      * @param {ResizeObserverEntry[]} entries - The resize observer entries
      */
     const onResizeEvent = useCallback((entries: ResizeObserverEntry[]) => {
-        if (editor && entries.length > 0) {
+        if (ref?.current && entries.length > 0) {
             const { width, height } = entries[0].contentRect;
-            editor.layout({ width, height });
+            ref!.current.layout({ width, height });
         }
-    }, [editor]);
-
-    /**
-     * Update editor value when the value prop changes externally
-     * Preserves cursor position and selection during updates
-     */
-    // useEffect(() => {
-    //     if (editorRef.current) {
-    //         // Skip on initial mount as we'll set the value in onMount handler
-    //         if (isInitialMount.current) {
-    //             isInitialMount.current = false;
-    //             return;
-    //         }
-
-    //         // Only update if the value differs from current editor content
-    //         // Only update if the value differs from current editor content
-    //         const currentValue = editorRef.current.getValue();
-    //         if (value !== currentValue) {
-    //             // Save cursor position
-    //             const position = editorRef.current.getPosition();
-    //             const selection = editorRef.current.getSelection();
-
-    //             // Update value
-    //             editorRef.current.setValue(value);
-
-    //             // Restore cursor position and selection
-    //             if (position) {
-    //                 editorRef.current.setPosition(position);
-    //             }
-    //             if (selection) {
-    //                 editorRef.current.setSelection(selection);
-    //             }
-
-    //             onChange(value);
-    //             // Ensure focus is maintained
-    //             editorRef.current.focus();
-    //         }
-    //     }
-    // }, [onChange, value]);
+    }, [ref]);
 
     /**
      * Set up resize observer to handle container size changes
@@ -120,8 +77,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
     }, [resizeOberve, containerRef, onResizeEvent]);
 
     useEffect(() => {
-        if (isInitialMount.current) {
-            isInitialMount.current = false;
+        if (!ref?.current) {
             // Define light theme
             monaco.editor.defineTheme('light', {
                 base: 'vs',
@@ -158,7 +114,36 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
                 tokenizer: SqlToken.tokenizer,
             });
 
-            const instance = monaco.editor.create(containerRef.current!, {
+            monaco.languages.registerCompletionItemProvider('sql', {
+                provideCompletionItems: (model, position) => {
+                    const textUntilPosition = model.getValueInRange({
+                        startLineNumber: position.lineNumber,
+                        startColumn: 1,
+                        endLineNumber: position.lineNumber,
+                        endColumn: position.column,
+                    });
+            
+                    const lastToken = textUntilPosition.trim().split(/\s+/).pop();
+            
+                    if (lastToken) {
+                        const suggestions = SqlToken.suggest(lastToken).map((suggestion: string) => ({
+                            label: suggestion,
+                            kind: monaco.languages.CompletionItemKind.Property,
+                            insertText: suggestion,
+                        }));
+            
+                        return {
+                            suggestions,
+                        };
+                    }
+            
+                    return {
+                        suggestions: [],
+                    };
+                },
+            });
+
+            ref!.current = monaco.editor.create(containerRef.current!, {
                 value,
                 language: 'sql',
                 automaticLayout: false,
@@ -175,15 +160,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
                 renderWhitespace: 'all',
                 contextmenu: false,
             });
-
-            instance.onDidChangeModelContent(() => {
-                ref.current = instance.getValue();
-            });
-
-            setEditor(instance);
-            return () => editor?.dispose();
         }
-    }, [value, ref, editor]);
+    }, [value, ref]);
 
 
     useEffect(() => {

@@ -462,8 +462,8 @@ function RouteComponent(): React.ReactElement {
                     }, index) => (
                         <Link
                             key={index}
-                            to={`/challenges/$name`}
-                            params={{ name: number?.toString() }}
+                            to={`/sql/$number`}
+                            params={{ number: number?.toString() }}
                             className="h-full block"
                         >
                             <Card

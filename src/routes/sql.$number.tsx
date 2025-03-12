@@ -1,4 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'react';
+import { editor as monacoEditor } from 'monaco-editor/esm/vs/editor/editor.api';
 import { DockviewApi, DockviewReact, DockviewReadyEvent, IDockviewPanelProps } from 'dockview-react';
 import { clsx } from 'clsx';
 import { createFileRoute } from '@tanstack/react-router';
@@ -25,7 +26,7 @@ import '../../node_modules/dockview/dist/styles/dockview.css';
  * @constant
  */
 const BG_STYLE =
-'w-full h-full dark:bg-gray-700 dark:bg-blend-overlay bg-blend-multiply dark:to-slate-800 dark:from-gray-700/80 from-white to-gray-200 bg-radial bg-size-125 bg-radial-[at_50%_50%]';
+    'w-full h-full dark:bg-gray-700 dark:bg-blend-overlay bg-blend-multiply dark:to-slate-800 dark:from-gray-700/80 from-white to-gray-200 bg-radial bg-size-125 bg-radial-[at_50%_50%]';
 
 
 /**
@@ -86,8 +87,9 @@ function View() {
     const { state, dispatch } = useAppState();
     const { updateSchema } = useContext(PgExecEngineContext);
     const challengeNumber = useChallengeNumber();
-    const challengeIndex =  challengeNumber - 1;
+    const challengeIndex = challengeNumber - 1;
     const [db, setDb] = useState<string>('');
+    const editorRef = useRef<monacoEditor.IStandaloneCodeEditor | null>(null);
     const { theme } = useTheme();
 
     useEffect(() => {
@@ -112,11 +114,11 @@ function View() {
 
 
     const components = {
-        lessonPanel: (props: IDockviewPanelProps<{
+        lessonPanel: function LessonPanel(props: IDockviewPanelProps<{
             description: string;
-            difficulty: 'easy' | 'medium' | 'hard' | 'unknown'; 
+            difficulty: 'easy' | 'medium' | 'hard' | 'unknown';
             lessonRef: React.RefObject<HTMLDivElement>
-        }>) => {
+        }>) {
             const [content, setContent] = useState<string>('');
             useEffect(() => {
                 setContent(props.params.description);
@@ -129,52 +131,45 @@ function View() {
                 />
             </div>;
         },
-        editorPanel: (props: IDockviewPanelProps<{query: string}>) => <EditorPanel 
-            onExecuted={(result: QueryResult) => {
-                const erdPanel = api?.panels[1];
-                api?.addPanel({
-                    id: `${PanelTypes.RESULT}-${nextId()}`,
-                    component: 'resultPanel',
-                    title: 'Ergebnis',
-                    params: {
-                        result: result,
-                    },
-                    position: {
-                        direction: 'within',
-                        referencePanel: erdPanel,
-                    },
-                });
-            }}
-            containerApi={props.containerApi} 
-            initialContent={props.params.query} 
+        editorPanel: (props: IDockviewPanelProps<{
+            query: string;
+            ref: React.RefObject<monacoEditor.IStandaloneCodeEditor>;
+        }>) => <EditorPanel
+            params={{
+                initialContent: props.params.query,
+                ref: props.params.ref,
+                onExecuted: (result: QueryResult) => {
+                    const erdPanel = api?.panels[1];
+                    api?.addPanel({
+                        id: `${PanelTypes.RESULT}-${nextId()}`,
+                        component: 'resultPanel',
+                        title: 'Ergebnis',
+                        params: {
+                            result: result,
+                        },
+                        position: {
+                            direction: 'within',
+                            referencePanel: erdPanel,
+                        },
+                    });
+                },
+            }} 
             api={props.api} 
-            params={props.params} 
+            containerApi={props.containerApi} 
         />,
-        erdPanel: (props: IDockviewPanelProps<{src: string}>) => {
+        erdPanel: function ErdPanel(props: IDockviewPanelProps<{ src: string }>) {
             const { theme } = useTheme();
             return (
-                
+
                 <div className={clsx('cursor-move h-full', BG_STYLE)}>
-                    
-                    {/* <img
-                        key={`erd-${theme}`}
-                        src={challenge.schema?.replace(
-                            '.sql',
-                            theme === 'dark' ? '-dark.svg' : '.svg',
-                        )}
-                        alt="ERD"
-                        width="100%"
-                        height="100%"
-                        className="erd max-h-full max-w-full"
-                    /> */}
-                        <ERD src={props.params.src?.replace(
-                            '.sql',
-                            theme === 'dark' ? '-dark.svg' : '.svg',
-                        ) ?? ''} />
+                    <ERD src={props.params.src?.replace(
+                        '.sql',
+                        theme === 'dark' ? '-dark.svg' : '.svg',
+                    ) ?? ''} />
                 </div>
             )
         },
-        resultPanel: (props: IDockviewPanelProps<{result: QueryResult}>) => {
+        resultPanel: (props: IDockviewPanelProps<{ result: QueryResult }>) => {
             return (
                 <div
                     className={clsx(
@@ -198,7 +193,7 @@ function View() {
                 const [type] = PANEL_TYPES.filter(type => type === panel.id.split('-')[0] as PanelTypes);
                 switch (type) {
                     case PanelTypes.EDITOR:
-                        panel.api.updateParameters({ content: query });
+                        editorRef.current?.setValue(query);
                         break;
                     case PanelTypes.ERD:
                         panel.api.updateParameters({ src: challenge.schema });
@@ -216,15 +211,12 @@ function View() {
 
         const disposables = [
             api.onDidAddPanel((event) => {
-                /* dispatch({ type: 'SAVE_DOCKVIEW_STATE', payload: JSON.stringify(api.toJSON()) }); */
-                setPanels((_) => [..._, event.id]);                
+                setPanels((_) => [..._, event.id]);
             }),
             api.onDidActivePanelChange((event) => {
                 setActivePanel(event?.id);
-                /* dispatch({ type: 'SAVE_DOCKVIEW_STATE', payload: JSON.stringify(api.toJSON()) }); */
             }),
             api.onDidRemovePanel((event) => {
-                /* dispatch({ type: 'SAVE_DOCKVIEW_STATE', payload: JSON.stringify(api.toJSON()) }); */
                 setPanels((_) => {
                     const next = [..._];
                     next.splice(
@@ -236,11 +228,9 @@ function View() {
                 });
             }),
             api.onDidAddGroup((event) => {
-                /* dispatch({ type: 'SAVE_DOCKVIEW_STATE', payload: JSON.stringify(api.toJSON()) }); */
                 setGroups((_) => [..._, event.id]);
             }),
             api.onDidRemoveGroup((event) => {
-                /* dispatch({ type: 'SAVE_DOCKVIEW_STATE', payload: JSON.stringify(api.toJSON()) }); */
                 setGroups((_) => {
                     const next = [..._];
                     next.splice(
@@ -252,7 +242,6 @@ function View() {
                 });
             }),
             api.onDidActiveGroupChange((event) => {
-                /* dispatch({ type: 'SAVE_DOCKVIEW_STATE', payload: JSON.stringify(api.toJSON()) }); */
                 setActiveGroup(event?.id);
             }),
         ];
@@ -264,13 +253,14 @@ function View() {
                 component: 'editorPanel',
                 params: {
                     query: valueRef.current,
+                    ref: editorRef,
                 },
             });
 
             const erd = api.addPanel({
                 id: `${PanelTypes.ERD}-${nextId()}`,
                 component: 'erdPanel',
-                title: 'ER Diagram',                
+                title: 'ER Diagram',
                 params: {
                     src: challenge.schema.replace('.sql', '.svg'),
                 },
@@ -279,7 +269,7 @@ function View() {
                     direction: 'left',
                 },
             });
-        
+
             api.addPanel({
                 id: `${PanelTypes.LESSON}-${nextId()}`,
                 component: 'lessonPanel',
@@ -302,10 +292,10 @@ function View() {
         loadLayout();
         isInitialized.current = true;
         return () => {
-           /*  api.clear(); */            
+            /*  api.clear(); */
             disposables.forEach((disposable) => disposable?.dispose());
         };
-    }, [api, challenge, challengeIndex, challengeNumber, dispatch, theme, valueRef]);
+    }, [api, challenge, challengeIndex, challengeNumber, dispatch, query, theme, valueRef]);
 
     /**
      * Loads the challenge query and schema into the database.
@@ -344,22 +334,6 @@ function View() {
     ])
 
     /**
-     * Initializes the challenge and updates the header UI based on the completion status.
-     *
-     * This effect:
-     * - Dispatches an action to initialize the current challenge.
-     * - Toggles the header success state based on whether the challenge is completed.
-     *
-     * @effect
-     * @dependencies challengeNo, dispatch, state.challenges, state.headerElement
-     */
-    useEffect(() => {
-        dispatch({ type: 'INIT_CHALLENGE', payload: { index: challengeIndex } })
-        const notCompleted = !state.challenges[challengeIndex].completed
-        toggleHeaderSuccess(notCompleted, state.headerElement)
-    }, [challengeIndex, dispatch, state.challenges, state.headerElement])
-
-    /**
      * Updates the SQL editor content based on the current challenge attempt.
      *
      * This effect:
@@ -375,28 +349,9 @@ function View() {
             (attempt) => Boolean(attempt.query),
         )
         const len = attempts?.length ?? 0;
-        console.log('attempts', len > 0 ? attempts[len - 1].query : '');
         setQuery(len > 0 ? attempts[len - 1]?.query ?? '' : '')
-        api?.panels[0]?.api.updateParameters({ query: len > 0 ? attempts[len - 1].query : '' });
-    }, [challengeIndex, state.challenges, query])
-
-    /**
-     * Updates the view to show the ERD (Entity-Relationship Diagram) and scrolls to the top of the right column.
-     *
-     * This effect:
-     * - Sets the active view to the ERD page.
-     * - Scrolls the right column to the top when the challenge number changes.
-     *
-     * @effect
-     * @dependencies challengeNo
-     */
-    useEffect(() => {
-        if (api) {
-            api.getPanel('lesson')?.view.content.element.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    }, [api])
-
-    
+        editorRef?.current?.setValue(len > 0 ? attempts[len - 1].query ?? '' : '');
+    }, [challengeIndex, state.challenges, query, api?.panels])
 
     const onReady = (event: DockviewReadyEvent) => {
         setApi(() => event.api);
@@ -410,9 +365,6 @@ function View() {
             className={theme === 'dark' ? 'dockview-theme-abyss' : 'dockview-theme-light'}
             rightHeaderActionsComponent={RightControls}
             leftHeaderActionsComponent={LeftControls}
-            // prefixHeaderActionsComponent={
-            //     PrefixHeaderControls
-            // }
         />
     );
 }

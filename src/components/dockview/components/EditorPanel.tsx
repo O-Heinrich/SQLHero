@@ -11,7 +11,7 @@ import { IDockviewPanelProps } from "dockview";
 import { Toolbar } from "../Controls";
 import { IconButton } from "@/components/buttons";
 import { ArrowDownOnSquareStackIcon, PlayIcon } from "@heroicons/react/24/solid";
-import { useContext, useMemo, useRef } from "react";
+import { useContext, useMemo } from "react";
 import { useChallengeNumber } from "@/hooks/useChallengeNumber";
 import { useAppState } from "@/hooks/useAppState";
 import { QueryResult, SqlExecutionResult } from "@/lib/exec-engine/postgres-engine";
@@ -19,20 +19,28 @@ import { ResultSetComparison } from "@/lib/utils";
 import { toast } from "sonner";
 import { TableDiff } from "@/lib/types";
 import { PgExecEngineContext } from "@/context/PgExecEngineContext";
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 /**
- * Props interface for the EditorPanel component
+ * Props for the EditorPanel component
  * @interface EditorPanelProps
- * @extends {IDockviewPanelProps} - Base properties from dockview panel
- */
-export interface EditorPanelProps extends IDockviewPanelProps {
-    /** Initial SQL content to display in the editor */
+ * @property {string} initialContent - The initial content to display in the editor
+ * @property {function} onExecuted - Callback function that receives the query result
+ * @property {string} erdSrc - The source path for the ERD PDF file
+ * @property {React.RefObject<monaco.editor.IStandaloneCodeEditor>} ref - A reference to the editor instance
+ * @extends IDockviewPanelProps
+ * @see {@link IDockviewPanelProps}
+ * @see {@link monaco.editor.IStandaloneCodeEditor}
+ * @see {@link QueryResult}
+ * @see {@link EditorPanel}
+ * @see {@link PgExecEngineContext}
+ */ 
+export type EditorPanelProps = IDockviewPanelProps<{
     initialContent: string;
-    /** Optional callback function triggered when SQL is executed successfully */
     onExecuted?: (result: QueryResult) => void;
-    /** Optional source path for the entity relationship diagram (ERD) */
     erdSrc?: string;
-}
+    ref: React.RefObject<monaco.editor.IStandaloneCodeEditor>;
+}>;
 
 /**
  * EditorPanel component for SQL challenges
@@ -49,7 +57,7 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
     const { pg } = useContext(PgExecEngineContext)
     const challengeNumber = useChallengeNumber();
     const challengeIndex = useMemo(() => challengeNumber - 1, [challengeNumber]);
-    const contentRef = useRef<string>(props.initialContent);
+
     /**
      * Background style for the challenge workspace
      * @constant
@@ -80,7 +88,7 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
         try {
             let queryResult: SqlExecutionResult | null = null
             const key = challengeNumber.toString() // Create a key for the current challenge.
-            const result = await pg.execute(contentRef.current ?? ''); // Execute the SQL query.
+            const result = await pg.execute(props.params.ref.current.getValue() ?? ''); // Execute the SQL query.
 
             if (!result.success) {
                 throw new Error(
@@ -113,8 +121,8 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
                 return success && ResultSetComparison.compareWithSolution(key, result);
             }, Boolean(result.data?.length))
 
-            if (props.onExecuted && result.data?.length > 0) {
-                props.onExecuted(result.data[result.data?.length - 1]);
+            if (props.params.onExecuted && result.data?.length > 0) {
+                props.params.onExecuted(result.data[result.data?.length - 1]);
             }
 
             if (isCorrect) {
@@ -123,7 +131,7 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
                 });
                 dispatch({
                     type: 'COMPLETE_CHALLENGE',
-                    payload: { index: challengeIndex, query: contentRef.current },
+                    payload: { index: challengeIndex, query: props.params.ref.current.getValue() ?? '' },
                 });
             } else {
                 toast.error('Fehler', {
@@ -134,7 +142,7 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
                     payload: {
                         index: challengeIndex,
                         difference: {} as TableDiff,
-                        query: contentRef.current,
+                        query: props.params.ref.current.getValue() ?? '',
                     },
                 });
             }
@@ -159,7 +167,7 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
      */
     const handleDownloadClick = (): void => {
         const a = document.createElement('a')
-        const file = props.erdSrc ?? ''
+        const file = props.params.erdSrc ?? ''
         a.href = `/databases/pdf/${file}`
         a.download = file
         a.click()
@@ -171,7 +179,7 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
      */
     return (
         <div className={BG_STYLE}>
-            <CodeEditor value={props.initialContent} ref={contentRef} />
+            <CodeEditor value={props.params.initialContent} ref={props.params.ref} />
             <Toolbar className="justify-center">
                 <IconButton
                     icon={<ArrowDownOnSquareStackIcon className="size-6" />}
