@@ -72,8 +72,8 @@ function Index() {
                         label="Start" 
                         size="lg"
                         onClick={() => navigate({ 
-                            to: '/challenges/$name', 
-                            params: { name: '1' } 
+                            to: '/sql/$number', 
+                            params: { number: '1' } 
                         })} 
                     />
                 </section>
