@@ -1,5 +1,7 @@
 import { languages } from 'monaco-editor';
 
+let ENV_TOKENS: string[] = [];
+
 export const keywords = [
     'ABORT', 'ABSOLUTE', 'ACCESS', 'ACTION', 'ADD', 'ADMIN', 'AFTER', 'AGGREGATE', 'ALL', 
     'ALSO', 'ALTER', 'ALWAYS', 'ANALYSE', 'ANALYZE', 'AND', 'ANY', 'ARRAY', 'AS', 'ASC', 
@@ -179,4 +181,39 @@ export const tokenizer: { [name: string]: languages.IMonarchLanguageRule[]; } = 
             }
         }],
     ],
+};
+
+export const suggest = (lastToken: string) => {
+    const suggestions: string[] = [
+        ...types,
+        ...keywords,  
+        ...functions,
+        ...ENV_TOKENS,
+    ].filter((suggestion) => {
+        if (lastToken.startsWith('"')) {
+            lastToken = lastToken.substring(1, suggestion.length - 1);
+        }
+
+        return suggestion.includes(lastToken);
+    }); 
+    console.log('Suggestions:', suggestions);
+    return suggestions;
+};
+
+export const addEnvToken = (...token: string[]) => {
+    ENV_TOKENS.push(...token);
+}
+
+export const clearEnvTokens = () => {
+    ENV_TOKENS = [];
+}
+
+export const SqlToken = {
+    keywords,
+    types,
+    functions,
+    tokenizer,
+    suggest,
+    addEnvToken,
+    clearEnvTokens,
 };

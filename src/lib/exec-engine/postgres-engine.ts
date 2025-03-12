@@ -198,4 +198,8 @@ export class PostgresExecutionEngine extends ExecutionEngine {
     isInitialized(): boolean {
         return Boolean(this.pg);
     }
+    
+    getSchema(): string {
+        return this.schema ?? '';
+    }
 }

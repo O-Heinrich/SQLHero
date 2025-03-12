@@ -11,7 +11,7 @@
 
 import { createContext, useReducer, useEffect, ReactNode } from 'react';
 import { appReducer } from '@/lib/reducer';
-import { AppState, ChallengeAction, Challenge, ChallengeData } from '@/lib/types';
+import { AppState, ChallengeAction, Challenge } from '@/lib/types';
 import { CHALLENGES } from 'virtual:sql-hero';
 import { loadState } from '@/lib/storage';
 
