@@ -1,7 +1,6 @@
 import { IDockviewHeaderActionsProps } from 'dockview';
 import * as React from 'react';
-import { nextId } from '@/lib/dockview/defaultLayout';
-import { ArrowsPointingOutIcon, ArrowsPointingInIcon, ArrowDownOnSquareStackIcon, ViewfinderCircleIcon, XMarkIcon, ArrowTopRightOnSquareIcon, PlusCircleIcon, Bars3BottomRightIcon } from '@heroicons/react/24/solid';
+import { ArrowsPointingOutIcon, ArrowsPointingInIcon, ArrowDownOnSquareStackIcon, ViewfinderCircleIcon, XMarkIcon, ArrowTopRightOnSquareIcon, Bars3BottomRightIcon } from '@heroicons/react/24/solid';
 import { ToolbarProps } from './panelActions';
 
 const Icon = (props: {
@@ -104,33 +103,33 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
     );
 };
 
-export const LeftControls = (props: IDockviewHeaderActionsProps) => {
-    const onClick = () => {
-        props.containerApi.addPanel({
-            id: `id_${Date.now().toString()}`,
-            component: 'editorPanel',
-            title: `Tab ${nextId()}`,
-            position: {
-                referenceGroup: props.group,
-            },
-        });
-    };
+// export const LeftControls = (props: IDockviewHeaderActionsProps) => {
+//     const onClick = () => {
+//         props.containerApi.addPanel({
+//             id: `id_${Date.now().toString()}`,
+//             component: 'editorPanel',
+//             title: `Tab ${nextId()}`,
+//             position: {
+//                 referenceGroup: props.group,
+//             },
+//         });
+//     };
 
-    return (
-        <div
-            className="group-control"
-            style={{
-                display: 'flex',
-                alignItems: 'center',
-                padding: '0px 8px',
-                height: '100%',
-                color: 'var(--dv-activegroup-visiblepanel-tab-color)',
-            }}
-        >
-            {/* <Icon onClick={onClick} icon={<PlusCircleIcon className="size-4" />} /> */}
-        </div>
-    );
-};
+//     return (
+//         <div
+//             className="group-control"
+//             style={{
+//                 display: 'flex',
+//                 alignItems: 'center',
+//                 padding: '0px 8px',
+//                 height: '100%',
+//                 color: 'var(--dv-activegroup-visiblepanel-tab-color)',
+//             }}
+//         >
+//             <Icon onClick={onClick} icon={<PlusCircleIcon className="size-4" />} />
+//         </div>
+//     );
+// };
 
 export const PrefixHeaderControls = (props: IDockviewHeaderActionsProps) => {
     return (

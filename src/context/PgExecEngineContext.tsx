@@ -23,7 +23,6 @@ export interface IPGliteContext {
      */
     pg: PostgresExecutionEngine | undefined;
     updateSchema: (schema: string) => Promise<void>;
-    getSchema: () => string;
 }
 
 /**
@@ -41,5 +40,4 @@ export interface IPGliteContext {
 export const PgExecEngineContext = createContext<IPGliteContext>({
     pg: undefined, 
     updateSchema: async () => { throw new Error("updateSchema not implemented"); },
-    getSchema: () => { throw new Error("getSchema not implemented"); }
 });

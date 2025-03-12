@@ -114,35 +114,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
                 tokenizer: SqlToken.tokenizer,
             });
 
-            monaco.languages.registerCompletionItemProvider('sql', {
-                provideCompletionItems: (model, position) => {
-                    const textUntilPosition = model.getValueInRange({
-                        startLineNumber: position.lineNumber,
-                        startColumn: 1,
-                        endLineNumber: position.lineNumber,
-                        endColumn: position.column,
-                    });
-            
-                    const lastToken = textUntilPosition.trim().split(/\s+/).pop();
-            
-                    if (lastToken) {
-                        const suggestions = SqlToken.suggest(lastToken).map((suggestion: string) => ({
-                            label: suggestion,
-                            kind: monaco.languages.CompletionItemKind.Property,
-                            insertText: suggestion,
-                        }));
-            
-                        return {
-                            suggestions,
-                        };
-                    }
-            
-                    return {
-                        suggestions: [],
-                    };
-                },
-            });
-
             ref!.current = monaco.editor.create(containerRef.current!, {
                 value,
                 language: 'sql',

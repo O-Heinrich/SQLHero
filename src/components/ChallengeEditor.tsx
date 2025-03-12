@@ -18,6 +18,7 @@
  * @requires @/hooks/useTheme
  * @requires react-ace
  * @requires ace-builds
+ * @deprecated Please use the `CodeEditor` component instead.
  */
 
 import React from "react";
@@ -63,6 +64,8 @@ interface ChallengeEditorProps {
  *   setValue={setQuery}
  * />
  * ```
+ * 
+ * @deprecated Please use the `CodeEditor` component instead.
  */
 export const ChallengeEditor: React.FC<ChallengeEditorProps> = ({
     valueRef,

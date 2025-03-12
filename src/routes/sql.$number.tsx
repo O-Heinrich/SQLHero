@@ -14,7 +14,7 @@ import { QueryResult } from '@/lib/exec-engine/postgres-engine';
 import { ChallengeLesson } from '@/components/ChallengeLesson';
 import { QueryResultTable } from '@/components/QueryResultTable';
 import { nextId } from '@/lib/dockview/defaultLayout';
-import { LeftControls, RightControls } from '@/components/dockview/Controls';
+import { RightControls } from '@/components/dockview/Controls';
 import { EditorPanel } from '@/components/dockview/components';
 import { PgExecEngineContext } from "@/context/PgExecEngineContext";
 import { ERD } from '@/components/ERD';
@@ -364,7 +364,6 @@ function View() {
             onReady={onReady}
             className={theme === 'dark' ? 'dockview-theme-abyss' : 'dockview-theme-light'}
             rightHeaderActionsComponent={RightControls}
-            leftHeaderActionsComponent={LeftControls}
         />
     );
 }

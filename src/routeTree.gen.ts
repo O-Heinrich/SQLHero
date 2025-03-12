@@ -20,7 +20,6 @@ import { Route as ChallengesNameImport } from './routes/challenges.$name'
 
 const OverviewLazyImport = createFileRoute('/overview')()
 const IntroductionLazyImport = createFileRoute('/introduction')()
-const DockviewLazyImport = createFileRoute('/dockview')()
 const IndexLazyImport = createFileRoute('/')()
 
 // Create/Update Routes
@@ -36,12 +35,6 @@ const IntroductionLazyRoute = IntroductionLazyImport.update({
   path: '/introduction',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/introduction.lazy').then((d) => d.Route))
-
-const DockviewLazyRoute = DockviewLazyImport.update({
-  id: '/dockview',
-  path: '/dockview',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/dockview.lazy').then((d) => d.Route))
 
 const IndexLazyRoute = IndexLazyImport.update({
   id: '/',
@@ -70,13 +63,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/dockview': {
-      id: '/dockview'
-      path: '/dockview'
-      fullPath: '/dockview'
-      preLoaderRoute: typeof DockviewLazyImport
       parentRoute: typeof rootRoute
     }
     '/introduction': {
@@ -114,7 +100,6 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
-  '/dockview': typeof DockviewLazyRoute
   '/introduction': typeof IntroductionLazyRoute
   '/overview': typeof OverviewLazyRoute
   '/challenges/$name': typeof ChallengesNameRoute
@@ -123,7 +108,6 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
-  '/dockview': typeof DockviewLazyRoute
   '/introduction': typeof IntroductionLazyRoute
   '/overview': typeof OverviewLazyRoute
   '/challenges/$name': typeof ChallengesNameRoute
@@ -133,7 +117,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
-  '/dockview': typeof DockviewLazyRoute
   '/introduction': typeof IntroductionLazyRoute
   '/overview': typeof OverviewLazyRoute
   '/challenges/$name': typeof ChallengesNameRoute
@@ -144,23 +127,15 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/dockview'
     | '/introduction'
     | '/overview'
     | '/challenges/$name'
     | '/sql/$number'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/dockview'
-    | '/introduction'
-    | '/overview'
-    | '/challenges/$name'
-    | '/sql/$number'
+  to: '/' | '/introduction' | '/overview' | '/challenges/$name' | '/sql/$number'
   id:
     | '__root__'
     | '/'
-    | '/dockview'
     | '/introduction'
     | '/overview'
     | '/challenges/$name'
@@ -170,7 +145,6 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
-  DockviewLazyRoute: typeof DockviewLazyRoute
   IntroductionLazyRoute: typeof IntroductionLazyRoute
   OverviewLazyRoute: typeof OverviewLazyRoute
   ChallengesNameRoute: typeof ChallengesNameRoute
@@ -179,7 +153,6 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
-  DockviewLazyRoute: DockviewLazyRoute,
   IntroductionLazyRoute: IntroductionLazyRoute,
   OverviewLazyRoute: OverviewLazyRoute,
   ChallengesNameRoute: ChallengesNameRoute,
@@ -197,7 +170,6 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/dockview",
         "/introduction",
         "/overview",
         "/challenges/$name",
@@ -206,9 +178,6 @@ export const routeTree = rootRoute
     },
     "/": {
       "filePath": "index.lazy.tsx"
-    },
-    "/dockview": {
-      "filePath": "dockview.lazy.tsx"
     },
     "/introduction": {
       "filePath": "introduction.lazy.tsx"
