@@ -94,14 +94,6 @@ function View() {
         dispatch({ type: 'SET_CURRENT_CHALLENGE', payload: challenge });
     }, [challenge, dispatch]);
 
-    useEffect(() => {
-        if (!api || !state.dockviewState) {
-            return;
-        }
-
-        api?.fromJSON(JSON.parse(JSON.parse(state.dockviewState)));
-    }, [api, state.dockviewState]);
-
     /**
      * Initializes the challenge and updates the header UI based on the completion status.
      * 
@@ -266,16 +258,6 @@ function View() {
         ];
 
         const loadLayout = () => {
-            if (state.dockviewState) {
-                try {
-     /*                api.fromJSON(JSON.parse(JSON.parse(state.dockviewState))); */
-                    return;
-                } catch {
-                   clearState();
-                }
-                return;
-            }
-
             const editor = api.addPanel({
                 id: `${PanelTypes.EDITOR}-${nextId()}`,
                 title: 'SQL Editor',
