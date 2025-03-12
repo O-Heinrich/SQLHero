@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { DockviewApi, DockviewReact, DockviewReadyEvent, IDockviewPanelProps } from 'dockview-react';
 import { clsx } from 'clsx';
 import { createFileRoute } from '@tanstack/react-router';
@@ -16,9 +16,9 @@ import { nextId } from '@/lib/dockview/defaultLayout';
 import { LeftControls, RightControls } from '@/components/dockview/Controls';
 import { EditorPanel } from '@/components/dockview/components';
 import { PgExecEngineContext } from "@/context/PgExecEngineContext";
-import '../../node_modules/dockview/dist/styles/dockview.css';
 import { ERD } from '@/components/ERD';
-import { clearState } from '@/lib/storage';
+
+import '../../node_modules/dockview/dist/styles/dockview.css';
 
 /**
  * Background style for the challenge workspace
