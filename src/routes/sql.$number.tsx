@@ -1,7 +1,15 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+/**
+ * @module ChallengeView
+ * @description Provides the main SQL learning challenge interface with integrated editor,
+ * database visualization, lesson display, and results panel. This module orchestrates
+ * the complete interactive learning experience for SQL challenges.
+ */
+
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { editor as monacoEditor } from 'monaco-editor/esm/vs/editor/editor.api';
 import { DockviewApi, DockviewReact, DockviewReadyEvent, IDockviewPanelHeaderProps, IDockviewPanelProps } from 'dockview-react';
 import { clsx } from 'clsx';
+import { XMarkIcon } from '@heroicons/react/24/solid';
 import { createFileRoute } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { ChallengeSkeleton } from '@/components/Skeleton';
@@ -45,12 +53,47 @@ const fetchChallenge = async (name: string): Promise<object> => {
     return response.json()
 }
 
+/**
+ * Array of all available panel type values
+ * @constant
+ */
 const PANEL_TYPES = Object.values(PanelTypes);
 
+/**
+ * Custom tab header component for Dockview panels
+ * 
+ * Renders a header with the panel title and conditionally displays a close button
+ * for result panels. The component detects if the panel is a result panel by checking
+ * if the panel ID contains the PanelTypes.RESULT identifier.
+ * 
+ * @component
+ * @param {IDockviewPanelHeaderProps<{title: string}>} props - The component props from Dockview
+ * @param {Object} props.params - Parameters passed to the component
+ * @param {string} props.params.title - The title to display in the header
+ * @param {Object} props.api - The Dockview panel API
+ * @param {string} props.api.id - The panel identifier
+ * @param {Function} props.api.close - Function to close the panel
+ * @returns {JSX.Element} The rendered tab header component
+ */
 const TabHeader: React.FunctionComponent<IDockviewPanelHeaderProps<{title: string}>> = (props) => {
+    /**
+     * Determines if the current panel is a result panel based on its ID
+     * Memoized to prevent unnecessary recalculations
+     */
+    const isResult = useMemo(() => props.api.id.includes(PanelTypes.RESULT), [props.api.id]);
+    
     return (
-        <div className="flex items-center justify-between p-2">
-            <div className="text-gray-700">{props.params.title}</div>
+        <div className="flex gap-4 items-center justify-between py-2 px-4">
+            <div className="text-gray-700 dark:text-gray-300">{props.params.title}</div>
+            {isResult && (
+                <div title={props.params.title} role="button" className="action" onClick={() => props.api.close()}>
+                    <span
+                        style={{ fontSize: 'inherit' }}
+                    >
+                        <XMarkIcon className="size-4" />
+                    </span>
+                </div>
+            )}
         </div>
     );
 }
@@ -93,6 +136,9 @@ function View() {
     const editorRef = useRef<monacoEditor.IStandaloneCodeEditor | null>(null);
     const { theme } = useTheme();
 
+    /**
+     * Updates the current challenge in the app state when it changes
+     */
     useEffect(() => {
         dispatch({ type: 'SET_CURRENT_CHALLENGE', payload: challenge });
     }, [challenge, dispatch]);
@@ -114,7 +160,19 @@ function View() {
     }, [challengeIndex, dispatch, state.challenges, state.headerElement]);
 
 
+    /**
+     * Collection of panel components used in the dockview layout
+     * 
+     * @type {Record<string, React.FC<IDockviewPanelProps<any>>}
+     */
     const components = {
+        /**
+         * Panel component for displaying challenge instructions and lesson content
+         * 
+         * @component
+         * @param {IDockviewPanelProps<{description: string, difficulty: string, lessonRef: React.RefObject<HTMLDivElement>}>} props - Panel props
+         * @returns {JSX.Element} Rendered lesson panel
+         */
         lessonPanel: function LessonPanel(props: IDockviewPanelProps<{
             description: string;
             difficulty: 'easy' | 'medium' | 'hard' | 'unknown';
@@ -132,6 +190,13 @@ function View() {
                 />
             </div>;
         },
+        /**
+         * Panel component for SQL editor with execution capabilities
+         * 
+         * @component
+         * @param {IDockviewPanelProps<{query: string, ref: React.RefObject<monacoEditor.IStandaloneCodeEditor>}>} props - Panel props
+         * @returns {JSX.Element} Rendered editor panel
+         */
         editorPanel: (props: IDockviewPanelProps<{
             query: string;
             ref: React.RefObject<monacoEditor.IStandaloneCodeEditor>;
@@ -158,6 +223,13 @@ function View() {
             api={props.api} 
             containerApi={props.containerApi} 
         />,
+        /**
+         * Panel component for displaying entity relationship diagrams
+         * 
+         * @component
+         * @param {IDockviewPanelProps<{src: string}>} props - Panel props with diagram source
+         * @returns {JSX.Element} Rendered ERD panel
+         */
         erdPanel: function ErdPanel(props: IDockviewPanelProps<{ src: string }>) {
             const { theme } = useTheme();
             return (
@@ -170,6 +242,13 @@ function View() {
                 </div>
             )
         },
+        /**
+         * Panel component for displaying SQL query results
+         * 
+         * @component
+         * @param {IDockviewPanelProps<{result: QueryResult}>} props - Panel props with query result
+         * @returns {JSX.Element} Rendered result table panel
+         */
         resultPanel: (props: IDockviewPanelProps<{ result: QueryResult }>) => {
             return (
                 <div
@@ -186,6 +265,17 @@ function View() {
         },
     }
 
+    /**
+     * Manages the dockview layout initialization and panel updates
+     * 
+     * This effect:
+     * - Sets up event listeners for panel and group changes
+     * - Creates the initial dockview layout with editor, ERD, and lesson panels
+     * - Updates panel content when challenge data changes
+     * 
+     * @effect
+     * @dependencies api, challenge, query, theme
+     */
     useEffect(() => {
         if (!api) {
             return;
@@ -247,6 +337,11 @@ function View() {
             }),
         ];
 
+        /**
+         * Creates the initial dockview layout with editor, ERD, and lesson panels
+         * 
+         * @function loadLayout
+         */
         const loadLayout = () => {
             const editor = api.addPanel({
                 id: `${PanelTypes.EDITOR}-${nextId()}`,
@@ -305,7 +400,7 @@ function View() {
      * - Updates the database state once the schema is loaded.
      *
      * @effect
-     * @dependencies db, challenge.schema, dispatch, updateSchema, state.challenges, challengeIndex
+     * @dependencies db, challenge.schema, updateSchema
      */
     useEffect(() => {
         if (db !== challenge.schema) {
@@ -347,25 +442,40 @@ function View() {
     useEffect(() => {
         const attempts = state.challenges[challengeIndex]?.attempts.filter(
             (attempt) => Boolean(attempt.query),
-        )
+        );
         const len = attempts?.length ?? 0;
         setQuery(len > 0 ? attempts[len - 1]?.query ?? '' : '')
         editorRef?.current?.setValue(len > 0 ? attempts[len - 1].query ?? '' : '');
     }, [challengeIndex, state.challenges, query, api?.panels])
 
+    /**
+     * Handles the ready event for the Dockview component.
+     * Sets the API reference in state when the Dockview component is initialized.
+     * 
+     * @param {DockviewReadyEvent} event - The ready event object containing the Dockview API
+     */
     const onReady = (event: DockviewReadyEvent) => {
         setApi(() => event.api);
     }
 
+    /**
+     * Renders the Dockview component with configuration for the SQL challenge environment.
+     * Provides theme-based styling, custom header components, and popout functionality.
+     * 
+     * @returns {JSX.Element} The configured DockviewReact component
+     */
     return (
-        <DockviewReact
-            popoutUrl="/popout.html"
-            components={components}
-            onReady={onReady}
-            className={theme === 'dark' ? 'dockview-theme-abyss' : 'dockview-theme-light'}
-            rightHeaderActionsComponent={RightControls}
-            defaultTabComponent={TabHeader}
-        />
+        <>
+            <title>SQL Hero - Challenges</title>
+            <DockviewReact
+                popoutUrl="/popout.html"
+                components={components}
+                onReady={onReady}
+                className={theme === 'dark' ? 'dockview-theme-abyss' : 'dockview-theme-light'}
+                rightHeaderActionsComponent={RightControls}
+                defaultTabComponent={TabHeader}
+            />
+        </>
     );
 }
 
@@ -375,10 +485,38 @@ function View() {
  * @type {RouteConfig}
  */
 export const Route = createFileRoute('/sql/$number')({
-    component: () => <View />,
+    /**
+     * Main component rendered for this route
+     * @returns {JSX.Element} The View component for the SQL challenge
+     */
+    component: View,
+    
+    /**
+     * Loads challenge data based on the route parameter
+     * @param {Object} params - Route parameters
+     * @param {string} params.number - Challenge number identifier
+     * @returns {Promise<Challenge>} The challenge data
+     */
     loader: ({ params }) => fetchChallenge(params.number),
+    
+    /**
+     * Displays error information when challenge loading fails
+     * @param {Object} props - Error component props
+     * @param {Error} props.error - The error that occurred
+     * @returns {JSX.Element} Error display component
+     */
     errorComponent: ({ error }) => <div>Error: {error.message}</div>,
+    
+    /**
+     * Component shown while challenge data is loading
+     * @returns {JSX.Element} Loading skeleton component
+     */
     pendingComponent: ChallengeSkeleton,
+    
+    /**
+     * Component shown when the requested challenge doesn't exist
+     * @returns {JSX.Element} Not found message component
+     */
     notFoundComponent: () => <div>Challenge not found</div>,
 });
 
