@@ -1,13 +1,13 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import { editor as monacoEditor } from 'monaco-editor/esm/vs/editor/editor.api';
-import { DockviewApi, DockviewReact, DockviewReadyEvent, IDockviewPanelProps } from 'dockview-react';
+import { DockviewApi, DockviewReact, DockviewReadyEvent, IDockviewPanelHeaderProps, IDockviewPanelProps } from 'dockview-react';
 import { clsx } from 'clsx';
 import { createFileRoute } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { ChallengeSkeleton } from '@/components/Skeleton';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppState } from '@/hooks/useAppState';
-import { Challenge } from '@/lib/types';
+import { Challenge, PanelTypes } from '@/lib/types';
 import { useChallengeNumber } from '@/hooks/useChallengeNumber';
 import { toggleHeaderSuccess } from '@/lib/reducer';
 import { QueryResult } from '@/lib/exec-engine/postgres-engine';
@@ -45,14 +45,15 @@ const fetchChallenge = async (name: string): Promise<object> => {
     return response.json()
 }
 
-enum PanelTypes {
-    LESSON = 'lesson',
-    EDITOR = 'editor',
-    ERD = 'erd',
-    RESULT = 'result',
-}
-
 const PANEL_TYPES = Object.values(PanelTypes);
+
+const TabHeader: React.FunctionComponent<IDockviewPanelHeaderProps<{title: string}>> = (props) => {
+    return (
+        <div className="flex items-center justify-between p-2">
+            <div className="text-gray-700">{props.params.title}</div>
+        </div>
+    );
+}
 
 /**
  * Main Challenge component that provides a complete SQL learning environment
@@ -143,8 +144,8 @@ function View() {
                     api?.addPanel({
                         id: `${PanelTypes.RESULT}-${nextId()}`,
                         component: 'resultPanel',
-                        title: 'Ergebnis',
                         params: {
+                            title: 'Ergebnis',
                             result: result,
                         },
                         position: {
@@ -249,9 +250,9 @@ function View() {
         const loadLayout = () => {
             const editor = api.addPanel({
                 id: `${PanelTypes.EDITOR}-${nextId()}`,
-                title: 'SQL Editor',
                 component: 'editorPanel',
                 params: {
+                    title: 'SQL Editor',
                     query: valueRef.current,
                     ref: editorRef,
                 },
@@ -260,8 +261,8 @@ function View() {
             const erd = api.addPanel({
                 id: `${PanelTypes.ERD}-${nextId()}`,
                 component: 'erdPanel',
-                title: 'ER Diagram',
                 params: {
+                    title: 'ER Diagram',
                     src: challenge.schema.replace('.sql', '.svg'),
                 },
                 position: {
@@ -273,8 +274,8 @@ function View() {
             api.addPanel({
                 id: `${PanelTypes.LESSON}-${nextId()}`,
                 component: 'lessonPanel',
-                title: 'Aufgabenstellung',
                 params: {
+                    title: 'Aufgabenstellung',
                     description: challenge.description,
                     difficulty: challenge.difficulty,
                     lessonRef,
@@ -292,7 +293,6 @@ function View() {
         loadLayout();
         isInitialized.current = true;
         return () => {
-            /*  api.clear(); */
             disposables.forEach((disposable) => disposable?.dispose());
         };
     }, [api, challenge, challengeIndex, challengeNumber, dispatch, query, theme, valueRef]);
@@ -364,6 +364,7 @@ function View() {
             onReady={onReady}
             className={theme === 'dark' ? 'dockview-theme-abyss' : 'dockview-theme-light'}
             rightHeaderActionsComponent={RightControls}
+            defaultTabComponent={TabHeader}
         />
     );
 }

@@ -564,3 +564,16 @@ export enum StatementType {
      */
     TCL = 'TransactionControlLanguage',
 }
+
+/**
+ * Enumaration of panel types used in the application.
+ * 
+ * This enum defines the different types of panels that can be displayed in the application,
+ * including lesson content, code editor, ERD (Entity-Relationship Diagram), and query results.
+ */
+export enum PanelTypes {
+    LESSON = 'lessonPanel',
+    EDITOR = 'editorPanel',
+    ERD = 'erdPanel',
+    RESULT = 'resultPanel',
+}

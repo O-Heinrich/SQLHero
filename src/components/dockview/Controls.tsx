@@ -1,7 +1,20 @@
 import { IDockviewHeaderActionsProps } from 'dockview';
 import * as React from 'react';
-import { ArrowsPointingOutIcon, ArrowsPointingInIcon, ArrowDownOnSquareStackIcon, ViewfinderCircleIcon, XMarkIcon, ArrowTopRightOnSquareIcon, Bars3BottomRightIcon } from '@heroicons/react/24/solid';
+import {
+    MagnifyingGlassPlusIcon,
+    MagnifyingGlassMinusIcon,
+    ArrowsPointingOutIcon,
+    ArrowsPointingInIcon,
+    ArrowDownOnSquareStackIcon,
+    ViewfinderCircleIcon,
+    XMarkIcon,
+    ArrowTopRightOnSquareIcon,
+    Bars3BottomRightIcon,
+} from '@heroicons/react/24/solid';
 import { ToolbarProps } from './panelActions';
+import { useTheme } from '@/hooks/useTheme';
+import { PanelTypes } from '@/lib/types';
+import { useControls } from 'react-zoom-pan-pinch';
 
 const Icon = (props: {
     icon: React.ReactElement;
@@ -26,6 +39,8 @@ const groupControlsComponents: Record<string, React.FC> = {
 };
 
 export const RightControls = (props: IDockviewHeaderActionsProps) => {
+    const { theme } = useTheme();
+    const { zoomIn, zoomOut } = useControls();
     const Component = React.useMemo(() => {
         if (!props.isGroupActive || !props.activePanel) {
             return null;
@@ -65,9 +80,20 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
         }
     };
 
-    const handlePopout = () => {
+    const handlePopout = async () => {
         if (props.api.location.type !== 'popout') {
-            props.containerApi.addPopoutGroup(props.group);
+            if (await props.containerApi.addPopoutGroup(props.group)) {
+                if (theme === 'dark') {
+                    const body = props.activePanel?.api.getWindow().document.body;
+                    const erd = body?.querySelector('.erd');
+                    const src = erd?.getAttribute('src') || '';
+                    body?.parentElement?.classList.add('dark');
+                    if (!src.endsWith('-dark.svg')) {
+                        erd?.setAttribute('src', src.replace('.svg', '-dark.svg'));   
+                    }
+                }
+            }
+
         } else {
             props.api.moveTo({ position: 'right' });
         }
@@ -87,49 +113,33 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
         >
             {props.isGroupActive && <ViewfinderCircleIcon />}
             {Component && <Component />}
-            <Icon
-                title={isPopout ? 'Fenster schliessen' : 'In neuen Fenster öffnen'}
-                icon={isPopout ? <XMarkIcon className="size-4" /> : <ArrowTopRightOnSquareIcon className="size-4" />}
-                onClick={handlePopout}
-            />
+            {props.activePanel?.view.contentComponent === PanelTypes.ERD && <>
+                <Icon
+                    title="Vergrössern"
+                    icon={<MagnifyingGlassPlusIcon className="size-6 cursor-pointer" />}
+                    onClick={() => zoomIn()}
+                />
+                <Icon
+                    title="Verkleinern"
+                    icon={<MagnifyingGlassMinusIcon className="size-6 cursor-pointer" />}
+                    onClick={() => zoomOut()}
+                />
+                <Icon
+                    title={isPopout ? 'Fenster schliessen' : 'In neuen Fenster öffnen'}
+                    icon={isPopout ? <XMarkIcon className="size-6 cursor-pointer" /> : <ArrowTopRightOnSquareIcon className="size-6 cursor-pointer" />}
+                    onClick={handlePopout}
+                />
+            </>}
             {!isPopout && (
                 <Icon
                     title={isMaximized ? 'Minimieren' : 'Maximieren'}
-                    icon={isMaximized ? <ArrowsPointingInIcon className="size-4" /> : <ArrowsPointingOutIcon className="size-4" />}
+                    icon={isMaximized ? <ArrowsPointingInIcon className="size-6" /> : <ArrowsPointingOutIcon className="size-6" />}
                     onClick={handleToggleMaxMin}
                 />
             )}
         </div>
     );
 };
-
-// export const LeftControls = (props: IDockviewHeaderActionsProps) => {
-//     const onClick = () => {
-//         props.containerApi.addPanel({
-//             id: `id_${Date.now().toString()}`,
-//             component: 'editorPanel',
-//             title: `Tab ${nextId()}`,
-//             position: {
-//                 referenceGroup: props.group,
-//             },
-//         });
-//     };
-
-//     return (
-//         <div
-//             className="group-control"
-//             style={{
-//                 display: 'flex',
-//                 alignItems: 'center',
-//                 padding: '0px 8px',
-//                 height: '100%',
-//                 color: 'var(--dv-activegroup-visiblepanel-tab-color)',
-//             }}
-//         >
-//             <Icon onClick={onClick} icon={<PlusCircleIcon className="size-4" />} />
-//         </div>
-//     );
-// };
 
 export const PrefixHeaderControls = (props: IDockviewHeaderActionsProps) => {
     return (
