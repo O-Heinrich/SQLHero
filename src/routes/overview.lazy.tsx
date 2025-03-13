@@ -12,7 +12,7 @@ import { ResponsiveContainer, PieChart, Pie, Cell, BarChart, XAxis, YAxis, Legen
 import { Wrapper } from '@/components/Wrapper';
 import { useAppState } from '@/hooks/useAppState';
 import { Challenge } from '@/lib/types';
-import { ArrowRightIcon } from '@/components/icons';
+import { ArrowLongRightIcon } from '@heroicons/react/24/solid';
 
 /**
  * Route definition using TanStack Router
@@ -175,7 +175,7 @@ const Card: React.FC<CardProps> = ({
                         </span>
                     )}
                     <span className="flex gap-1 items-center text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:stroke-blue-600 group-hover:text-blue-600 dark:group-hover:stroke-blue-400 dark:group-hover:text-blue-400 transition-colors duration-300 ml-auto">
-                        {attempted ? (completed ? 'Wiederholen' : 'Fortsetzen') : 'Starte die Herausforderung'} <ArrowRightIcon size={1.6} />
+                        {attempted ? (completed ? 'Wiederholen' : 'Fortsetzen') : 'Starte die Herausforderung'} <ArrowLongRightIcon className="mt-1 size-6" />
                     </span>
                 </div>
             </div>
