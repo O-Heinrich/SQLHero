@@ -49,7 +49,7 @@ function Index() {
         if (state === undefined) {
             dispatch({ type: 'LOAD_STATE', payload: null });
         }
-    }, [state]);
+    }, [dispatch, state]);
 
     /**
      * Memoized theme check to prevent unnecessary re-renders
