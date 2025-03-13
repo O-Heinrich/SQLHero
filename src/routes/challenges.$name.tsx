@@ -19,6 +19,8 @@
  * - DOMPurify for HTML sanitization
  * - Allotment for split-pane layouts
  * 
+ * @deprecated This module is deprecated and will be removed in a future release.
+ * 
  * @requires react
  * @requires sonner
  * @requires allotment
@@ -185,6 +187,8 @@ const Spacer: React.FC = () => <span className="inline-block h-12 my-1 w-0.5 sel
  * 
  * Uses PGlightContext for database operations and theme context for visual customization.
  * 
+ * @deprecated This component is deprecated and will be removed in a future release. Use View comonent instead.
+ * @see View
  * @component Challenge
  * 
  * @example
