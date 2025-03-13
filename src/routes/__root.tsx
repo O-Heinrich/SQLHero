@@ -25,7 +25,7 @@ const Root: React.FC = () => {
                         </div>
                         {/* Workaround for mounting issue */}
                         <TransformComponent contentClass="hidden">
-                            <img src="#" />
+                            <img src="#" style={{display: 'none'}} />
                         </TransformComponent>
                     </TransformWrapper>
                     <Toaster 
