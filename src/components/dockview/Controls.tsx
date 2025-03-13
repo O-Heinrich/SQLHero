@@ -1,3 +1,10 @@
+/**
+ * @module Controls
+ * @description Provides UI control components for the dockview panels, including
+ * panel action buttons, toolbar components, and specialized controls for different
+ * panel types like ERD panels with zoom functionality.
+ */
+
 import { IDockviewHeaderActionsProps } from 'dockview';
 import * as React from 'react';
 import {
@@ -16,6 +23,16 @@ import { useTheme } from '@/hooks/useTheme';
 import { PanelTypes } from '@/lib/types';
 import { useControls } from 'react-zoom-pan-pinch';
 
+/**
+ * Icon button component for panel controls
+ * 
+ * @component
+ * @param {Object} props - Component properties
+ * @param {React.ReactElement} props.icon - Icon element to display
+ * @param {string} [props.title] - Tooltip text for the icon
+ * @param {(event: React.MouseEvent) => void} [props.onClick] - Click handler function
+ * @returns {JSX.Element} Rendered icon button
+ */
 const Icon = (props: {
     icon: React.ReactElement;
     title?: string;
@@ -32,15 +49,36 @@ const Icon = (props: {
     );
 };
 
+/**
+ * Map of panel-specific control components keyed by panel ID
+ * 
+ * @type {Record<string, React.FC>}
+ */
 const groupControlsComponents: Record<string, React.FC> = {
     panel_1: () => {
         return <ArrowDownOnSquareStackIcon />;
     },
 };
 
+/**
+ * Right-aligned controls for dockview panel headers
+ * 
+ * Provides functionality such as:
+ * - Zoom in/out for ERD panels
+ * - Maximize/minimize panels
+ * - Pop-out panels to separate windows
+ * 
+ * @component
+ * @param {IDockviewHeaderActionsProps} props - Dockview header actions properties
+ * @returns {JSX.Element} Rendered control components
+ */
 export const RightControls = (props: IDockviewHeaderActionsProps) => {
     const { theme } = useTheme();
     const { zoomIn, zoomOut } = useControls();
+    
+    /**
+     * Dynamically selected component based on active panel ID
+     */
     const Component = React.useMemo(() => {
         if (!props.isGroupActive || !props.activePanel) {
             return null;
@@ -49,14 +87,23 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
         return groupControlsComponents[props.activePanel.id];
     }, [props.isGroupActive, props.activePanel]);
 
+    /**
+     * Track whether the current panel group is maximized
+     */
     const [isMaximized, setIsMaximized] = React.useState<boolean>(
         props.containerApi.hasMaximizedGroup()
     );
 
+    /**
+     * Track whether the current panel is in a popout window
+     */
     const [isPopout, setIsPopout] = React.useState<boolean>(
         props.api.location.type === 'popout'
     );
 
+    /**
+     * Set up listeners for panel maximization and location changes
+     */
     React.useEffect(() => {
         const disposable = props.containerApi.onDidMaximizedGroupChange(() => {
             setIsMaximized(props.containerApi.hasMaximizedGroup());
@@ -72,6 +119,11 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
         };
     }, [props.api, props.containerApi]);
 
+    /**
+     * Toggle between maximized and normal panel states
+     * 
+     * @function handleToggleMaxMin
+     */
     const handleToggleMaxMin = () => {
         if (props.containerApi.hasMaximizedGroup()) {
             props.containerApi.exitMaximizedGroup();
@@ -80,6 +132,13 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
         }
     };
 
+    /**
+     * Handle popping out a panel to a separate window or moving it back
+     * Also ensures dark theme is applied to popout windows if needed
+     * 
+     * @async
+     * @function handlePopout
+     */
     const handlePopout = async () => {
         if (props.api.location.type !== 'popout') {
             if (await props.containerApi.addPopoutGroup(props.group)) {
@@ -141,6 +200,15 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
     );
 };
 
+/**
+ * Prefix header controls component for dockview panels
+ * 
+ * Displays a hamburger menu icon in the panel header prefix area
+ * 
+ * @component
+ * @param {IDockviewHeaderActionsProps} props - Dockview header actions properties
+ * @returns {JSX.Element} Rendered prefix control
+ */
 export const PrefixHeaderControls = (props: IDockviewHeaderActionsProps) => {
     return (
         <div
@@ -161,10 +229,14 @@ export const PrefixHeaderControls = (props: IDockviewHeaderActionsProps) => {
 
 /**
  * Toolbar component for challenge actions
+ * 
+ * Provides a consistent styled container for action buttons
+ * 
  * @component
  * @param {Object} props - Component properties
  * @param {React.ReactNode} props.children - Toolbar content
  * @param {string} [props.className] - Additional CSS classes
+ * @returns {JSX.Element} Rendered toolbar
  */
 export const Toolbar: React.FC<ToolbarProps> = ({
     children,
