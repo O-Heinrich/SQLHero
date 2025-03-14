@@ -156,37 +156,13 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
     }
 
     /**
-     * Handles database schema PDF download
-     *
-     * Creates and triggers a download for the PDF version of the current challenge's
-     * database schema. Extracts the appropriate filename from the schema path,
-     * replacing the .sql extension with db.pdf.
-     *
-     * @function handleDownloadClick
-     * @returns {void}
-     */
-    const handleDownloadClick = (): void => {
-        const a = document.createElement('a')
-        const file = props.params.erdSrc ?? ''
-        a.href = `/databases/pdf/${file}`
-        a.download = file
-        a.click()
-    }
-
-    /**
      * Renders the editor panel with code editor and toolbar controls
      * @returns {JSX.Element} The rendered component
      */
     return (
         <div className={BG_STYLE}>
             <CodeEditor value={props.params.initialContent} ref={props.params.ref} />
-            <Toolbar className="justify-center">
-                <IconButton
-                    icon={<ArrowDownOnSquareStackIcon className="size-6" />}
-                    aria-label="ERD downloaden"
-                    title="ERD downloaden"
-                    onClick={handleDownloadClick}
-                />
+            <Toolbar className="absolute bottom-4 right-4 p-0! bg-transparent">
                 <IconButton
                     icon={<PlayIcon className="size-6" />}
                     aria-label="SQL ausführen"

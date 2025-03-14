@@ -22,6 +22,9 @@ import { ToolbarProps } from './panelActions';
 import { useTheme } from '@/hooks/useTheme';
 import { PanelTypes } from '@/lib/types';
 import { useControls } from 'react-zoom-pan-pinch';
+import { clsx } from 'clsx';
+
+const SIZE = 'size-4';
 
 /**
  * Icon button component for panel controls
@@ -34,13 +37,27 @@ import { useControls } from 'react-zoom-pan-pinch';
  * @returns {JSX.Element} Rendered icon button
  */
 const Icon = (props: {
-    icon: React.ReactElement;
+    icon: React.JSX.Element;
     title?: string;
     onClick?: (event: React.MouseEvent) => void;
 }) => {
     return (
-        <div title={props.title} role="button" className="action" onClick={props.onClick}>
+        <div title={props.title} role="button" className={
+            clsx('transition-all', 
+                'cursor-pointer', 
+                'text-slate-500',
+                'font-light',
+                'stroke-[1px]',
+                'dark:fill-slate-300/50',
+                'dark:stroke-slate-300/50',
+                'hover:bg-white/80',
+                'hover:dark:bg-black/80',
+                'p-2')
+            } 
+            onClick={props.onClick}
+        >
             <span
+                className={SIZE}
                 style={{ fontSize: 'inherit' }}
             >
                 {props.icon}
@@ -158,41 +175,56 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
         }
     };
 
+    /**
+     * Handles database schema PDF download
+     *
+     * Creates and triggers a download for the PDF version of the current challenge's
+     * database schema. Extracts the appropriate filename from the schema path,
+     * replacing the .sql extension with db.pdf.
+     *
+     * @function handleDownloadClick
+     * @returns {void}
+     */
+    const handleDownloadClick = (): void => {
+        const a = document.createElement('a')
+        const file = props.activePanel?.params?.src?.split('/').pop() ?? ''
+        a.href = `/databases/pdf/${file}`
+        a.download = file
+        a.click()
+    }
+
     return (
         <div
-            className="group-control"
-            style={{
-                display: 'flex',
-                alignItems: 'center',
-                padding: '0px 8px',
-                gap: '8px',
-                height: '100%',
-                color: 'var(--dv-activegroup-hiddenpanel-tab-color)',
-            }}
+            className="group-control flex"           
         >
             {props.isGroupActive && <ViewfinderCircleIcon />}
             {Component && <Component />}
             {props.activePanel?.view.contentComponent === PanelTypes.ERD && <>
                 <Icon
-                    title="Vergrössern"
-                    icon={<MagnifyingGlassPlusIcon className="size-6 cursor-pointer" />}
+                    title="Vergrössern"                    
+                    icon={<MagnifyingGlassPlusIcon className={SIZE} />}
                     onClick={() => zoomIn()}
                 />
                 <Icon
                     title="Verkleinern"
-                    icon={<MagnifyingGlassMinusIcon className="size-6 cursor-pointer" />}
+                    icon={<MagnifyingGlassMinusIcon className={SIZE} />}
                     onClick={() => zoomOut()}
                 />
                 <Icon
+                    title="Download"
+                    icon={<ArrowDownOnSquareStackIcon className={SIZE} />}
+                    onClick={handleDownloadClick}
+                />
+                <Icon
                     title={isPopout ? 'Fenster schliessen' : 'In neuen Fenster öffnen'}
-                    icon={isPopout ? <XMarkIcon className="size-6 cursor-pointer" /> : <ArrowTopRightOnSquareIcon className="size-6 cursor-pointer" />}
+                    icon={isPopout ? <XMarkIcon className={SIZE} /> : <ArrowTopRightOnSquareIcon className={SIZE} />}
                     onClick={handlePopout}
                 />
             </>}
             {!isPopout && (
                 <Icon
                     title={isMaximized ? 'Minimieren' : 'Maximieren'}
-                    icon={isMaximized ? <ArrowsPointingInIcon className="size-6" /> : <ArrowsPointingOutIcon className="size-6" />}
+                    icon={isMaximized ? <ArrowsPointingInIcon className={SIZE} /> : <ArrowsPointingOutIcon className={SIZE} />}
                     onClick={handleToggleMaxMin}
                 />
             )}
@@ -222,7 +254,7 @@ export const PrefixHeaderControls = (props: IDockviewHeaderActionsProps) => {
                 color: 'var(--dv-activegroup-visiblepanel-tab-color)',
             }}
         >
-            <Icon icon={<Bars3BottomRightIcon className="size-4" />} />
+            <Icon icon={<Bars3BottomRightIcon />} />
         </div>
     );
 };

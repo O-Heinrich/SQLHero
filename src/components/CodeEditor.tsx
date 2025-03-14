@@ -140,6 +140,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
     }, [theme]);
 
     return (
-        <div ref={containerRef} className="w-full" style={{ height: 'calc(100% - 76px)' }} />
+        <div ref={containerRef} className="w-full h-full" />
     );
 };
