@@ -27,7 +27,7 @@ import { Wrapper } from "./Wrapper";
  */
 export const Skeleton = (): React.ReactElement => (
     <Wrapper>
-        <div className="flex w-full flex-col gap-2">
+        <div className="flex w-full flex-col gap-2 mt-12">
             <div className="h-18 w-1/3 mb-8 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
             <div className="h-10 w-1/2 my-4 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
             <div className="h-3.5 w-full animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
@@ -105,30 +105,29 @@ export const IndexSkeleton = (): React.ReactElement => (
  */
 export const ChallengeSkeleton = (): React.ReactElement => (
     <div className="flex flex-1 inset-0 mt-[calc(var(--spacing)*-20)]">
+        <div className="flex-1 flex items-center justify-center pt-8 gap-2 w-full h-full overflow-auto pb-16">
+            <div className="h-1/2 w-[96%] mr-[2%] ml-[2%] mx-auto animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30">{/* Table */}</div>
+        </div>
         <div className="flex-1 h-full flex flex-col mt-20 pb-5 overflow-auto bg-gray-200/50 dark:bg-slate-900/50">
             <div className="flex-col flex-1 gap-2 h-1/2 items-center justify-center">
-                <div className="h-[83%] w-[96%] m-[2%] animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true">{/* Editor */}</div>
-                <div className="h-[10%] w-[10%] m-[2%] justify-self-end animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true">{/* Toolbar */}</div>
+                <div className="h-full w-[96%] m-[2%] animate-pulse dark:bg-on-surface-dark/30animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true">{/* Editor */}</div>
             </div>
-            <div className="flex-1 pt-8 gap-2 w-full h-1/2 overflow-auto pb-16">
-                <div className="h-[96%] w-[96%] mx-[2%] mr-[2%] ml-[2%] mx-auto animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30">{/* Table */}</div>
+            <div className="flex-1 h-full  px-4 pt-15 pb-22 overflow-auto border-l-2 border-ridge border-white/80 dark:border-slate-900/80">
+                <div className="h-18 w-[40%] mb-8 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+                <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+                <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+                <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+                <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+                <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+                <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+                <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+                <div className="h-3.5 w-1/4 mb-4 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />   
+                <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+                <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+                <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+                <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
+                <div className="h-3.5 w-1/4 mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
             </div>
-        </div>
-        <div className="flex-1 h-full  px-4 pt-40 pb-22 overflow-auto h-full border-l-2 border-ridge border-white/80 dark:border-slate-900/80">
-            <div className="h-18 w-[40%] mb-8 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
-            <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
-            <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
-            <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
-            <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
-            <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
-            <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
-            <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
-            <div className="h-3.5 w-1/4 mb-4 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />   
-            <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
-            <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
-            <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
-            <div className="h-3.5 w-full mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
-            <div className="h-3.5 w-1/4 mb-2 animate-pulse rounded-radius bg-on-surface/30 dark:bg-on-surface-dark/30" aria-hidden="true" />
         </div>
         <span className="sr-only">loading</span>
     </div>
