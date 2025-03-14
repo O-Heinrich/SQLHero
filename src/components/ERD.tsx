@@ -103,7 +103,7 @@ export const ERD: React.FC<{ src: string; style?: React.CSSProperties; className
             <Style />
             <div className={className} style={style}></div>
             <TransformComponent wrapperStyle={{ width: '100%', height: '100%' }} contentClass="h-full w-full">
-                {svg ? <div className='drop-shadow-md' dangerouslySetInnerHTML={{__html: svg}} /> : <div>Loading...</div>}
+                {svg ? <div className='drop-shadow-md dark:drop-shadow-[0_1px_2px_rgba(25,60,184,0.6)]' dangerouslySetInnerHTML={{__html: svg}} /> : <div>Loading...</div>}
             </TransformComponent>
         </>
     );
