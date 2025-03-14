@@ -24,7 +24,7 @@ import { PanelTypes } from '@/lib/types';
 import { useControls } from 'react-zoom-pan-pinch';
 import { clsx } from 'clsx';
 
-const SIZE = 'size-4';
+const SIZE = 'size-6';
 
 /**
  * Icon button component for panel controls
@@ -42,18 +42,19 @@ const Icon = (props: {
     onClick?: (event: React.MouseEvent) => void;
 }) => {
     return (
-        <div title={props.title} role="button" className={
-            clsx('transition-all', 
+        <div 
+            title={props.title} 
+            role="button" 
+            className={clsx('transition-all', 
                 'cursor-pointer', 
                 'text-slate-500',
                 'font-light',
                 'stroke-[1px]',
                 'dark:fill-slate-300/50',
                 'dark:stroke-slate-300/50',
-                'hover:bg-white/80',
-                'hover:dark:bg-black/80',
-                'p-2')
-            } 
+                'hover:bg-black/20',
+                'hover:dark:bg-white/20',
+                'p-2')} 
             onClick={props.onClick}
         >
             <span
