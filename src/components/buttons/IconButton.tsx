@@ -70,18 +70,18 @@ export const IconButton: React.FC<IconButtonProps> = ({
     ...props 
 }: IconButtonProps): React.JSX.Element => (
     <Button className={clsx(
-        'p-4!',
+        'p-2!',
         'group/button',
         'overflow-hidden!',
         'flex justify-center items-center',
         'border! border-gray-300! dark:border-gray-600!',
-        'shadow-md! shadow-inner! shadow-white/50! hover:dark:shadow-gray-200! dark:shadow-inner! dark:shadow-gray-500! dark:active:bg-slate-800/50! active:bg-white/30!',
+        'shadow-white/50! hover:dark:shadow-gray-200! dark:shadow-inner! dark:shadow-gray-500! dark:active:bg-slate-800/50! active:bg-white/30!',
         'dark:text-white/85! text-black/85!',
         'font-light',
         'transition-all',
         'duration-250',
         'ease-in-out',
-        'rounded-md',
+        'rounded-none!',
         'focus:outline-none',
         'focus:ring-2!',
         'focus:ring-offset-2!',
