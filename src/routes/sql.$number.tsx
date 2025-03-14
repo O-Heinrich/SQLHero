@@ -90,7 +90,7 @@ const TabHeader: React.FunctionComponent<IDockviewPanelHeaderProps<{title: strin
                     <span
                         style={{ fontSize: 'inherit' }}
                     >
-                        <XMarkIcon className="size-4" />
+                        <XMarkIcon className="size-6" />
                     </span>
                 </div>
             )}
@@ -182,7 +182,7 @@ function View() {
             useEffect(() => {
                 setContent(props.params.description);
             }, [props.params.description]);
-            return <div className={clsx('p-4 w-full h-full')}>
+            return <div className={clsx('p-4 pt-8 w-full h-full')}>
                 <ChallengeLesson
                     lesson={content}
                     difficulty={props.params.difficulty}
@@ -233,14 +233,9 @@ function View() {
          * @returns {JSX.Element} Rendered ERD panel
          */
         erdPanel: function ErdPanel(props: IDockviewPanelProps<{ src: string }>) {
-            const { theme } = useTheme();
             return (
-
                 <div className={clsx('cursor-move h-full', BG_STYLE)}>
-                    <ERD src={props.params.src?.replace(
-                        '.sql',
-                        theme === 'dark' ? '-dark.svg' : '.svg',
-                    ) ?? ''} />
+                    <ERD src={props.params.src}  />
                 </div>
             )
         },
@@ -255,7 +250,7 @@ function View() {
             return (
                 <div
                     className={clsx(
-                        'h-full',
+                        'h-full pt-6',
                         'border-t-4 border-ridge',
                         'border-white/20 dark:border-slate-900/20',
                         'overflow-auto',
@@ -289,7 +284,7 @@ function View() {
                         editorRef.current?.setValue(query);
                         break;
                     case PanelTypes.ERD:
-                        panel.api.updateParameters({ src: challenge.schema });
+                        panel.api.updateParameters({ src: challenge.schema.replace('.sql', '.svg') });
                         break;
                     case PanelTypes.LESSON:
                         panel.api.updateParameters({ description: challenge.description, difficulty: challenge.difficulty });
@@ -356,7 +351,7 @@ function View() {
                 },
             });
 
-            const erd = api.addPanel({
+            api.addPanel({
                 id: `${PanelTypes.ERD}-${nextId()}`,
                 component: 'erdPanel',
                 params: {
@@ -383,9 +378,6 @@ function View() {
                     direction: 'below',
                 },
             });
-
-            erd.api.setActive();
-            editor.api.setActive();
         };
 
         loadLayout();

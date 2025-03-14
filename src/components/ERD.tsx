@@ -6,11 +6,33 @@
 * 
 * @module components/erd-viewer
 */
-import React from 'react';
+import React, { useEffect } from 'react';
+import dompurify from 'dompurify';
 import { TransformComponent, useControls } from "react-zoom-pan-pinch";
 import { IconButton } from './buttons/IconButton';
 import { isFirefox } from '@/lib/agents';
 import { MagnifyingGlassMinusIcon, MagnifyingGlassPlusIcon } from '@heroicons/react/24/solid';
+
+async function fetchSvg(url: string): Promise<string> {
+    const buffer: string[] = [];
+    const response = await fetch(url);
+    const reader = response.body?.getReader();
+    const len = parseInt(response.headers.get('Content-Length') ?? '0', 10);
+    let bytesRead = 0;
+
+    while (true) {
+        const { done, value } = await reader!.read();
+        if (done) {
+            break;
+        }
+
+        bytesRead += value!.byteLength;
+        console.log(`Downloaded ${bytesRead} of ${len} bytes`);
+        buffer.push(new TextDecoder().decode(value));
+    }
+
+    return dompurify.sanitize(buffer.join(''), { ADD_TAGS: ['style', 'use'], ADD_ATTR: ['viewBox'] });
+}
 
 /**
 * ERD zoom control buttons component
@@ -57,7 +79,9 @@ export const ErdControls: React.FC<{disabled: boolean}> = ({disabled}) => {
 * <ERD src="/images/database-schema.png" />
 * ```
 */
-export const ERD: React.FC<{ src: string }> = ({ src }) => {
+export const ERD: React.FC<{ src: string; style?: React.CSSProperties; className?: string; }> = ({ src, className, style }) => {
+    const [svg, setSvg] = React.useState<string | null>(null);
+    const [svgSrc, setSvgSrc] = React.useState<string | null>(null);
     const Style =  () => isFirefox ?
         <style>
             {`
@@ -67,11 +91,19 @@ export const ERD: React.FC<{ src: string }> = ({ src }) => {
             }
             `}
         </style> : null;
+
+    useEffect(() => {
+        if (src !== svgSrc) {
+            setSvgSrc(src);
+            fetchSvg(src).then(setSvg);
+        }
+    }, [src, svgSrc]);
     return (
         <>
             <Style />
+            <div className={className} style={style}></div>
             <TransformComponent wrapperStyle={{ width: '100%', height: '100%' }} contentClass="h-full w-full">
-                <img src={src} alt="ERD" width="100%" height="100%" className="erd" />
+                {svg ? <div className='drop-shadow-md' dangerouslySetInnerHTML={{__html: svg}} /> : <div>Loading...</div>}
             </TransformComponent>
         </>
     );
