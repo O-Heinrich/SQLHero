@@ -117,6 +117,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
             ref!.current = monaco.editor.create(containerRef.current!, {
                 value,
                 language: 'sql',
+                lineNumbers: 'on',	
                 automaticLayout: false,
                 minimap: {
                     enabled: false,
@@ -130,6 +131,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
                 wrappingStrategy: 'advanced',
                 renderWhitespace: 'all',
                 contextmenu: false,
+
             });
         }
     }, [value, ref]);
@@ -140,6 +142,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
     }, [theme]);
 
     return (
-        <div ref={containerRef} className="w-full h-full" />
+        <div ref={containerRef} className="w-full h-full mt-[30px]" />
     );
 };
