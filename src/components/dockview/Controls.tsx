@@ -47,11 +47,9 @@ const Icon = (props: {
             role="button" 
             className={clsx('transition-all', 
                 'cursor-pointer', 
-                'text-slate-500',
+                'text-slate-600/75 dark:text-slate-200/75',
                 'font-light',
-                'stroke-[1px]',
-                'dark:fill-slate-300/50',
-                'dark:stroke-slate-300/50',
+                'stroke-0',
                 'hover:bg-black/20',
                 'hover:dark:bg-white/20',
                 'p-2')} 
