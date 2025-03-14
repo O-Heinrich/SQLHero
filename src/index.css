@@ -62,20 +62,39 @@
 
 }
 
+.dv-tabs-and-actions-container {
+    overflow: hidden;
+    backdrop-filter: blur(16px);
+    z-index: 1;
+}
+
+.dv-content-container {
+    margin-top: -35px !important;
+    padding-top: 35px !important;
+}
+
+.dv-content-container:has(img.erd) {
+    padding-top: 0 !important;
+}
+
+.dockview-theme-light {
+    --dv-tabs-and-actions-container-background-color: #ffffff85;
+}
+
 .dockview-theme-abyss {
     --dv-paneview-active-outline-color: dodgerblue;
     --dv-tabs-and-actions-container-font-size: 13px;
     --dv-tabs-and-actions-container-height: 35px;
     --dv-drag-over-background-color: rgba(83, 89, 93, 0.5);
     --dv-drag-over-border-color: white;
-    --dv-tabs-container-scrollbar-color: #888;
+    --dv-tabs-container-scrollbar-color: transparent;
     --dv-icon-hover-background-color: rgba(90, 93, 94, 0.31);
     --dv-floating-box-shadow: 8px 8px 8px 0px rgba(83, 89, 93, 0.5);
     --dv-overlay-z-index: 999;
     --dv-active-sash-transition-duration: 0.1s;
     --dv-active-sash-transition-delay: 0.5s;
     --dv-group-view-background-color: transparent !important;
-    --dv-tabs-and-actions-container-background-color: #1c1c2a;
+    --dv-tabs-and-actions-container-background-color: #1c1c2aa3;
     --dv-activegroup-visiblepanel-tab-background-color: #000c18;
     --dv-activegroup-hiddenpanel-tab-background-color: #10192c;
     --dv-inactivegroup-visiblepanel-tab-background-color: #000c18;
@@ -337,9 +356,9 @@ header button {
     @apply py-6 disabled:opacity-0 disabled:cursor-default rounded-none bg-slate-100/20 dark:bg-slate-800/50 ring-0 focus:ring-0 focus:ring-offset-0 shadow-none border-none opacity-80 dark:text-gray-100 text-gray-800/90 mix-blend-multiply dark:mix-blend-overlay dark:active:mix-blend-color-burn active:mix-blend-soft-light;
 }
 
-/* button.primary {
+button.primary {
     @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 dark:bg-blue-700 dark:hover:bg-blue-800 dark:focus:ring-blue-600;
-} */
+}
 
 button.theme-button {
     @apply transition-none shadow-none ring-offset-0 m-0 ml-4 py-4 px-4 ring-0 self-start dark:bg-transparent border-none bg-transparent dark:text-gray-100 text-gray-800 outline-0;
