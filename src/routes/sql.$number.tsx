@@ -200,8 +200,10 @@ function View() {
         editorPanel: (props: IDockviewPanelProps<{
             query: string;
             ref: React.RefObject<monacoEditor.IStandaloneCodeEditor>;
+            erdSrc: string;
         }>) => <EditorPanel
             params={{
+                erdSrc: props.params.erdSrc,
                 initialContent: props.params.query,
                 ref: props.params.ref,
                 onExecuted: (result: QueryResult) => {
@@ -350,6 +352,7 @@ function View() {
                     title: 'SQL Editor',
                     query: valueRef.current,
                     ref: editorRef,
+                    erdSrc:  challenge.schema.replace('.sql', '.svg'),
                 },
             });
 
