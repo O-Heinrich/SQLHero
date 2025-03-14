@@ -13,6 +13,7 @@ import { Wrapper } from '@/components/Wrapper';
 import { useAppState } from '@/hooks/useAppState';
 import { Challenge } from '@/lib/types';
 import { ArrowLongRightIcon } from '@heroicons/react/24/solid';
+import { IndexSkeleton, Skeleton } from '@/components/Skeleton';
 
 /**
  * Route definition using TanStack Router
@@ -20,6 +21,9 @@ import { ArrowLongRightIcon } from '@heroicons/react/24/solid';
  */
 export const Route = createLazyFileRoute('/overview')({
     component: RouteComponent,
+    errorComponent: ({ error }) => <div>Error: {error.message}</div>,
+    pendingComponent: () => <IndexSkeleton />,
+    notFoundComponent: () => <div>Challenge not found</div>,
 })
 
 /**
@@ -427,11 +431,17 @@ function formatDate(date: Date): string {
  */
 function RouteComponent(): React.ReactElement {
     const { state } = useAppState();
+    
     useEffect(() => {
         if (window.scrollY > 0) {
             window.scrollTo(0, 0);
         }
     }, []);
+
+    if (!state.challenges) {
+        return <Skeleton />;
+    }
+
     return (
         <Wrapper>
             <title>SQL Hero - Übersicht</title>
