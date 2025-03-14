@@ -10,7 +10,7 @@ import { CodeEditor } from "@/components/CodeEditor";
 import { IDockviewPanelProps } from "dockview";
 import { Toolbar } from "../Controls";
 import { IconButton } from "@/components/buttons";
-import { ArrowDownOnSquareStackIcon, PlayIcon } from "@heroicons/react/24/solid";
+import { PlayIcon } from "@heroicons/react/24/solid";
 import { useContext, useMemo } from "react";
 import { useChallengeNumber } from "@/hooks/useChallengeNumber";
 import { useAppState } from "@/hooks/useAppState";
