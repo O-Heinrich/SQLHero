@@ -79,35 +79,7 @@
 
 .dockview-theme-light {
     --dv-tabs-and-actions-container-background-color: #ffffff85;
-    --dv-activegroup-visiblepanel-tab-color: #ffffff80;
-}
-
-.dockview-theme-abyss {
-    --dv-paneview-active-outline-color: dodgerblue;
-    --dv-tabs-and-actions-container-font-size: 13px;
-    --dv-tabs-and-actions-container-height: 35px;
-    --dv-drag-over-background-color: rgba(83, 89, 93, 0.5);
-    --dv-drag-over-border-color: white;
-    --dv-tabs-container-scrollbar-color: transparent;
-    --dv-icon-hover-background-color: rgba(90, 93, 94, 0.31);
-    --dv-floating-box-shadow: 8px 8px 8px 0px rgba(83, 89, 93, 0.5);
-    --dv-overlay-z-index: 999;
-    --dv-active-sash-transition-duration: 0.1s;
-    --dv-active-sash-transition-delay: 0.5s;
-    --dv-group-view-background-color: transparent !important;
-    --dv-tabs-and-actions-container-background-color: #1c1c2aa3;
-    --dv-activegroup-visiblepanel-tab-background-color: #000c18;
-    --dv-activegroup-hiddenpanel-tab-background-color: #10192c;
-    --dv-inactivegroup-visiblepanel-tab-background-color: #000c18;
-    --dv-inactivegroup-hiddenpanel-tab-background-color: #10192c;
-    --dv-tab-divider-color: #2b2b4a;
-    --dv-activegroup-visiblepanel-tab-color: white;
-    --dv-activegroup-hiddenpanel-tab-color: rgba(255, 255, 255, 0.5);
-    --dv-inactivegroup-visiblepanel-tab-color: rgba(255, 255, 255, 0.5);
-    --dv-inactivegroup-hiddenpanel-tab-color: rgba(255, 255, 255, 0.25);
-    --dv-separator-border: #8d9dff47;
-    --dv-paneview-header-border-color: #2b2b4a;
-    --dv-paneview-active-outline-color: #596f99;
+    --dv-activegroup-visiblepanel-tab-color: #38363680;
 }
 
 .dark .dockview-theme-abyss {
@@ -129,7 +101,7 @@
     --dv-inactivegroup-visiblepanel-tab-background-color: #000c18;
     --dv-inactivegroup-hiddenpanel-tab-background-color: #10192c;
     --dv-tab-divider-color: #2b2b4a;
-    --dv-activegroup-visiblepanel-tab-color: #000c1840;
+    --dv-activegroup-visiblepanel-tab-color: #e7e7e7e7;
     --dv-activegroup-hiddenpanel-tab-color: rgba(255, 255, 255, 0.5);
     --dv-inactivegroup-visiblepanel-tab-color: rgba(255, 255, 255, 0.5);
     --dv-inactivegroup-hiddenpanel-tab-color: rgba(255, 255, 255, 0.25);
@@ -391,10 +363,6 @@ button:not(header button):disabled {
 
 header button {
     @apply py-6 disabled:opacity-0 disabled:cursor-default rounded-none bg-slate-100/20 dark:bg-slate-800/50 ring-0 focus:ring-0 focus:ring-offset-0 shadow-none border-none opacity-80 dark:text-gray-100 text-gray-800/90 mix-blend-multiply dark:mix-blend-overlay dark:active:mix-blend-color-burn active:mix-blend-soft-light;
-}
-
-button.primary {
-    @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 dark:bg-blue-700 dark:hover:bg-blue-800 dark:focus:ring-blue-600;
 }
 
 button.theme-button {
