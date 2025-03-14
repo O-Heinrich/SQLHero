@@ -55,7 +55,7 @@ const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     // Initialize challenges on component mount
     useEffect(() => {
         // Map the predefined challenges to include completion and attempt status
-        const initialChallenges = loadState()?.challenges || CHALLENGES.map(Challenge.fromShortChallenge) as Challenge[];
+        const initialChallenges = loadState()?.challenges || CHALLENGES.map(Challenge.fromShortChallenge);
 
         // Dispatch the INIT_CHALLENGES action to set up the initial state
         dispatch({ type: 'INIT_CHALLENGES', payload: initialChallenges });

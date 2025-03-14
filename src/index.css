@@ -57,25 +57,116 @@
 
     --animate-pulse: pulse 0.75s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 
-    --footer-shadow: #ffffff63;
+    --footer-shadow: #ffffff23;
+    --dv-group-view-background-color: transparent !important;
+
 }
 
-.dark {
-    --footer-shadow: #b3b3b326;
+.dv-tabs-and-actions-container {
+    overflow: hidden;
+    backdrop-filter: blur(16px);
+    z-index: 1;
+}
+
+.dv-content-container {
+    margin-top: -35px !important;
+    padding-top: 35px !important;
+}
+
+.dv-content-container:has(img.erd) {
+    padding-top: 0 !important;
+}
+
+.dockview-theme-light {
+    --dv-tabs-and-actions-container-background-color: #ffffff85;
+    --dv-activegroup-visiblepanel-tab-color: #ffffff80;
+}
+
+.dockview-theme-abyss {
+    --dv-paneview-active-outline-color: dodgerblue;
+    --dv-tabs-and-actions-container-font-size: 13px;
+    --dv-tabs-and-actions-container-height: 35px;
+    --dv-drag-over-background-color: rgba(83, 89, 93, 0.5);
+    --dv-drag-over-border-color: white;
+    --dv-tabs-container-scrollbar-color: transparent;
+    --dv-icon-hover-background-color: rgba(90, 93, 94, 0.31);
+    --dv-floating-box-shadow: 8px 8px 8px 0px rgba(83, 89, 93, 0.5);
+    --dv-overlay-z-index: 999;
+    --dv-active-sash-transition-duration: 0.1s;
+    --dv-active-sash-transition-delay: 0.5s;
+    --dv-group-view-background-color: transparent !important;
+    --dv-tabs-and-actions-container-background-color: #1c1c2aa3;
+    --dv-activegroup-visiblepanel-tab-background-color: #000c18;
+    --dv-activegroup-hiddenpanel-tab-background-color: #10192c;
+    --dv-inactivegroup-visiblepanel-tab-background-color: #000c18;
+    --dv-inactivegroup-hiddenpanel-tab-background-color: #10192c;
+    --dv-tab-divider-color: #2b2b4a;
+    --dv-activegroup-visiblepanel-tab-color: white;
+    --dv-activegroup-hiddenpanel-tab-color: rgba(255, 255, 255, 0.5);
+    --dv-inactivegroup-visiblepanel-tab-color: rgba(255, 255, 255, 0.5);
+    --dv-inactivegroup-hiddenpanel-tab-color: rgba(255, 255, 255, 0.25);
+    --dv-separator-border: #8d9dff47;
+    --dv-paneview-header-border-color: #2b2b4a;
+    --dv-paneview-active-outline-color: #596f99;
+}
+
+.dark .dockview-theme-abyss {
+    --dv-paneview-active-outline-color: dodgerblue;
+    --dv-tabs-and-actions-container-font-size: 13px;
+    --dv-tabs-and-actions-container-height: 35px;
+    --dv-drag-over-background-color: rgba(83, 89, 93, 0.5);
+    --dv-drag-over-border-color: white;
+    --dv-tabs-container-scrollbar-color: #888;
+    --dv-icon-hover-background-color: rgba(90, 93, 94, 0.31);
+    --dv-floating-box-shadow: 8px 8px 8px 0px rgba(83, 89, 93, 0.5);
+    --dv-overlay-z-index: 999;
+    --dv-active-sash-transition-duration: 0.1s;
+    --dv-active-sash-transition-delay: 0.5s;
+    --dv-group-view-background-color: transparent;
+    --dv-tabs-and-actions-container-background-color: #1c1c2ab8;
+    --dv-activegroup-visiblepanel-tab-background-color: #000c1844;
+    --dv-activegroup-hiddenpanel-tab-background-color: #10192c;
+    --dv-inactivegroup-visiblepanel-tab-background-color: #000c18;
+    --dv-inactivegroup-hiddenpanel-tab-background-color: #10192c;
+    --dv-tab-divider-color: #2b2b4a;
+    --dv-activegroup-visiblepanel-tab-color: #000c1840;
+    --dv-activegroup-hiddenpanel-tab-color: rgba(255, 255, 255, 0.5);
+    --dv-inactivegroup-visiblepanel-tab-color: rgba(255, 255, 255, 0.5);
+    --dv-inactivegroup-hiddenpanel-tab-color: rgba(255, 255, 255, 0.25);
+    --dv-separator-border: #8d9dff47;
+    --dv-paneview-header-border-color: #2b2b4a;
+    --dv-paneview-active-outline-color: #596f99;
+}
+
+.dockview-theme-light,
+.dockview-theme-dark,
+.dockview-theme-dracula,
+.dockview-theme-abyss,
+.dockview-theme-vscode {
+    --dv-group-view-background-color: transparent !important;
+}
+
+.dv-content-container {
+    overflow-y: auto;
+    background: transparent;
+    padding: 0;
 }
 
 @layer utilities {
     .text-shadow-sm {
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     }
+
     .text-shadow {
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
+
     .text-shadow-lg {
-      text-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        text-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     }
+
     .bg-size-125 {
-      background-size: 125%;
+        background-size: 125%;
     }
 }
 
@@ -148,7 +239,7 @@ h2.text-2xl {
 }
 
 h3 {
-    @apply text-2xl lg:text-3xl pt-4 font-light text-slate-800 dark:text-slate-300;
+    @apply text-2xl lg:text-3xl pt-4 pb-2 font-light text-slate-800 dark:text-slate-300;
 }
 
 h4 {
@@ -176,7 +267,7 @@ ol li {
 }
 
 hr {
-    @apply my-8 mx-auto bg-slate-300  shadow-md h-1 rounded-md max-w-sm dark:bg-slate-400 border-none;
+    @apply my-8 mx-auto bg-slate-300 shadow-md h-1 rounded-md max-w-sm dark:bg-slate-400 border-none;
 }
 
 a:not(a:has(button)):not(header h1 a) {
@@ -191,11 +282,11 @@ a:not(a:has(button)):not(header h1 a):hover {
 }
 
 table {
-    @apply min-w-full divide-y divide-gray-200 dark:divide-gray-700 shadow-lg rounded-lg overflow-hidden;
+    @apply min-w-full divide-y my-4 divide-gray-200 dark:divide-gray-700 shadow-lg rounded-lg overflow-hidden;
 }
 
 table#query-result {
-    @apply overflow-x-auto my-2 overflow-hidden;
+    @apply h-auto overflow-x-auto my-0 overflow-hidden;
 }
 
 table thead {
@@ -203,7 +294,7 @@ table thead {
 }
 
 table thead th {
-    @apply py-2 px-4 text-left text-lg font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider;
+    @apply py-2 px-4 text-left text-lg font-medium text-gray-500 dark:text-gray-300 tracking-wider h-10;
 }
 
 table tbody {
@@ -256,7 +347,7 @@ table#query-result tbody tr td {
 button {
     @apply px-8 py-3 text-xl font-light text-center cursor-pointer transition duration-250 ease-in-out transform bg-slate-200 border-gray-300 border-1 dark:bg-gray-800 dark:border-gray-800 dark:hover:bg-slate-700 dark:hover:border-white/25 dark:focus:ring-slate-900/40 dark:focus:ring-offset-gray-700 rounded-xl shadow-inner shadow-white dark:shadow-inner dark:shadow-gray-600/80 dark:hover:shadow-gray-100/25 hover:bg-slate-100 hover:shadow-white hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-200 focus:ring-slate-400/50 dark:active:bg-slate-900/50 active:bg-white/30;
 }
-    
+
 
 button:not(header button):disabled {
     @apply hidden;
@@ -266,9 +357,9 @@ header button {
     @apply py-6 disabled:opacity-0 disabled:cursor-default rounded-none bg-slate-100/20 dark:bg-slate-800/50 ring-0 focus:ring-0 focus:ring-offset-0 shadow-none border-none opacity-80 dark:text-gray-100 text-gray-800/90 mix-blend-multiply dark:mix-blend-overlay dark:active:mix-blend-color-burn active:mix-blend-soft-light;
 }
 
-/* button.primary {
+button.primary {
     @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 dark:bg-blue-700 dark:hover:bg-blue-800 dark:focus:ring-blue-600;
-} */
+}
 
 button.theme-button {
     @apply transition-none shadow-none ring-offset-0 m-0 ml-4 py-4 px-4 ring-0 self-start dark:bg-transparent border-none bg-transparent dark:text-gray-100 text-gray-800 outline-0;
@@ -276,14 +367,15 @@ button.theme-button {
     align-self: center;
 }
 
-button.icon, header a button {
+button.icon,
+header a button {
     @apply p-4;
 }
 
 
 button.icon,
 button.primary {
-    @apply px-8 py-3 text-xl rounded-xl font-light bg-teal-200 dark:bg-teal-900 shadow-teal-100 dark:shadow-teal-600 border-1 border-gray-300 dark:border-gray-400/50 dark:hover:bg-teal-700 hover:bg-teal-300 cursor-pointer transition duration-250 ease-in-out transform inline-flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none shadow-inner;
+    @apply px-8 py-3 text-xl rounded-xl font-light bg-teal-300 dark:bg-teal-900 shadow-teal-100 dark:shadow-teal-600 border-1 border-gray-300 dark:border-gray-400/50 dark:hover:bg-teal-700 hover:bg-teal-200 cursor-pointer transition duration-250 ease-in-out transform inline-flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none shadow-inner;
 }
 
 button.icon {
@@ -338,4 +430,8 @@ code {
 text.recharts-text.recharts-cartesian-axis-tick-value,
 text.recharts-text.recharts-pie-label-text {
     @apply fill-gray-500/70 dark:fill-gray-300/50;
+}
+
+main>div {
+    height: auto !important;
 }

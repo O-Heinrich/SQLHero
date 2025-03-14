@@ -4,37 +4,38 @@
  * @note Just copy and paste this code to main.tsx and watch the dev console.
  * 
  */
-import { JavaScriptExecutionEngine } from "@/lib/exec-engine/javascript-engine";
-import { PostgresExecutionEngine } from "@/lib/exec-engine/postgres-engine";
+import { JavaScriptExecutionEngine } from "../src/lib/exec-engine/javascript-engine";
+import { PostgresExecutionEngine } from "../src/lib/exec-engine/postgres-engine";
 
 async function jsEngine(): Promise<void> {
     const engine = await JavaScriptExecutionEngine.create();
 
     // Execute a simple JavaScript code snippet. Like PgExecutionEngine supports, too.
-    await engine.execute('console.log("Hello, World!")');
+    await engine.execute('console.log("Hello, World!\n\n")');
 
     // But additionally JavaScriptExecutionEngine supports running tests.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result: any = await engine.runTests(`
+        const { assert } = TestFramework;
         const sum = (a, b) => a + b;
 
-        test('adds 1 + 2 to equal 3', () => {
+        TestFramework.test('adds 1 + 2 to equal 3', () => {
             assert.equal(sum(1, 2), 3, '1 + 2 should be 3');
         });
 
-        test('adds 2 + 2 to equal 4', () => {
+        TestFramework.test('adds 2 + 2 to equal 4', () => {
             assert.equal(sum(2, 2), 4, '2 + 2 should be 4');
         });
 
-        test('adds 3 + 2 to equal 5', () => {
+        TestFramework.test('adds 3 + 2 to equal 5', () => {
             assert.equal(sum(3, 2), 5, '3 + 2 should be 5');
         });
 
-        test('adds 4 + 2 to equal 6', () => {
+        TestFramework.test('adds 4 + 2 to equal 6', () => {
             assert.equal(sum(4, 2), 6, '4 + 2 should be 6');
         });
 
-        test('adds 5 + 2 to equal 7', () => {
+        TestFramework.test('adds 5 + 2 to equal 7', () => {
             assert.equal(sum(5, 2), 7, '5 + 2 should be 7');
         });
     `);
@@ -43,10 +44,9 @@ async function jsEngine(): Promise<void> {
     console.log(`Total tests: ${result.testResults?.total}`);
     console.log(`Passed tests: ${result.testResults?.passed}`);
     console.log(`Failed tests: ${result.testResults?.failed}`);
-    console.log(`\n        ======== Test Results ========` + result.testResults?.details.map((r: {name: string, passed: boolean, error: string}) => `
-        ${r.name} - ${r.passed ? 'Passed' : 'Failed'}
-        ${r.error}
-    `).join('\n'));
+    console.log(`\n        ======== Test Results ========\n` + result.testResults?.details.map((r: {name: string, passed: boolean, error: string}) => 
+        `        ${r.name} - ${r.passed ? 'Passed' : 'Failed'} ${r.error ? r.error : ''}`
+    ).join('\n'));
 
     engine.destroy();
 }
@@ -75,5 +75,5 @@ async function pgEngine(): Promise<void> {
     
 }
 
-jsEngine().then(() => console.log('JavaScript engine finished')).catch(console.error);
-pgEngine().then(() => console.log('Postgres engine finished')).catch(console.error);
+jsEngine().then(() => console.log('        ==============================\n')).catch(console.error);
+pgEngine().catch(console.error);

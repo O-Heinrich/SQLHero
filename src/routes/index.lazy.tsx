@@ -49,7 +49,7 @@ function Index() {
         if (state === undefined) {
             dispatch({ type: 'LOAD_STATE', payload: null });
         }
-    }, [state]);
+    }, [dispatch, state]);
 
     /**
      * Memoized theme check to prevent unnecessary re-renders
@@ -72,8 +72,8 @@ function Index() {
                         label="Start" 
                         size="lg"
                         onClick={() => navigate({ 
-                            to: '/challenges/$name', 
-                            params: { name: '1' } 
+                            to: '/sql/$number', 
+                            params: { number: '1' } 
                         })} 
                     />
                 </section>

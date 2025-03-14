@@ -19,12 +19,11 @@
  * - DOMPurify for HTML sanitization
  * - Allotment for split-pane layouts
  * 
+ * @deprecated This module is deprecated and will be removed in a future release.
+ * 
  * @requires react
  * @requires sonner
- * @requires dompurify
  * @requires allotment
- * @requires react-ace
- * @requires react-zoom-pan-pinch
  * @requires @tanstack/react-router
  */
 
@@ -33,29 +32,28 @@ import { clsx } from 'clsx';
 import { createFileRoute } from '@tanstack/react-router';
 import { TransformWrapper } from "react-zoom-pan-pinch";
 import { toast } from 'sonner';
-import dompurify from 'dompurify';
 import { Allotment } from "allotment";
-import AceEditor from "react-ace";
-import "ace-builds/src-noconflict/mode-sql";
-import "ace-builds/src-noconflict/theme-one_dark";
-import "ace-builds/src-noconflict/theme-iplastic";
-import "ace-builds/src-noconflict/ext-language_tools";
+
 import { ChallengeSkeleton } from '@/components/Skeleton';
 import { PgExecEngineContext } from '@/context/PgExecEngineContext';
 import { useTheme } from '@/hooks/useTheme';
-import { Table } from '@/components/table';
 import { ERD, ErdControls } from '@/components/ERD';
 import { useAppState } from '@/hooks/useAppState';
-import { TableDiff } from '@/lib/types';
-import { queryResultToStringArray, ResultSetComparison } from '@/lib/utils';
+import { TableDiff, ChallengeData } from '@/lib/types';
+import { ResultSetComparison } from '@/lib/utils';
 import { useChallengeNumber } from '@/hooks/useChallengeNumber';
 import { IconButton } from '@/components/buttons/IconButton';
 import { BREAKPOINTS } from 'virtual:sql-hero';
 import { toggleHeaderSuccess } from '@/lib/reducer';
 import { QueryResult, SqlExecutionResult } from '@/lib/exec-engine/postgres-engine';
 import { PlayIcon, ArrowLeftIcon, ArrowDownOnSquareStackIcon } from '@heroicons/react/24/solid';
-
+import { useResizeObserver } from '@/hooks/useResizeObserver';
+/* import { CodeEditor } from '@/components/CodeEditor'; */
+import { ChallengeLesson } from '@/components/ChallengeLesson';
+import { ChallengeEditor } from '@/components/ChallengeEditor';
+import { QueryResultTable } from '@/components/QueryResultTable';
 import "allotment/dist/style.css";
+
 
 /**
  * Background style for the challenge workspace
@@ -85,91 +83,6 @@ enum DetailViewPages {
 }
 
 /**
- * Represents the structure of a challenge, typically used in coding or database-related challenges.
- * 
- * This interface defines the properties required to describe a challenge, including its metadata, 
- * schema, and expected results.
- * 
- * @interface ChallengeData
- */
-interface ChallengeData {
-    /**
-     * @property {number} number
-     * @description A unique identifier or sequence number for the challenge.
-     * @example 1
-     */
-    number: number;
-
-    /**
-     * @property {string} title
-     * @description The title or name of the challenge.
-     * @example "Find the highest salary"
-     */
-    title: string;
-
-    /**
-     * @property {string} schema
-     * @description The schema or structure of the database/table(s) relevant to the challenge.
-     * This is typically a SQL schema or a JSON representation of the data structure.
-     * @example "CREATE TABLE employees (id INT, name TEXT, salary INT);"
-     */
-    schema: string;
-
-    /**
-     * @property {string} description
-     * @description A detailed description of the challenge, including the problem statement and requirements.
-     * @example "Write a query to find the employee with the highest salary."
-     */
-    description: string;
-
-    /**
-     * @property {'easy' | 'medium' | 'hard'} difficulty
-     * @description The difficulty level of the challenge.
-     * Possible values: 'easy', 'medium', 'hard'.
-     * @example "medium"
-     */
-    difficulty: 'easy' | 'medium' | 'hard';
-    /**
-     * @property {string} query
-     * @description The query or solution to the challenge. This is typically a SQL query or code snippet.
-     * @example "SELECT name, MAX(salary) FROM employees;"
-     */
-    query: string;
-    /**
-     * @property {string} hashedResult
-     * @description A hashed representation of the expected result of the challenge.
-     * This is used to verify the correctness of the user's solution.
-     * @example "a1b2c3d4e5f6g7h8i9j0"
-     */
-    hashedResult: string;
-    /**
-     * @property {string[]} hints
-     * @description An array of hints to assist the user in solving the challenge.
-     * Each hint is a string that provides guidance or clues.
-     * @example ["Use the MAX() function", "Filter by salary"]
-     */
-    hints: string[];
-    /**
-     * @property {string} [erd]
-     * @description Optional property representing an Entity-Relationship Diagram (ERD) for the challenge.
-     * This is typically a URL or base64-encoded image of the ERD.
-     * @example "https://example.com/erd.png"
-     */
-    erd?: string;
-};
-
-/**
- * Challenge header properties
- * @interface
- * @property {string} title - Challenge title
- * @property {string} subtitle - Challenge subtitle
- */
-interface ChallengeHeaderProps {
-    title: string;
-    subtitle: string;
-}
-
-/**
  * Props interface for Toolbar component
  * 
  * Defines the properties for a container component that displays
@@ -192,32 +105,6 @@ interface ToolbarProps {
     * @property {string} [className]
     */
     className?: string;
-}
-
-/**
- * Props interface for QueryResultTable component
- * 
- * Defines the properties required for rendering a table that displays
- * SQL query execution results in a structured format.
- * 
- * @interface QueryResultTableProps
- */
-interface QueryResultTableProps {
-    /**
-    * Unique identifier for the result table
-    * Used for DOM identification and accessibility purposes
-    * 
-    * @property {string} id
-    */
-    id: string;
-    /**
-    * Query result data to display in the table
-    * Optional as it may not be available before query execution
-    * Contains fields, rows, and metadata from the executed query
-    * 
-    * @property {QueryResult} [result]
-    */
-    result?: QueryResult;
 }
 
 /**
@@ -300,6 +187,8 @@ const Spacer: React.FC = () => <span className="inline-block h-12 my-1 w-0.5 sel
  * 
  * Uses PGlightContext for database operations and theme context for visual customization.
  * 
+ * @deprecated This component is deprecated and will be removed in a future release. Use View comonent instead.
+ * @see View
  * @component Challenge
  * 
  * @example
@@ -311,7 +200,7 @@ function Challenge() {
     const { pg, updateSchema } = useContext(PgExecEngineContext);
     const challenge = Route.useLoaderData() as ChallengeData;
     const rightColRef = useRef<HTMLDivElement>(null);
-    const [editorState, setEditorState] = useState('');
+    const editorRef = useRef<string>('');
     const [result, setResult] = useState<QueryResult | undefined>();
     const [isMobile, setIsMobile] = useState(window.innerWidth < BREAKPOINTS.lg);
     const [db, setDb] = useState<string>('');
@@ -321,6 +210,7 @@ function Challenge() {
     const challengeIndex = useMemo(() => challengeNo - 1, [challengeNo]);
     const { theme } = useTheme();
     const isErdActive = useMemo(() => activeView === DetailViewPages.ERD, [activeView]);
+    const resizeObserve = useResizeObserver<HTMLElement>();
     const erdFile = useMemo(
         () => challenge.schema.replace('.sql', theme === 'dark' ? '-dark.svg' : '.svg'),
         [challenge.schema, theme]
@@ -356,7 +246,7 @@ function Challenge() {
     useEffect(() => {
         const attempts = state.challenges[challengeIndex]?.attempts.filter(attempt => Boolean(attempt.query));
         const len = attempts?.length ?? 0;
-        setEditorState(() => len > 0 ? attempts[len - 1].query! : '');
+        editorRef.current = len > 0 ? attempts[len - 1].query! : '';
     }, [challengeIndex, state.challenges]);
 
     /**
@@ -405,20 +295,29 @@ function Challenge() {
     }, [challengeNo]);
 
     /**
-     * Observes changes in the viewport width and updates the UI for mobile responsiveness.
+     * Handles responsive view detection based on window size changes
+     * Switches between mobile and desktop views when breakpoint is crossed
      * 
      * This effect:
-     * - Uses the `ResizeObserver` API to monitor changes in the viewport width.
-     * - Updates the `isMobile` state and switches the active view to the ERD (Entity-Relationship Diagram)
-     *   when the viewport width crosses a breakpoint (e.g., for small devices).
-     * - Cleans up the observer when the component unmounts or dependencies change.
+     * - Observes the window size and updates the view based on the breakpoint.
+     * - Sets the active view to the ERD page when switching to mobile view.
      * 
      * @effect
-     * @dependencies isMobile, rightColRef
+     * @dependencies isMobile, resizeObserve, rightColRef
      */
     useEffect(() => {
-        if ('ResizeObserver' in window && rightColRef.current) {
-            const observer = new ResizeObserver((entries) => {
+        try {
+            /**
+             * Observes window body size and updates mobile view state
+             * Uses the custom useResizeObserver hook to track size changes
+             * 
+             * Switches active view and mobile state when screen width 
+             * crosses the defined large breakpoint
+             * 
+             * @param target - The window.document.body element to observe
+             * @param callback - Resize event handler that checks mobile breakpoint
+             */
+            resizeObserve(window.document.body, (entries) => {
                 for (const entry of entries) {
                     const smDevice = entry.contentRect.width < BREAKPOINTS.lg;
                     if (smDevice !== isMobile) {
@@ -427,17 +326,19 @@ function Challenge() {
                     }
                 }
             });
-
-            observer.observe(window.document.body);
-            return () => observer.disconnect();
+        } catch (error) {
+            const errMsg = typeof error === 'string' ? error : (error as Error).message;
+            toast.error('Failed to observe window resize', {
+                description: errMsg
+            });
         }
-    }, [isMobile, rightColRef]);
+    }, [isMobile, resizeObserve, rightColRef]);
 
     /**
      * Handles the execution of a SQL query or a series of SQL statements for a specific challenge.
      * 
      * This function:
-     * - Executes the SQL query/queries provided in the `editorState`.
+     * - Executes the SQL query/queries provided in the `editorRef`.
      * - Compares the result with a pre-stored solution (if available).
      * - Dispatches appropriate actions based on whether the challenge was completed successfully or not.
      * - Updates the UI to display the result or error messages.
@@ -456,7 +357,7 @@ function Challenge() {
         try {
             let queryResult: SqlExecutionResult | null = null;
             const key = challengeNo.toString(); // Create a key for the current challenge.
-            const result = await pg.execute(editorState); // Execute the SQL query.
+            const result = await pg.execute(editorRef.current ?? ''); // Execute the SQL query.
 
             if (!result.success) {
                 throw new Error(result.error ?? 'An error occurred while executing the query.');
@@ -484,7 +385,7 @@ function Challenge() {
                 });
                 dispatch({
                     type: 'COMPLETE_CHALLENGE',
-                    payload: { index: challengeIndex, query: editorState }
+                    payload: { index: challengeIndex, query: editorRef.current }
                 });
             } else {
                 toast.error('Fehler', {
@@ -495,7 +396,7 @@ function Challenge() {
                     payload: {
                         index: challengeIndex,
                         difference: {} as TableDiff,
-                        query: editorState
+                        query: editorRef.current
                     }
                 });
             }
@@ -547,37 +448,40 @@ function Challenge() {
                 <TransformWrapper initialScale={2}>
                     <Allotment vertical={true} className="mt-1 pb-1 lg:mt-20 lg:pb-22 overflow-auto h-full">
                         <div ref={rightColRef} className="px-4 pt-4 pb-22 overflow-auto h-full border-l-4 border-ridge border-white/80 dark:border-slate-900/80">
-                            <ChallengeLesson lesson={challenge.description!} />
+                            <ChallengeLesson lesson={challenge.description!} difficulty={challenge.difficulty} />
                         </div>
                         <div className="relative h-full flex flex-col lg:mx-4 mt-4 pb-4 ">
-                            <ChallengeEditor value={editorState} setValue={setEditorState} />
-                            <Toolbar className="mx-4 justify-center">
-                                <ErdControls disabled={!isErdActive} />
-                                {isErdActive && <Spacer />}
-                                <IconButton
-                                    icon={<ArrowDownOnSquareStackIcon className="size-6" />}
-                                    aria-label="ERD downloaden"
-                                    title="ERD downloaden"
-                                    disabled={!isErdActive}
-                                    onClick={handleDownloadClick}
-                                />
-                                <IconButton
-                                    icon={<ArrowLeftIcon className="size-6" />}
-                                    aria-label="ERD anzeigen"
-                                    title="ERD anzeigen"
-                                    disabled={isErdActive}
-                                    onClick={handleErdClick}
-                                />
-                                <IconButton
-                                    icon={<PlayIcon className="size-6" />}
-                                    aria-label="SQL ausführen"
-                                    title="SQL ausführen"
-                                    variant="primary"
-                                    onClick={handleRun}
-                                />
-                            </Toolbar>
+                            <ChallengeEditor valueRef={editorRef} />
+                            {/* <CodeEditor value={editorState} onChange={setEditorState} /> */}
+                            <div className="flex-1">
+                                <Toolbar className="mx-4 justify-center">
+                                    <ErdControls disabled={!isErdActive} />
+                                    {isErdActive && <Spacer />}
+                                    <IconButton
+                                        icon={<ArrowDownOnSquareStackIcon className="size-6" />}
+                                        aria-label="ERD downloaden"
+                                        title="ERD downloaden"
+                                        disabled={!isErdActive}
+                                        onClick={handleDownloadClick}
+                                    />
+                                    <IconButton
+                                        icon={<ArrowLeftIcon className="size-6" />}
+                                        aria-label="ERD anzeigen"
+                                        title="ERD anzeigen"
+                                        disabled={isErdActive}
+                                        onClick={handleErdClick}
+                                    />
+                                    <IconButton
+                                        icon={<PlayIcon className="size-6" />}
+                                        aria-label="SQL ausführen"
+                                        title="SQL ausführen"
+                                        variant="primary"
+                                        onClick={handleRun}
+                                    />
+                                </Toolbar>    
+                                <DetailViewRoot active={activeView} result={result} erd={erdFile} isMobile={isMobile} />
+                            </div>
                         </div>
-                        <DetailViewRoot active={activeView} result={result} erd={erdFile} isMobile={isMobile} />
                     </Allotment>
                 </TransformWrapper>
             </div>
@@ -591,7 +495,8 @@ function Challenge() {
                 <Allotment className="overflow-auto h-full">
                     <Allotment vertical={true} className={`mt-16 pb-22 overflow-auto h-full ${BG_STYLE}`}>
                         <div className="relative h-full flex flex-col mt-4 pb-4">
-                            <ChallengeEditor value={editorState} setValue={setEditorState} />
+                            {<ChallengeEditor valueRef={editorRef} />}
+                            {/* <CodeEditor ref={editorRef} value={''} /> */}
                             <Toolbar className="justify-center">
                                 <ErdControls disabled={!isErdActive} />
                                 {isErdActive && <Spacer />}
@@ -621,7 +526,7 @@ function Challenge() {
                         <DetailViewRoot active={activeView} result={result} erd={erdFile} isMobile={isMobile} />
                     </Allotment>
                     <div ref={rightColRef} className="px-4 pt-4 pb-22 overflow-auto h-full border-l-4 border-ridge border-white/80 dark:border-slate-900/80">
-                        <ChallengeLesson lesson={challenge.description!} />
+                        <ChallengeLesson lesson={challenge.description!} difficulty={challenge.difficulty} />
                     </div>
                 </Allotment>
             </TransformWrapper>
@@ -661,36 +566,6 @@ const DetailViewRoot: React.FC<DetailViewProps> = ({ active, result, erd, isMobi
     );
 }
 
-/** 
- * Query result table component
- * 
- * @description 
- * The component uses the Table component to render the query result data in a tabular format.
- * 
- * @component
- * @param {Object} props - Component properties
- * @param {QueryResult} props.result - Query result data
- * @param {string} props.id - Unique table identifier
- * @returns {React.ReactElement} Query result table
- */
-const QueryResultTable: React.FC<QueryResultTableProps> = ({
-    result,
-    ...props
-}: {
-    result?: QueryResult;
-    id: string;
-}): React.ReactElement => {
-    const data = useMemo(() => result && queryResultToStringArray(result), [result]);
-    return (
-        <>
-            {data && result && result.fields.length
-                ? <Table {...props} columns={data.columns} rows={data.rows} />
-                : <Table id={props.id} columns={['Ergebnis Tabelle']} rows={[['']]} />
-            }
-        </>
-    );
-}
-
 /**
  * Toolbar component for challenge actions
  * @component
@@ -710,114 +585,6 @@ const Toolbar: React.FC<ToolbarProps> = ({
     </div>
 );
 
-/**
- * Challenge header component
- * @component
- * @param {Object} props - Component properties
- * @param {string} props.title - Challenge title
- * @param {string} props.subtitle - Challenge subtitle
- * @deprecated
- */
-export const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
-    title,
-    subtitle
-}: {
-    title: string;
-    subtitle: string;
-}) => (
-    <>
-        <h2 style={{ paddingTop: '2em' }}>{title}</h2>
-        <h3>{subtitle}</h3>
-    </>
-);
-
-/**
- * Challenge lesson display component with sanitized HTML
- * @component
- * @param {Object} props - Component properties
- * @param {string} props.lesson - HTML lesson content
- */
-const ChallengeLesson: React.FC<{ lesson: string }> = ({
-    lesson
-}: {
-    lesson: string;
-}) => (
-    <div className="mt-24"
-        dangerouslySetInnerHTML={{
-            __html: dompurify.sanitize(lesson)
-        }}
-    />
-);
-
-/**
- * Challenge task display component with sanitized HTML
- * @component
- * @param {Object} props - Component properties
- * @param {string} props.task - HTML task content
- * @deprecated
- */
-export const ChallengeTask: React.FC<{ task: string }> = ({ task }: { task: string }) => (
-    <p
-        dangerouslySetInnerHTML={{
-            __html: dompurify.sanitize(task)
-        }}
-    />
-);
-
-/**
- * SQL code editor component with theme awareness
- * @component
- * @description
- * Provides a full-featured SQL editor using Ace Editor with:
- * - Syntax highlighting
- * - Autocompletion
- * - Theme-aware styling
- * - Line numbers
- * - Live autocompletion
- * 
- * @param {Object} props - Component properties
- * @param {string} props.value - Current SQL query content
- * @param {React.Dispatch<string>} props.setValue - Function to update query content
- * 
- * @example
- * ```tsx
- * const [query, setQuery] = useState('');
- * <ChallengeEditor 
- *   value={query} 
- *   setValue={setQuery}
- * />
- * ```
- */
-const ChallengeEditor: React.FC<{ value: string, setValue: React.Dispatch<string> }> = ({
-    value, setValue
-}: {
-    value: string,
-    setValue: React.Dispatch<string>
-}) => {
-    const { theme } = useTheme();
-    return (
-        <AceEditor
-            mode="sql"
-            theme={theme === 'dark' ? 'one_dark' : 'iplastic'}
-            width='100%'
-            height='100%'
-            className='border-2 border-ridge shadow-lg border-gray-300 dark:border-gray-700 absolute inset-0'
-            setOptions={{
-                enableBasicAutocompletion: true,
-                enableLiveAutocompletion: true,
-                enableSnippets: true,
-                showLineNumbers: true,
-                tabSize: 4,
-                cursorStyle: 'smooth',
-            }}
-            fontSize={16}
-            value={value}
-            onChange={(value: string) => setValue(value)}
-            name="editor"
-            editorProps={{ $blockScrolling: true }}
-        />
-    );
-}
 
 /**
  * TanStack Router configuration for challenge routes

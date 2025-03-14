@@ -16,44 +16,6 @@ import React from 'react';
 import dompurify from 'dompurify';
 
 /**
- * Props interface for content rendering components
- * @interface ContentProps
- * @description Defines the shape of props for HTML content components
- */
-interface ContentProps {
-    /** 
-     * HTML content to be rendered and sanitized
-     * @type {string}
-     */
-    content: string;
-}
-
-/**
- * Challenge task display component with sanitized HTML
- * @component
- * @description Renders HTML task content with XSS protection
- * 
- * @param {ContentProps} props - Component properties
- * @returns {React.ReactElement} Sanitized task content paragraph
- * 
- * @deprecated Use more specific content rendering components
- * @warning Potential future removal
- * 
- * @example
- * ```tsx
- * <ChallengeTask task="<p>Complete the SQL query</p>" />
- * ```
- */
-export const ChallengeTask: React.FC<{ task: string }> = ({ task }: { task: string }) => (
-    <p
-        dangerouslySetInnerHTML={{
-            // Sanitize HTML to prevent XSS attacks
-            __html: dompurify.sanitize(task)
-        }}
-    />
-);
-
-/**
  * Challenge lesson display component with sanitized HTML
  * @component
  * @description Renders HTML lesson content with XSS protection and additional styling
@@ -66,15 +28,31 @@ export const ChallengeTask: React.FC<{ task: string }> = ({ task }: { task: stri
  * <ChallengeLesson lesson="<h2>SQL Basics</h2><p>Learn about databases...</p>" />
  * ```
  */
-export const ChallengeLesson: React.FC<{ lesson: string }> = ({
-    lesson
+export const ChallengeLesson: React.FC<{ 
+    lesson: string, 
+    difficulty: 'easy' | 'medium' | 'hard' | 'unknown',
+    ref?: React.RefObject<HTMLDivElement|null>
+}> = ({
+    lesson,
+    difficulty,
+    ref,
 }: {
     lesson: string;
-}) => (
-    <div className="mt-24"
-        dangerouslySetInnerHTML={{
-            // Sanitize HTML to prevent XSS attacks
-            __html: dompurify.sanitize(lesson)
-        }}
-    />
+    difficulty: 'easy' | 'medium' | 'hard' | 'unknown';
+    ref?: React.RefObject<HTMLDivElement|null>
+}): React.ReactElement => (
+    <article className="mt-4">
+        <div 
+            className="pb-4"
+            ref={ref}
+            dangerouslySetInnerHTML={{
+                __html: `
+                <span class="float-right inline-block rounded-full px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                    ${dompurify.sanitize(difficulty)}
+                </span>\n
+                ${dompurify.sanitize(lesson)}
+                `
+            }}
+        />
+    </article>
 );

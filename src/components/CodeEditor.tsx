@@ -1,0 +1,145 @@
+/**
+ * @file CodeEditor.tsx
+ * @description A wrapper component for Monaco Editor that uses an uncontrolled approach
+ * to prevent cursor position reset issues and provide better integration with Monaco's
+ * internal state management system. Features PostgreSQL dialect syntax highlighting.
+ */
+
+import { useResizeObserver } from '@/hooks/useResizeObserver';
+import { useTheme } from '@/hooks/useTheme';
+import { useEffect, useCallback, useRef, JSX, useMemo } from 'react';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import { SqlToken } from '@/lib/token';
+
+/**
+ * Props for the CodeEditor component
+ * @interface CodeEditorProps
+ * @property {string} value - The initial or updated value to display in the editor
+ * @property {function} onChange - Callback function that receives the updated editor content
+ */
+export interface CodeEditorProps {
+    /** The current value to display in the editor */
+    value: string;
+
+    ref?: React.RefObject<monaco.editor.IStandaloneCodeEditor>;
+}
+
+/**
+ * CodeEditor component that wraps Monaco Editor using an uncontrolled approach
+ * to prevent cursor reset issues and provide better performance.
+ * Includes PostgreSQL dialect syntax highlighting.
+ *
+ * @component
+ * @param {CodeEditorProps} props - The component props
+ * @returns {JSX.Element} The rendered editor component
+ *
+ * @example
+ * ```tsx
+ * const [sqlQuery, setSqlQuery] = useState('SELECT * FROM users');
+ * 
+ * <CodeEditor 
+ *   value={sqlQuery} 
+ *   onChange={(newValue) => setSqlQuery(newValue)} 
+ * />
+ * ```
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditorProps): JSX.Element => {
+    /** Current theme from the theme hook */
+    const { theme: heroTheme } = useTheme();
+    /** Reference to the container div element */
+    const containerRef = useRef<HTMLDivElement>(null);
+    /** Resize Observer instance */
+    const resizeOberve = useResizeObserver();
+    /** Memorized theme name */
+    const theme = useMemo(() => heroTheme, [heroTheme]);
+
+    /**
+     * Handles resize events for the editor container
+     * Resizes the editor layout when the container dimensions change
+     * 
+     * @param {ResizeObserverEntry[]} entries - The resize observer entries
+     */
+    const onResizeEvent = useCallback((entries: ResizeObserverEntry[]) => {
+        if (ref?.current && entries.length > 0) {
+            const { width, height } = entries[0].contentRect;
+            ref!.current.layout({ width, height });
+        }
+    }, [ref]);
+
+    /**
+     * Set up resize observer to handle container size changes
+     */
+    useEffect(() => {
+        if (containerRef.current) {
+            resizeOberve(containerRef.current, onResizeEvent);
+        }
+    }, [resizeOberve, containerRef, onResizeEvent]);
+
+    useEffect(() => {
+        if (!ref?.current) {
+            // Define light theme
+            monaco.editor.defineTheme('light', {
+                base: 'vs',
+                inherit: true,
+                rules: [],
+                colors: {
+                    'editor.background': '#f6f6f6',
+                    'editor.lineHighlightBackground': '#ffffff66',
+                    'editorHighlight.foreground': '#fefefefe66',
+                },
+            });
+
+            // Define dark theme
+            monaco.editor.defineTheme('dark', {
+                base: 'vs-dark',
+                inherit: true,
+                rules: [],
+                colors: {
+                    'editor.background': '#414a60',
+                    'editor.lineHighlightBackground': '#ffffff11',
+                    'editorHighlight.foreground': '#fefefefe66',
+                },
+            });
+
+            // Set up PostgreSQL SQL syntax highlighting
+            monaco.languages.setMonarchTokensProvider("sql", {
+                defaultToken: "invalid",
+                ignoreCase: true, // PostgreSQL keywords are case-insensitive
+
+                // Define arrays for matching in rules
+                keywords: SqlToken.keywords,
+                typeKeywords: SqlToken.types,
+                functions: SqlToken.functions,
+                tokenizer: SqlToken.tokenizer,
+            });
+
+            ref!.current = monaco.editor.create(containerRef.current!, {
+                value,
+                language: 'sql',
+                automaticLayout: false,
+                minimap: {
+                    enabled: false,
+                },
+                scrollbar: {
+                    vertical: 'auto',
+                    horizontal: 'auto',
+                },
+                wordWrap: 'on',
+                wrappingIndent: 'same',
+                wrappingStrategy: 'advanced',
+                renderWhitespace: 'all',
+                contextmenu: false,
+            });
+        }
+    }, [value, ref]);
+
+
+    useEffect(() => {
+        monaco.editor.setTheme(theme);
+    }, [theme]);
+
+    return (
+        <div ref={containerRef} className="w-full h-full" />
+    );
+};

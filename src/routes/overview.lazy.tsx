@@ -12,7 +12,7 @@ import { ResponsiveContainer, PieChart, Pie, Cell, BarChart, XAxis, YAxis, Legen
 import { Wrapper } from '@/components/Wrapper';
 import { useAppState } from '@/hooks/useAppState';
 import { Challenge } from '@/lib/types';
-import { ArrowRightIcon } from '@/components/icons';
+import { ArrowLongRightIcon } from '@heroicons/react/24/solid';
 
 /**
  * Route definition using TanStack Router
@@ -175,7 +175,7 @@ const Card: React.FC<CardProps> = ({
                         </span>
                     )}
                     <span className="flex gap-1 items-center text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:stroke-blue-600 group-hover:text-blue-600 dark:group-hover:stroke-blue-400 dark:group-hover:text-blue-400 transition-colors duration-300 ml-auto">
-                        {attempted ? (completed ? 'Wiederholen' : 'Fortsetzen') : 'Starte die Herausforderung'} <ArrowRightIcon size={1.6} />
+                        {attempted ? (completed ? 'Wiederholen' : 'Fortsetzen') : 'Starte die Herausforderung'} <ArrowLongRightIcon className="mt-1 size-6" />
                     </span>
                 </div>
             </div>
@@ -255,10 +255,10 @@ const ChallengeStatistics = ({ challenges }: { challenges: Challenge[]; }): Reac
 
     // Data for the status pie chart
     const statusData = [
-        { name: 'Fertig', value: stats.statusCounts.completed, color: '#10B981' },
-        { name: 'Fehler', value: stats.statusCounts.failed, color: '#EF4444' },
-        { name: 'Bearbeitung', value: stats.statusCounts.inProgress, color: '#F59E0B' },
-        { name: 'Nicht gestartet', value: stats.statusCounts.notStarted, color: '#6B7280' }
+        { name: 'Fertig', value: stats.statusCounts.completed, color: '#10B98188' },
+        { name: 'Fehler', value: stats.statusCounts.failed, color: '#EF444466' },
+        { name: 'Bearbeitung', value: stats.statusCounts.inProgress, color: '#fba07355' },
+        { name: 'Nicht gestartet', value: stats.statusCounts.notStarted, color: '#6B728033' }
     ].filter(item => item.value > 0);
 
     // Data for the difficulty completion bar chart
@@ -278,9 +278,9 @@ const ChallengeStatistics = ({ challenges }: { challenges: Challenge[]; }): Reac
                     <div className="text-gray-600/60 dark:text-gray-300/60 text-center">
                         Gesamtfortschritt ({stats.statusCounts.completed} von {stats.totalChallenges})
                     </div>
-                    <div className="w-full bg-gray-200/50 dark:bg-gray-800/20 rounded-full h-4 mt-4">
+                    <div className="w-full bg-gray-500/5 dark:bg-gray-800/20 rounded-full h-4 mt-4">
                         <div 
-                            className="bg-green-500/50 h-4 rounded-full" 
+                            className="bg-[#10B98188] h-4 rounded-full" 
                             style={{ width: `${stats.completionPercentage}%` }}
                         ></div>
                     </div>
@@ -302,8 +302,8 @@ const ChallengeStatistics = ({ challenges }: { challenges: Challenge[]; }): Reac
                                 <XAxis type="number" domain={[0, 'dataMax']} />
                                 <YAxis dataKey="difficulty" type="category" width={70} />
                                 <Legend />
-                                <Bar dataKey="completed" stackId="a" fill="#00c951" name="Abgeschlossen" />
-                                <Bar dataKey="attempted" stackId="a" fill="#f59e0b" name="In Bearbeitung" />
+                                <Bar dataKey="completed" stackId="a" fill="#10B98188" name="Abgeschlossen" />
+                                <Bar dataKey="attempted" stackId="a" fill="#fba07355" name="In Bearbeitung" />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
@@ -462,8 +462,8 @@ function RouteComponent(): React.ReactElement {
                     }, index) => (
                         <Link
                             key={index}
-                            to={`/challenges/$name`}
-                            params={{ name: number?.toString() }}
+                            to={`/sql/$number`}
+                            params={{ number: number?.toString() }}
                             className="h-full block"
                         >
                             <Card

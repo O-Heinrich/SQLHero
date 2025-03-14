@@ -13,6 +13,7 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as SqlNumberImport } from './routes/sql.$number'
 import { Route as ChallengesNameImport } from './routes/challenges.$name'
 
 // Create Virtual Routes
@@ -40,6 +41,12 @@ const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+
+const SqlNumberRoute = SqlNumberImport.update({
+  id: '/sql/$number',
+  path: '/sql/$number',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const ChallengesNameRoute = ChallengesNameImport.update({
   id: '/challenges/$name',
@@ -79,6 +86,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChallengesNameImport
       parentRoute: typeof rootRoute
     }
+    '/sql/$number': {
+      id: '/sql/$number'
+      path: '/sql/$number'
+      fullPath: '/sql/$number'
+      preLoaderRoute: typeof SqlNumberImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -89,6 +103,7 @@ export interface FileRoutesByFullPath {
   '/introduction': typeof IntroductionLazyRoute
   '/overview': typeof OverviewLazyRoute
   '/challenges/$name': typeof ChallengesNameRoute
+  '/sql/$number': typeof SqlNumberRoute
 }
 
 export interface FileRoutesByTo {
@@ -96,6 +111,7 @@ export interface FileRoutesByTo {
   '/introduction': typeof IntroductionLazyRoute
   '/overview': typeof OverviewLazyRoute
   '/challenges/$name': typeof ChallengesNameRoute
+  '/sql/$number': typeof SqlNumberRoute
 }
 
 export interface FileRoutesById {
@@ -104,14 +120,26 @@ export interface FileRoutesById {
   '/introduction': typeof IntroductionLazyRoute
   '/overview': typeof OverviewLazyRoute
   '/challenges/$name': typeof ChallengesNameRoute
+  '/sql/$number': typeof SqlNumberRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/introduction' | '/overview' | '/challenges/$name'
+  fullPaths:
+    | '/'
+    | '/introduction'
+    | '/overview'
+    | '/challenges/$name'
+    | '/sql/$number'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/introduction' | '/overview' | '/challenges/$name'
-  id: '__root__' | '/' | '/introduction' | '/overview' | '/challenges/$name'
+  to: '/' | '/introduction' | '/overview' | '/challenges/$name' | '/sql/$number'
+  id:
+    | '__root__'
+    | '/'
+    | '/introduction'
+    | '/overview'
+    | '/challenges/$name'
+    | '/sql/$number'
   fileRoutesById: FileRoutesById
 }
 
@@ -120,6 +148,7 @@ export interface RootRouteChildren {
   IntroductionLazyRoute: typeof IntroductionLazyRoute
   OverviewLazyRoute: typeof OverviewLazyRoute
   ChallengesNameRoute: typeof ChallengesNameRoute
+  SqlNumberRoute: typeof SqlNumberRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -127,6 +156,7 @@ const rootRouteChildren: RootRouteChildren = {
   IntroductionLazyRoute: IntroductionLazyRoute,
   OverviewLazyRoute: OverviewLazyRoute,
   ChallengesNameRoute: ChallengesNameRoute,
+  SqlNumberRoute: SqlNumberRoute,
 }
 
 export const routeTree = rootRoute
@@ -142,7 +172,8 @@ export const routeTree = rootRoute
         "/",
         "/introduction",
         "/overview",
-        "/challenges/$name"
+        "/challenges/$name",
+        "/sql/$number"
       ]
     },
     "/": {
@@ -156,6 +187,9 @@ export const routeTree = rootRoute
     },
     "/challenges/$name": {
       "filePath": "challenges.$name.tsx"
+    },
+    "/sql/$number": {
+      "filePath": "sql.$number.tsx"
     }
   }
 }
