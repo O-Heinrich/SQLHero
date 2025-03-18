@@ -21,14 +21,14 @@ import { toggleHeaderSuccess } from '@/lib/reducer';
 import { QueryResult } from '@/lib/exec-engine/postgres-engine';
 import { ChallengeLesson } from '@/components/ChallengeLesson';
 import { QueryResultTable } from '@/components/QueryResultTable';
-import { nextId } from '@/lib/dockview/defaultLayout';
+import { nextId, setId } from '@/lib/dockview/id';
 import { RightControls } from '@/components/dockview/Controls';
 import { EditorPanel } from '@/components/dockview/components';
 import { PgExecEngineContext } from "@/context/PgExecEngineContext";
+import { loadPanels, savePanels } from '@/lib/storage';
 import { ERD } from '@/components/ERD';
 
 import '../../node_modules/dockview/dist/styles/dockview.css';
-import { loadPanels, savePanels } from '@/lib/storage';
 
 /**
  * Background style for the challenge workspace
@@ -76,18 +76,18 @@ const PANEL_TYPES = Object.values(PanelTypes);
  * @param {Function} props.api.close - Function to close the panel
  * @returns {JSX.Element} The rendered tab header component
  */
-const TabHeader: React.FunctionComponent<IDockviewPanelHeaderProps<{title: string}>> = (props) => {
+const TabHeader: React.FunctionComponent<IDockviewPanelHeaderProps<{ title: string }>> = (props) => {
     /**
      * Determines if the current panel is a result panel based on its ID
      * Memoized to prevent unnecessary recalculations
      */
     const isResult = useMemo(() => props.api.id.includes(PanelTypes.RESULT), [props.api.id]);
-    
+
     return (
         <div className="flex gap-4 items-center justify-between py-2 px-4">
             <div className="text-gray-700 dark:text-gray-300">{props.params.title}</div>
             {isResult && (
-                <div title={props.params.title} role="button" className="action" onClick={() => props.api.close()}>
+                <div title={props.params.title} role="button" className="action flex items-center" onClick={() => props.api.close()}>
                     <span
                         style={{ fontSize: 'inherit' }}
                     >
@@ -208,7 +208,6 @@ function View() {
                 initialContent: props.params.query,
                 ref: props.params.ref,
                 onExecuted: (result: QueryResult) => {
-                    const erdPanel = api?.panels[1];
                     api?.addPanel({
                         id: `${PanelTypes.RESULT}-${nextId()}`,
                         component: 'resultPanel',
@@ -218,13 +217,13 @@ function View() {
                         },
                         position: {
                             direction: 'within',
-                            referencePanel: erdPanel,
+                            referencePanel: api.getPanel(PanelTypes.ERD)?.id,
                         },
                     });
                 },
-            }} 
-            api={props.api} 
-            containerApi={props.containerApi} 
+            }}
+            api={props.api}
+            containerApi={props.containerApi}
         />,
         /**
          * Panel component for displaying entity relationship diagrams
@@ -236,7 +235,7 @@ function View() {
         erdPanel: function ErdPanel(props: IDockviewPanelProps<{ src: string }>) {
             return (
                 <div className={clsx('cursor-move h-full', BG_STYLE)}>
-                    <ERD src={props.params.src}  />
+                    <ERD src={props.params.src} />
                 </div>
             )
         },
@@ -282,7 +281,7 @@ function View() {
                 const [type] = PANEL_TYPES.filter(type => type === panel.id.split('-')[0] as PanelTypes);
                 switch (type) {
                     case PanelTypes.EDITOR:
-                        editorRef.current?.setValue(query);
+                        panel.params?.ref.current.setValue(valueRef.current);
                         break;
                     case PanelTypes.ERD:
                         panel.api.updateParameters({ src: challenge.schema.replace('.sql', '.svg') });
@@ -300,15 +299,15 @@ function View() {
 
         const disposables = [
             api.onDidAddPanel((event) => {
-                savePanels(api);
+                savePanels(api, query);
                 setPanels((_) => [..._, event.id]);
             }),
             api.onDidActivePanelChange((event) => {
-                savePanels(api);
+                savePanels(api, query);
                 setActivePanel(event?.id);
             }),
             api.onDidRemovePanel((event) => {
-                savePanels(api);
+                savePanels(api, query);
                 setPanels((_) => {
                     const next = [..._];
                     next.splice(
@@ -323,7 +322,7 @@ function View() {
                 setGroups((_) => [..._, event.id]);
             }),
             api.onDidRemoveGroup((event) => {
-                savePanels(api);
+                savePanels(api, query);
                 setGroups((_) => {
                     const next = [..._];
                     next.splice(
@@ -335,17 +334,20 @@ function View() {
                 });
             }),
             api.onDidActiveGroupChange((event) => {
-                savePanels(api);
+                savePanels(api, query);
                 setActiveGroup(event?.id);
+            }),
+            api.onDidMovePanel(() => {
+                savePanels(api, query);
             }),
         ];
 
-        /**
-         * Creates the initial dockview layout with editor, ERD, and lesson panels
-         * 
-         * @function loadLayout
-         */
-        const loadLayout = () => {
+        if (loadPanels(api, editorRef)) {
+            const resultPanels = api.panels.filter((panel) => panel.id.startsWith(PanelTypes.RESULT));
+            if (resultPanels.length > 0) {
+                setId(resultPanels.length);
+            }
+        } else {
             const lesson = api.addPanel({
                 id: `${PanelTypes.LESSON}`,
                 component: 'lessonPanel',
@@ -365,7 +367,7 @@ function View() {
                     src: challenge.schema.replace('.sql', '.svg'),
                 }
             });
-            
+
             api.addPanel({
                 id: `${PanelTypes.EDITOR}`,
                 component: 'editorPanel',
@@ -377,17 +379,15 @@ function View() {
                     title: 'SQL Editor',
                     query: valueRef.current,
                     ref: editorRef,
-                    erdSrc:  challenge.schema.replace('.sql', '.svg'),
+                    erdSrc: challenge.schema.replace('.sql', '.svg'),
                 },
             });
 
             lesson.api.setActive();
-        };
-
-        if (!loadPanels(api)) {
-            loadLayout();
         }
+
         isInitialized.current = true;
+        
         return () => {
             disposables.forEach((disposable) => disposable?.dispose());
         };
@@ -444,9 +444,13 @@ function View() {
         const attempts = state.challenges[challengeIndex]?.attempts.filter(
             (attempt) => Boolean(attempt.query),
         );
-        const len = attempts?.length ?? 0;
-        setQuery(len > 0 ? attempts[len - 1]?.query ?? '' : '')
-        editorRef?.current?.setValue(len > 0 ? attempts[len - 1].query ?? '' : '');
+
+        setQuery(() => {
+            const len = attempts?.length ?? 0;
+            valueRef.current = len > 0 ? attempts[len - 1]?.query ?? '' : ''
+            editorRef.current?.setValue(valueRef.current);
+            return valueRef.current;
+        });
     }, [challengeIndex, state.challenges, query, api?.panels])
 
     /**
@@ -491,7 +495,7 @@ export const Route = createFileRoute('/sql/$number')({
      * @returns {JSX.Element} The View component for the SQL challenge
      */
     component: View,
-    
+
     /**
      * Loads challenge data based on the route parameter
      * @param {Object} params - Route parameters
@@ -499,7 +503,7 @@ export const Route = createFileRoute('/sql/$number')({
      * @returns {Promise<Challenge>} The challenge data
      */
     loader: ({ params }) => fetchChallenge(params.number),
-    
+
     /**
      * Displays error information when challenge loading fails
      * @param {Object} props - Error component props
@@ -507,13 +511,13 @@ export const Route = createFileRoute('/sql/$number')({
      * @returns {JSX.Element} Error display component
      */
     errorComponent: ({ error }) => <div>Error: {error.message}</div>,
-    
+
     /**
      * Component shown while challenge data is loading
      * @returns {JSX.Element} Loading skeleton component
      */
     pendingComponent: ChallengeSkeleton,
-    
+
     /**
      * Component shown when the requested challenge doesn't exist
      * @returns {JSX.Element} Not found message component
