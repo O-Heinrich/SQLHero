@@ -214,12 +214,12 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
                     icon={<ArrowDownOnSquareStackIcon className={SIZE} />}
                     onClick={handleDownloadClick}
                 />
-                <Icon
-                    title={isPopout ? 'Fenster schliessen' : 'In neuen Fenster öffnen'}
-                    icon={isPopout ? <XMarkIcon className={SIZE} /> : <ArrowTopRightOnSquareIcon className={SIZE} />}
-                    onClick={handlePopout}
-                />
             </>}
+            {props.activePanel?.view.contentComponent !== PanelTypes.EDITOR && <Icon
+                title={isPopout ? 'Fenster schliessen' : 'In neuen Fenster öffnen'}
+                icon={isPopout ? <XMarkIcon className={SIZE} /> : <ArrowTopRightOnSquareIcon className={SIZE} />}
+                onClick={handlePopout}
+            />}
             {!isPopout && (
                 <Icon
                     title={isMaximized ? 'Minimieren' : 'Maximieren'}
