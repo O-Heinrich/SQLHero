@@ -186,7 +186,7 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
      */
     const handleDownloadClick = (): void => {
         const a = document.createElement('a')
-        const file = props.activePanel?.params?.src?.split('/').pop() ?? ''
+        const file = props.activePanel?.params?.src?.replace('.svg', '.pdf').split('/').pop() ?? ''
         a.href = `/databases/pdf/${file}`
         a.download = file
         a.click()
