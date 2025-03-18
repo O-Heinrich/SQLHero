@@ -162,9 +162,9 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
     return (
         <div className={BG_STYLE}>
             <CodeEditor value={props.params.initialContent} ref={props.params.ref} />
-            <Toolbar className="absolute z-10 top-[1px] right-10 p-0! bg-transparent dark:bg-transparent">
+            <Toolbar className="absolute z-10 top-0 right-10 p-0! bg-transparent dark:bg-transparent">
                 <IconButton
-                    icon={<PlayIcon className="size-5 text-black/80 dark:text-white/80" />}
+                    icon={<PlayIcon className="size-6 text-black/80 dark:text-white/80" />}
                     aria-label="SQL ausführen"
                     title="SQL ausführen"
                     variant="primary"
