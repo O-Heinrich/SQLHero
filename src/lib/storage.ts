@@ -9,8 +9,11 @@
  * @module lib/storage
  */
 
+import React from 'react';
+import { monacoEditor } from 'monaco-editor';
 import { toast } from 'sonner';
 import { AppState, Challenge } from "@/lib/types";
+import { DockviewApi } from 'dockview-react';
 
 const STORAGE_KEY = 'sql-hero-state';
 
@@ -51,3 +54,47 @@ export function saveState(state: AppState): void {
         toast.error(`Error saving state: ${errMsg}`);
     }
 }
+
+export function savePanels(api: DockviewApi): void {
+    try {
+        const json = api.toJSON();
+
+        if (json && json.panels && json.panels['editorPanel'] && json.panels['editorPanel'].params) {
+            json.panels['editorPanel'].params.ref.current = undefined;
+        }
+
+        if (json && json.panels && json.panels['lessonPanel'] && json.panels['lessonPanel'].params) {
+            json.panels['lessonPanel'].params.lessonRef.current = undefined;
+        }
+        const serializedState = JSON.stringify(json);
+        console.log(json);
+        localStorage.setItem('dockview-layout', serializedState);
+    } catch (err) {
+        const errMsg = typeof err === 'string' ? err : (err as Error).message;
+        console.error(err);
+        toast.error(`Error saving panels: ${errMsg}`);
+    }
+}
+
+export function loadPanels(api: DockviewApi): boolean {
+    try {
+        const serializedState = localStorage.getItem('dockview-layout');
+        if (serializedState === null) {
+            return false;
+        }
+
+        const json = JSON.parse(serializedState);
+        
+        if (!json || !json.panels || !json.panels['editorPanel'] || !json.panels['lessonPanel'] || !json.panels['erdPanel']) {
+            return false;
+        }
+
+        json.panels['editorPanel'].params.ref = React.createRef<monacoEditor.IStandaloneCodeEditor | null>();
+        api.fromJSON(json);
+        return true;
+    } catch (err) {
+        const errMsg = typeof err === 'string' ? err : (err as Error).message;
+        toast.error(`Error loading panels: ${errMsg}`);
+        return false;
+    }
+}   

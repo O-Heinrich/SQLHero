@@ -576,4 +576,5 @@ export enum PanelTypes {
     EDITOR = 'editorPanel',
     ERD = 'erdPanel',
     RESULT = 'resultPanel',
+    GROUP = 'groupPanel',
 }
