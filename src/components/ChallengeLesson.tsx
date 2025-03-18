@@ -15,6 +15,11 @@
 import React from 'react';
 import dompurify from 'dompurify';
 
+// Import CSS styles for syntax highlighting themes. 
+// Loading order is important to ensure the correct theme is applied.
+import('@/assets/atom-one-light.css');
+import('@/assets/atom-one-dark.css');
+
 /**
  * Challenge lesson display component with sanitized HTML
  * @component
