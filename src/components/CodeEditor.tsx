@@ -43,7 +43,6 @@ export interface CodeEditorProps {
  * />
  * ```
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditorProps): JSX.Element => {
     /** Current theme from the theme hook */
     const { theme: heroTheme } = useTheme();
@@ -142,6 +141,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
     }, [theme]);
 
     return (
-        <div ref={containerRef} className="w-full h-full mt-[30px]" />
+        <div id="editor" ref={containerRef} className="w-full h-full pt-[30px]" />
     );
 };
