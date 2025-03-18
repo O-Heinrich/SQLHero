@@ -28,6 +28,7 @@ import { PgExecEngineContext } from "@/context/PgExecEngineContext";
 import { ERD } from '@/components/ERD';
 
 import '../../node_modules/dockview/dist/styles/dockview.css';
+import { loadPanels, savePanels } from '@/lib/storage';
 
 /**
  * Background style for the challenge workspace
@@ -299,12 +300,15 @@ function View() {
 
         const disposables = [
             api.onDidAddPanel((event) => {
+                savePanels(api);
                 setPanels((_) => [..._, event.id]);
             }),
             api.onDidActivePanelChange((event) => {
+                savePanels(api);
                 setActivePanel(event?.id);
             }),
             api.onDidRemovePanel((event) => {
+                savePanels(api);
                 setPanels((_) => {
                     const next = [..._];
                     next.splice(
@@ -319,6 +323,7 @@ function View() {
                 setGroups((_) => [..._, event.id]);
             }),
             api.onDidRemoveGroup((event) => {
+                savePanels(api);
                 setGroups((_) => {
                     const next = [..._];
                     next.splice(
@@ -330,6 +335,7 @@ function View() {
                 });
             }),
             api.onDidActiveGroupChange((event) => {
+                savePanels(api);
                 setActiveGroup(event?.id);
             }),
         ];
@@ -340,9 +346,33 @@ function View() {
          * @function loadLayout
          */
         const loadLayout = () => {
-            const editor = api.addPanel({
-                id: `${PanelTypes.EDITOR}-${nextId()}`,
+            const lesson = api.addPanel({
+                id: `${PanelTypes.LESSON}`,
+                component: 'lessonPanel',
+                params: {
+                    title: 'Aufgabenstellung',
+                    description: challenge.description,
+                    difficulty: challenge.difficulty,
+                    lessonRef,
+                }
+            });
+
+            api.addPanel({
+                id: `${PanelTypes.ERD}`,
+                component: 'erdPanel',
+                params: {
+                    title: 'ER Diagram',
+                    src: challenge.schema.replace('.sql', '.svg'),
+                }
+            });
+            
+            api.addPanel({
+                id: `${PanelTypes.EDITOR}`,
                 component: 'editorPanel',
+                position: {
+                    referencePanel: lesson,
+                    direction: 'right',
+                },
                 params: {
                     title: 'SQL Editor',
                     query: valueRef.current,
@@ -351,36 +381,12 @@ function View() {
                 },
             });
 
-            api.addPanel({
-                id: `${PanelTypes.ERD}-${nextId()}`,
-                component: 'erdPanel',
-                params: {
-                    title: 'ER Diagram',
-                    src: challenge.schema.replace('.sql', '.svg'),
-                },
-                position: {
-                    referencePanel: editor,
-                    direction: 'left',
-                },
-            });
-
-            api.addPanel({
-                id: `${PanelTypes.LESSON}-${nextId()}`,
-                component: 'lessonPanel',
-                params: {
-                    title: 'Aufgabenstellung',
-                    description: challenge.description,
-                    difficulty: challenge.difficulty,
-                    lessonRef,
-                },
-                position: {
-                    referencePanel: editor,
-                    direction: 'below',
-                },
-            });
+            lesson.api.setActive();
         };
 
-        loadLayout();
+        if (!loadPanels(api)) {
+            loadLayout();
+        }
         isInitialized.current = true;
         return () => {
             disposables.forEach((disposable) => disposable?.dispose());
