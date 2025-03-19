@@ -86,10 +86,12 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
         // If the PostgreSQL client (`pg`) is not available, exit the function.
         if (!pg) return
 
+        let queryResult: SqlExecutionResult | null = null
+        let result: SqlExecutionResult | null = null
+
         try {
-            let queryResult: SqlExecutionResult | null = null
             const key = challengeNumber.toString() // Create a key for the current challenge.
-            const result = await pg.execute(props.params.ref.current.getValue() ?? ''); // Execute the SQL query.
+            result = await pg.execute(props.params.ref.current.getValue() ?? ''); // Execute the SQL query.
 
             if (!result.success) {
                 throw new Error(
@@ -126,10 +128,6 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
                 }
             }
 
-            if (props.params.onExecuted && result.data?.length > 0) {
-                props.params.onExecuted(result.data[result.data?.length - 1]);
-            }
-
             if (isCorrect) {
                 toast.success('Erfolg', {
                     description: 'Ergebnis korrekt. Gut gemacht!',
@@ -157,6 +155,10 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
             toast.error('Fehler beim Ausführen der Abfrage', {
                 description: errMsg,
             });
+        } finally {
+            if (props.params.onExecuted && result && result.data?.length > 0) {
+                props.params.onExecuted(result.data[result.data?.length - 1]);
+            }
         }
     }, [
         challengeIndex, 
