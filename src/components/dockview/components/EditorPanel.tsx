@@ -6,6 +6,7 @@
  * to users working through SQL challenges.
  */
 
+import React from "react";
 import { CodeEditor } from "@/components/CodeEditor";
 import { IDockviewPanelProps } from "dockview";
 import { Toolbar } from "../Controls";
@@ -34,7 +35,7 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
  * @see {@link QueryResult}
  * @see {@link EditorPanel}
  * @see {@link PgExecEngineContext}
- */ 
+ */
 export type EditorPanelProps = IDockviewPanelProps<{
     initialContent: string;
     onExecuted?: (result: QueryResult) => void;
@@ -81,7 +82,7 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
      * @example
      * await handleRun();
      */
-    const handleRun = async (): Promise<void> => {
+    const handleRun = React.useCallback(async (): Promise<void> => {
         // If the PostgreSQL client (`pg`) is not available, exit the function.
         if (!pg) return
 
@@ -153,7 +154,38 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
                 description: errMsg,
             });
         }
-    }
+    }, [
+        challengeIndex, 
+        challengeNumber, 
+        dispatch, 
+        pg, 
+        props.params, 
+        state.currentChallenge?.query,
+    ]);
+
+    /**
+     * Adds a keyup event listener to the window to handle the Ctrl+Enter key combination
+     * for executing the SQL query.
+     * 
+     * @function
+     * @returns {void}
+     */ 
+    React.useEffect(() => {
+        /**
+         * Handles the keyup event for the editor panel
+         * @param {KeyboardEvent} event - The keyboard event
+         * @returns {void}
+         */
+        const handleKeyUp = (event: KeyboardEvent) => {
+            if (event.ctrlKey && event.key === 'Enter') {
+                handleRun();
+            }
+        };
+
+        window.addEventListener('keyup', handleKeyUp);
+
+        return () => window.removeEventListener('keyup', handleKeyUp);
+    }, [handleRun]);
 
     /**
      * Renders the editor panel with code editor and toolbar controls
