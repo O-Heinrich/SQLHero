@@ -203,28 +203,29 @@ function View() {
             ref: React.RefObject<monacoEditor.IStandaloneCodeEditor>;
             erdSrc: string;
         }>) => <EditorPanel
-            params={{
-                erdSrc: props.params.erdSrc,
-                initialContent: props.params.query,
-                ref: props.params.ref,
-                onExecuted: (result: QueryResult) => {
-                    api?.addPanel({
-                        id: `${PanelTypes.RESULT}-${nextId()}`,
-                        component: 'resultPanel',
-                        params: {
-                            title: 'Ergebnis',
-                            result: result,
-                        },
-                        position: {
-                            direction: 'within',
-                            referencePanel: api.getPanel(PanelTypes.ERD)?.id,
-                        },
-                    });
-                },
-            }}
-            api={props.api}
-            containerApi={props.containerApi}
-        />,
+                params={{
+                    erdSrc: props.params.erdSrc,
+                    initialContent: props.params.query,
+                    ref: props.params.ref,
+                    onExecuted: (result: QueryResult) => {
+                        api?.addPanel({
+                            id: `${PanelTypes.RESULT}-${nextId()}`,
+                            component: 'resultPanel',
+                            params: {
+                                title: 'Ergebnis',
+                                result: result,
+                            },
+                            position: {
+                                direction: 'within',
+                                referencePanel: api.panels.findLast((panel) => panel.id.startsWith(PanelTypes.RESULT))
+                                    ?? api.panels.findLast((panel) => panel.id == PanelTypes.ERD),
+                            },
+                        });
+                    },
+                }}
+                api={props.api}
+                containerApi={props.containerApi}
+            />,
         /**
          * Panel component for displaying entity relationship diagrams
          * 
@@ -387,7 +388,7 @@ function View() {
         }
 
         isInitialized.current = true;
-        
+
         return () => {
             disposables.forEach((disposable) => disposable?.dispose());
         };
