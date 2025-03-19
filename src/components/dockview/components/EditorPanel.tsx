@@ -116,10 +116,10 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
                 }
             }
 
-            const isCorrect = result.data!.reduce((success, result, i) => {
+            const isCorrect = Boolean(result.data?.length) && result.data!.every((result, i) => {
                 const key = `${challengeNumber.toString()}-${i}`;
-                return success && ResultSetComparison.compareWithSolution(key, result);
-            }, Boolean(result.data?.length))
+                return ResultSetComparison.compareWithSolution(key, result);
+            });
 
             if (props.params.onExecuted && result.data?.length > 0) {
                 props.params.onExecuted(result.data[result.data?.length - 1]);
