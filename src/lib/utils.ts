@@ -251,6 +251,34 @@ export class ResultSetComparison {
     }
 
     /**
+     * Generates hash values for a query result comparison.
+     * 
+     * This generator function creates hashes for both the column names and each row in the result set.
+     * It first yields a hash for the column headers, then iterates through each row to generate
+     * individual row hashes. Each yield returns a tuple containing the index and the hash value.
+     * 
+     * @param {ResultComparison} comparison - The comparison object containing columns and rows data
+     * @yields {[number, string]} - Tuples of [index, hash], where index 0 represents column headers
+     *                              and indices 1+ represent the individual rows
+     * @returns {Generator<[number, string]>} - A generator that yields index-hash pairs
+     * @private
+     */
+    private static *hash(comparison: ResultComparison): Generator<[number, string]> {
+        const len = comparison.rows.length + comparison.rows.length > 0
+            ? Math.min(1, comparison.rows.length)
+            : 0;
+
+        if (len === 0) {
+            return [0, undefined];
+        }
+
+        yield [0, comparison.columns.join(',')];
+        for (let i = 0; i < comparison.rows.length; i++) {
+            yield [i + 1, comparison.rows[i].join(',')];
+        }
+    }
+
+    /**
      * Stores the hash of a solution result set for a given exercise ID.
      * 
      * @param {string} exerciseId - The ID of the exercise.
@@ -264,54 +292,60 @@ export class ResultSetComparison {
     }
 
     /**
-     * Compares a result set with the stored solution for a given exercise ID.
+     * Compares a query result with the solution for a given exercise.
      * 
-     * Performs a comprehensive comparison by:
-     * - Retrieving the solution hash for the specified exercise
-     * - Serializing the input result set
-     * - Comparing column count and individual hash values
+     * This method verifies if the provided query result matches the expected solution
+     * by comparing hash values. It serializes the query result into a string array and
+     * computes hashes for each entry, then compares these against the pre-computed
+     * solution hashes stored for the exercise.
      * 
-     * @param {string} exerciseId - Unique identifier for the exercise
-     * @param {QueryResult} result - The result set to compare against the solution
-     * @returns {boolean} Indicates whether the result exactly matches the solution
-     * @throws {SolutionHashNotFoundError} When no solution hash exists for the given exercise ID
-     * 
-     * @remarks
-     * - Comparison is strict: column count and individual cell values must match
-     * - Uses string-based hash comparison for precise matching
+     * @param {string} exerciseId - The unique identifier of the exercise to check
+     * @param {QueryResult} result - The result of the user's query to compare against the solution
+     * @returns {Promise<void>} - Resolves if the result matches the solution, rejects with an error otherwise
+     * @throws {SolutionHashNotFountError} If no solution hash exists for the given exercise ID
+     * @throws {Error} If the result does not match the expected solution
      * 
      * @example
-     * // Returns true if result matches solution exactly
-     * const isCorrect = ResultSetComparison.compareWithSolution('exercise-001', result);
+     * ```ts
+     * const solution = {
+     *   fields: [
+     *     { name: 'id', dataTypeID: PostgresTypeID.INTEGER },
+     *     { name: 'name', dataTypeID: PostgresTypeID.TEXT },
+     *   ],
+     *   rows: [
+     *     { id: 1, name: 'Alice' },
+     *     { id: 2, name: 'Bob' },
+     *   ],
+     * };
      * 
-     * @example
-     * // Throws error if no solution hash exists
-     * try {
-     *   ResultSetComparison.compareWithSolution('unknown-exercise', result);
-     * } catch (error) {
-     *   console.error('No solution found for this exercise');
-     * }
+     * ResultSetComparison.storeSolutionHash('exercise-1', solution);
+     * 
+     * const result = {
+     *   fields: [
+     *     { name: 'id', dataTypeID: PostgresTypeID.INTEGER },
+     *     { name: 'name', dataTypeID: PostgresTypeID.TEXT },
+     *   ],
+     *   rows: [
+     *     { id: 1, name: 'Alice' },
+     *     { id: 2, name: 'Bob' },
+     *   ],
+     * };
+     * 
+     * await ResultSetComparison.compareWithSolution('exercise-1', result);
+     * ```
      */
-    static compareWithSolution(exerciseId: string, result: QueryResult): boolean {
+    static async compareWithSolution(exerciseId: string, result: QueryResult): Promise<void> {
         const solutionHash = this.solutionHashes.get(exerciseId);
         if (!solutionHash) {
             throw new SolutionHashNotFountError(exerciseId);
         }
 
         const serialized = queryResultToStringArray(result);
-        const hash = this.hashResultSet(serialized);
-
-        if (solutionHash.length !== hash.length) {
-            return false;
-        }
-
-        for (let i = 0; i < solutionHash.length; i++) {
-            if (solutionHash[i] !== hash[i]) {
-                return false;
+        for await (const [i, hash] of this.hash(serialized)) {
+            if (solutionHash[i] !== hash) {
+                throw new Error(`Result does not match solution for Record: ${exerciseId}`);
             }
         }
-
-        return true;
     }
 
     /**
