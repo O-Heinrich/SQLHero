@@ -4,7 +4,7 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} \.(jpg|jpeg|png|gif|svg)$ [NC]
 RewriteRule ^ - [L]
 
-RewriteCond %{REQUEST_FILENAME} \.(wasm|data|sql|json|css|js)$ [NC]
+RewriteCond %{REQUEST_FILENAME} \.(wasm|data|sql|json|css|js|pdf)$ [NC]
 RewriteRule ^ - [L]
 
 RewriteCond %{REQUEST_FILENAME} popout\.html [NC]
