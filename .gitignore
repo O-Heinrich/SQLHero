@@ -28,7 +28,6 @@ bun.lock
 
 sqldiagram/
 public/api
-public/databases/.*svg
 src/constants.ts
 docs/
 src/routeTree.gen.ts
