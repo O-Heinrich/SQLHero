@@ -101,6 +101,26 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
                 },
             });
 
+            // Register SQL language
+            monaco.languages.register({ id: 'sql' });
+
+            // Register SQL completion provider
+            monaco.languages.registerCompletionItemProvider('sql', {
+                triggerCharacters: [' ', '.', '(', ')', ',', '"'],
+                provideCompletionItems: function(model, position) {
+                    const word = model.getWordUntilPosition(position);
+                    const token = word.word.replace(/"/g, '').toUpperCase();
+                    return {
+                        suggestions: SqlToken.suggest(token).map((suggestion) => ({
+                            label: suggestion,
+                            kind: monaco.languages.CompletionItemKind.Keyword,
+                            insertText: suggestion,
+                            range: new monaco.Range(position.lineNumber, word.startColumn, position.lineNumber, word.endColumn),
+                        })),
+                    };
+                }
+            });
+            
             // Set up PostgreSQL SQL syntax highlighting
             monaco.languages.setMonarchTokensProvider("sql", {
                 defaultToken: "invalid",
@@ -129,7 +149,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
                 wrappingIndent: 'same',
                 wrappingStrategy: 'advanced',
                 renderWhitespace: 'all',
-                contextmenu: false,
+                contextmenu: true,
+
 
             });
         }

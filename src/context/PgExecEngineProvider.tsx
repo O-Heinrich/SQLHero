@@ -1,6 +1,35 @@
 import { ReactNode,  useState } from "react";
 import { PgExecEngineContext } from "./PgExecEngineContext";
 import { PostgresExecutionEngine } from "@/lib/exec-engine/postgres-engine";
+import { addEnvToken, clearEnvTokens } from "@/lib/token/sql";
+
+/*
+ * Extracts table and field names from a SQL schema string.
+ * 
+ * @param {string} sqlString - The SQL schema string to extract names from
+ * @returns {string[]} An array of unique table and field names
+ */
+function extractTableAndFieldNames(sqlString: string): string[] {
+    const extractedNames = new Set<string>();
+    const createTableRegex = /CREATE\s+TABLE\s+(\w+)\s*\(([\s\S]*?)\);/gi;
+    const fieldRegex = /"?(\w+)"?\s+\w+(?:\s*\(\d+\))?(?:\s*NOT\s+NULL|\s*NULL)?/gi;
+    
+    let tableMatch: RegExpExecArray | null;
+    while ((tableMatch = createTableRegex.exec(sqlString)) !== null) {
+        const tableName = tableMatch[1];
+        const fieldsDefinition = tableMatch[2];
+        
+        extractedNames.add(tableName);
+
+        let fieldMatch: RegExpExecArray | null;
+        const fieldRegexCopy = new RegExp(fieldRegex);
+        while ((fieldMatch = fieldRegexCopy.exec(fieldsDefinition)) !== null) {
+            extractedNames.add(fieldMatch[1]);
+        }
+    }
+    
+    return Array.from(extractedNames);
+}
 
 /**
  * A React provider component that initializes and provides a `PGlite` instance to the component tree.
@@ -27,6 +56,8 @@ export const PgExecEngineProvider: React.FC<{ children: ReactNode }> = ({ childr
             await pg.destroy();
         } 
 
+        clearEnvTokens();
+        addEnvToken(...extractTableAndFieldNames(schema));
         setPg(await PostgresExecutionEngine.create(schema));
     };
 
