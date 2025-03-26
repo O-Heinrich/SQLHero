@@ -83,11 +83,10 @@ npm run build
    - Filter: [WHERE-Klauseln]  
    - Sortierung: [ORDER BY-Logik]  
    
-   ### Ausgabestruktur  
-   | Spalte       | Typ        | Beispiel      |
-   |--------------|------------|--------------:|
-   | Name         | VARCHAR    | "Schmidt"     |  
-   | Umsatz       | DECIMAL    |    12,345.67  |  
+   ### Erwartete Ausgabe  
+   | Spalte 1     | Spalte 2     | 
+   |--------------|--------------|
+   | Feld 1       | Feld 2       |
    
    ### Wichtige Hinweise  
    1. Angezeigte Werte auf 2 Dezimalstellen gerundet  
