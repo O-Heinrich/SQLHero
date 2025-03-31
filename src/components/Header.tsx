@@ -53,6 +53,12 @@ const Spacer: React.FC<SpacerProps> = ({classList}: SpacerProps): React.ReactEle
     `mx-1 w-[1px] h-16 bg-transparent ${classList ?? ''}`
 } />;
 
+//FIXME: Quick and dirty hack. Should follow the React way
+function scrollLessonUp() {
+    const container = document.querySelector('.dv-content-container:has(article)');
+    container?.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 /**
  * Main application header component
  * 
@@ -174,6 +180,7 @@ export const Header: React.FC = (): React.ReactElement => {
                 number: (next <= 0 ? 1 : next).toString()
             }
         });
+        scrollLessonUp();
     }
 
     /**
@@ -194,6 +201,7 @@ export const Header: React.FC = (): React.ReactElement => {
                 number: (next <= 0 ? COUNT_CHALLENGES : next).toString()
             }
         });
+        scrollLessonUp();
     }
 
     return (
