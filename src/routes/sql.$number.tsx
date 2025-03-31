@@ -126,6 +126,7 @@ function View() {
     const [, setActiveGroup] = useState<string>();
     const challenge = Route.useLoaderData() as Challenge;
     const valueRef = useRef<string>('');
+    // ToDo: `lessonRef` can be removed
     const lessonRef = useRef<HTMLDivElement>(null);
     const [query, setQuery] = useState<string>('');
     const isInitialized = useRef<boolean>(false);
