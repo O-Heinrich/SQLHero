@@ -12,6 +12,36 @@ import { Button } from '@headlessui/react';
 import { toast } from 'sonner';
 
 /**
+ * Spacer component properties
+ * @interface SpacerProps
+ * @property {string} classList - List of CSS classes
+ */ 
+interface SpacerProps {
+    classList?: string;
+}
+
+/**
+ * Spacer component for header navigation
+ * 
+ * @component
+ * @param {SpacerProps} props - Component properties
+ * 
+ * @description
+ * Renders a vertical spacer with a border line.
+ * 
+ * @example
+ * ```tsx
+ * <Spacer classList="mx-2" />
+ * ```
+ * 
+ * @returns {React.ReactElement} Vertical spacer with border line
+ */
+const Spacer: React.FC<SpacerProps> = ({classList}: SpacerProps): React.ReactElement => <span className={
+    `mx-4 my-2 md:w-[1px] md:h-45 sm:w-full sm:h-[1px] bg-slate-300 dark:bg-slate-600 ${classList ?? ''}`
+} />;
+
+
+/**
  * The `Introduction` component provides an introductory guide to SQL and its various aspects.
  * It includes sections on:
  * - What is SQL?
@@ -197,14 +227,15 @@ const Introduction = (): JSX.Element => {
                 {/* Lernen mit SQL Hero Section */}
                 <section className="space-y-3">
                     <h2 className="text-2xl font-semibold">Lernen mit SQL Hero</h2>
-                    <div className="bg-blue-50/20 dark:bg-blue-800/20 p-6 rounded-xl space-y-4 shadow shadow-gray-400/25 dark:shadow-gray-800/30">
-                        <div>
+                    <div className="bg-blue-50/20 dark:bg-blue-800/20 p-6 rounded-xl space-y-4 shadow shadow-gray-400/25 dark:shadow-gray-800/30 items-center flex flex-col md:flex-row gap-4">
+                        <div className="m-0">
                             <h3 className="font-semibold">Praktische Übungen</h3>
                             <p className="dark:text-gray-300">
                                 Jede Lektion enthält praktische Aufgaben, die Sie direkt im Browser lösen können.
                             </p>
                         </div>
-                        <div>
+                        <Spacer />
+                        <div className="m-0">
                             <h3 className="font-semibold">Sofortiges Feedback</h3>
                             <p className="dark:text-gray-300">
                                 Ihre Lösungen werden automatisch überprüft und Sie erhalten sofort Feedback.
@@ -213,11 +244,66 @@ const Introduction = (): JSX.Element => {
                     </div>
                 </section>
 
+                {/* Syntax Section */}
+                <section className="bg-gray-100/30 dark:bg-blue-400/10 p-6 rounded-xl mt-8 shadow shadow-gray-400/25 dark:shadow-gray-800/30 hyphens-auto">
+                    <h3 className="text-2xl font-semibold">Hinweis zur SQL-Syntax in SQL Hero</h3>
+                    <p>SQL Hero verwendet eine WASM-kompilierte PostgreSQL-Version zur Auswertung Ihrer Queries.</p>
+                    <p className="font-light">Leider konnten wir unser Ziel, einen SQL-Dialekt zu verwenden, der eng am Standard orientiert ist und mit verschiedenen SQL-Engines kompatibel bleibt, nicht vollständig erreichen. Zu den Einschränkungen zählen insbesondere die Postgres-spezifische Normalisierung von Feldnamen sowie eine vom Standard abweichende Definition von Stringliteralen.</p>
+                    <h4 className="italic">Beachten Sie folgende Syntaxbesonderheiten.</h4>
+                    <div className="space-y-3">
+                        <div className="bg-white/20 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm">
+                            <h4 className="font-semibold text-red-600 dark:text-red-400">Stringliterale</h4>
+                            <div>
+                                <p className="dark:text-gray-300">
+                                    Immer mit einfachen Anführungszeichen definieren: 
+                                </p>
+                                <pre>
+                                    <code data-highlighted="yes" className="language-sql hljs"><span className="hljs-string">'Ich bin ein String'</span></code>
+                                </pre>
+                            </div>
+                        </div>
+                        <div className="bg-white/20 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm">
+                            <h4 className="font-semibold text-red-600 dark:text-red-400">Feldnamen</h4>
+                            <div>
+                                <p className="dark:text-gray-300">
+                                    Ohne Anführungszeichen: Automatische Konvertierung zu Lowercase  
+                                </p>
+                                <pre>
+                                    <code data-highlighted="yes" className="language-sql hljs">Country → wird zu "country"</code>
+                                </pre>
+                                <p className="dark:text-gray-300">
+                                    Mit doppelten Anführungszeichen: Beibehaltung der exakten Schreibweise 
+                                </p>
+                                <pre>
+                                    <code data-highlighted="yes" className="language-sql hljs">"Country" → bleibt "Country"</code>
+                                </pre>
+                            </div>
+                        </div>
+                        <div className="bg-white/20 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm">
+                            <h4 className="font-semibold text-red-600 dark:text-red-400">Beispiele</h4>
+                            <div>
+                                <p className="dark:text-gray-300">
+                                    ❌ Falsch (ungewollte Lowercase-Konvertierung):
+                                </p>
+                                <pre>
+                                    <code data-highlighted="yes" className="language-sql hljs"><span className="hljs-keyword">SELECT</span> Country <span className="hljs-keyword">FROM</span> customers;  <span className="hljs-comment">-- Wird zu: SELECT country FROM customers;</span></code>
+                                </pre>
+                                <p className="dark:text-gray-300">
+                                    ✅ Korrekt (explizite Großschreibung):
+                                </p>
+                                <pre>
+                                    <code data-highlighted="yes" className="language-sql hljs"><span className="hljs-keyword">SELECT</span> "Country" <span className="hljs-keyword">FROM</span> customers;  <span className="hljs-comment">-- Bleibt: SELECT "Country" FROM customers;</span></code>
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 {/* Fehlerbehandlung Section */}
                 <section className="bg-gray-100/30 dark:bg-blue-400/10 p-6 rounded-xl mt-8 shadow shadow-gray-400/25 dark:shadow-gray-800/30">
                     <h3 className="text-2xl font-semibold">Fehlerbehandlung und Tipps</h3>
-                    <div className="space-y-3">
-                        <div className="bg-white/20 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm">
+                    <div className="items-center flex flex-col md:flex-row gap-4">
+                        <div className="bg-white/20 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm flex-1">	
                             <h4 className="font-semibold text-red-600 dark:text-red-400">Fachliche Fehler</h4>
                             <div className='flex items-center justify-between'>
                                 <p className="dark:text-gray-300">
@@ -226,7 +312,7 @@ const Introduction = (): JSX.Element => {
                                 <Button id="logic" onClick={handleExampleClick} style={{fontSize: '1.2rem', padding: '0.75rem'}}>Beispiel</Button>
                             </div>
                         </div>
-                        <div className="bg-white/20 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm">
+                        <div className="bg-white/20 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm flex-1">
                             <h4 className="font-semibold text-red-600 dark:text-red-400">Technische Fehler</h4>
                             <div className='flex items-center justify-between'>
                                 <p className="dark:text-gray-300">
