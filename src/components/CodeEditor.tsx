@@ -7,9 +7,11 @@
 
 import { useResizeObserver } from '@/hooks/useResizeObserver';
 import { useTheme } from '@/hooks/useTheme';
-import { useEffect, useCallback, useRef, JSX, useMemo } from 'react';
+import { useEffect, useCallback, useRef, JSX, useMemo, useState } from 'react';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { SqlToken } from '@/lib/token';
+import { historyUpdate } from '@/lib/storage';
+import { useChallengeNumber } from '@/hooks/useChallengeNumber';
 
 /**
  * Props for the CodeEditor component
@@ -52,6 +54,15 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
     const resizeOberve = useResizeObserver();
     /** Memorized theme name */
     const theme = useMemo(() => heroTheme, [heroTheme]);
+    /** Store last value */
+    const [lastValue, setLastValue] = useState<string|null>();
+    /** Current challenge number */
+    const challengeNumber = useChallengeNumber();
+    /** Current challenge index */
+    const challengeIndex = challengeNumber - 1;
+
+    /** Global state */
+    // const { state, dispatch } = useAppState();
 
     /**
      * Handles resize events for the editor container
@@ -153,8 +164,34 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
 
 
             });
+
+            ref!.current.onKeyDown((event) => {
+                if (event.ctrlKey && event.key === 'Enter') {
+                    console.log('ctrl+enter');
+                    event.stopPropagation();
+                    event.preventDefault();
+                }
+            });
+
+            ref!.current.onKeyUp((event) => {
+                const newValue = ref!.current?.getValue();
+                if (newValue !== value) {
+                    setLastValue(() => {
+                        historyUpdate(challengeIndex, newValue);
+                        return newValue;
+                    });
+                }
+            });
         }
-    }, [value, ref]);
+    }, [value, ref, containerRef, challengeIndex]);
+
+    useEffect(() => {
+        // console.log(value, lastValue);
+        // if (ref?.current && value !== lastValue) {
+        //     setLastValue(() => value);
+        //     ref.current.setValue(value);
+        // }
+    }, [value, ref, lastValue]);
 
 
     useEffect(() => {

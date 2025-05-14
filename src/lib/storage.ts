@@ -17,6 +17,37 @@ import React from 'react';
 
 const STORAGE_KEY = 'sql-hero-state';
 const LAYOUT_KEY = 'dockview-layout_' + STORAGE_KEY;
+const HISTORY_KEY = 'editor-history_' + STORAGE_KEY;
+
+
+
+/**
+ * Represents an error that occurs when an index is out of the valid bounds.
+ * This error is typically thrown when attempting to access an element at an
+ * invalid index in a collection or array.
+ *
+ * @extends {Error}
+ */
+class OutOfBoundsError extends Error {
+    constructor(index: nummber) {
+        super(`Index ${index} is out of bounds`);
+        this.name = 'OutOfBoundsError';
+    }
+}
+
+/**
+ * Represents an error that occurs when an item is not found at a specified index.
+ * This error is typically thrown when attempting to access an element at an
+ * index that does not exist in a collection or array.
+ *
+ * @extends {Error}
+ */
+class NotFoundError extends Error {
+    constructor(index: number) {
+        super(`Item on index ${index} not found`);
+        this.name = 'NotFoundError';
+    }
+}
 
 /**
 * Loads the application state from local storage.
@@ -69,6 +100,69 @@ export function saveState(state: AppState): void {
     } catch (err) {
         const errMsg = typeof err === 'string' ? err : (err as Error).message;
         toast.error(`Error saving state: ${errMsg}`);
+    }
+}
+
+/**
+ * Updates the query history in local storage at the specified index.
+ * If the index is out of bounds, a custom error is thrown.
+ * If the index is greater than or equal to the current history length,
+ * the query is appended to the history. Otherwise, the query at the
+ * specified index is updated.
+ *
+ * @param index - The index in the history array to update.
+ * @param query - The SQL query string to store in the history.
+ * 
+ * @remarks
+ * This function uses `localStorage` to persist the history and displays
+ * an error toast if an exception occurs during the update process.
+ */
+export function historyUpdate(index: number, query: string): void {
+    try {
+        if (index < 0) {
+            throw new OutOfBoundsError(index);
+        }
+
+        const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]') as string[];
+        if (index >= history.length) {
+            history.push(query);
+        } else {
+            history[index] = query;
+        }
+
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    } catch (err) {
+        const errMsg = typeof err === 'string' ? err : (err as Error).message;
+        toast.error(`Error saving history: ${errMsg}`);
+    }
+}
+
+/**
+ * Retrieves a specific history entry from local storage by its index.
+ * 
+ * The function attempts to parse the history stored in local storage under the key `HISTORY_KEY`.
+ * If the index is invalid or an error occurs during retrieval, an error message is displayed
+ * using a toast notification, and `undefined` is returned.
+ *
+ * @param index - The zero-based index of the history entry to retrieve.
+ * @returns The history entry as a string if found, or `undefined` if an error occurs.
+ */
+export function getHistory(index: number): string | undefined {
+    try {
+        if (index < 0) {
+            throw new OutOfBoundsError(index);
+        }
+
+        const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]') as string[];
+        if (index >= history.length) {
+            throw new NotFoundError(index);
+        }
+
+        return history[index];
+    } catch (err) {
+        const errMsg = typeof err === 'string' ? err : (err as Error).message;
+        toast.error(`Error loading history: ${errMsg}`);
+        return undefined;
     }
 }
 
