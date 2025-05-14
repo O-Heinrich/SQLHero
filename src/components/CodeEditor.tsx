@@ -165,15 +165,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
 
             });
 
-            ref!.current.onKeyDown((event) => {
-                if (event.ctrlKey && event.key === 'Enter') {
-                    console.log('ctrl+enter');
-                    event.stopPropagation();
-                    event.preventDefault();
-                }
-            });
-
-            ref!.current.onKeyUp((event) => {
+            ref!.current.onKeyUp(() => {
                 const newValue = ref!.current?.getValue();
                 if (newValue !== value) {
                     setLastValue(() => {
