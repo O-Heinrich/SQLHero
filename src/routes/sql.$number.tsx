@@ -157,10 +157,10 @@ function View() {
      */
     useEffect(() => {
         dispatch({ type: 'INIT_CHALLENGE', payload: { index: challengeIndex } });
-        const notCompleted = !state.challenges[challengeIndex].completed;
+        const notCompleted = isNaN(challengeIndex) ? true : !state.challenges[challengeIndex].completed;
         toggleHeaderSuccess(notCompleted, state.headerElement);
         api?.getPanel('lessonPanel')?.api.setActive();
-    }, [challengeIndex, dispatch, state.challenges, state.headerElement]);
+    }, [challengeIndex, dispatch, state.challenges, state.headerElement, api]);
 
 
     /**
