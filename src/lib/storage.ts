@@ -29,7 +29,7 @@ const HISTORY_KEY = 'editor-history_' + STORAGE_KEY;
  * @extends {Error}
  */
 class OutOfBoundsError extends Error {
-    constructor(index: nummber) {
+    constructor(index: number) {
         super(`Index ${index} is out of bounds`);
         this.name = 'OutOfBoundsError';
     }
