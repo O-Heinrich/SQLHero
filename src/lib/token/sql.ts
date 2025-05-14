@@ -196,11 +196,15 @@ export const suggest = (lastToken: string) => {
 
         return suggestion.includes(lastToken);
     }); 
-    console.log('Suggestions:', suggestions);
-    return suggestions;
+
+    return suggestions
 };
 
 export const addEnvToken = (...token: string[]) => {
+    if (ENV_TOKENS.includes(token[0])) {
+        return;
+    }
+
     ENV_TOKENS.push(...token);
 }
 
