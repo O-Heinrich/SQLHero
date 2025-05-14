@@ -57,23 +57,6 @@ export const appReducer = (state: AppState, action: ChallengeAction): AppState =
             break;
         }
 
-        case 'UPDATE_CHALLENGE': {
-            const challenge = state.challenges[action.payload.index];
-            if (challenge) {
-                newState = {
-                    ...state,
-                    challenges: [
-                        ...state.challenges.slice(0, action.payload.index),
-                        { ...challenge, currentValue: action.payload.values } as Challenge,
-                        ...state.challenges.slice(action.payload.index + 1),
-                    ],
-                };
-            } else {
-                newState = state;
-            }
-            break;
-        }
-
         case 'CHALLENGE_FAILED': {
             toggleHeaderSuccess(true, state.headerElement);
             const challenge = state.challenges[action.payload.index];
