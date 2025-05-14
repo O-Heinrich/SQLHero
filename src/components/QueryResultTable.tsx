@@ -20,7 +20,7 @@ import { QueryResult } from '@/lib/exec-engine/postgres-engine';
 import { queryResultToStringArray } from '@/lib/utils';
 // FIXME: This import is intentionally used as workaround for weird issue in dev mode
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { JavaScriptExecutionResult } from "@/lib/exec-engine/javascript-engine.ts";
+// import { JavaScriptExecutionResult } from "@/lib/exec-engine/javascript-engine.ts";
 
 /**
  * Props interface for QueryResultTable component
