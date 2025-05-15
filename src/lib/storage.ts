@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { AppState, Challenge } from "@/lib/types";
 import { DockviewApi } from 'dockview-react';
 import React from 'react';
+import { CHALLENGES } from 'virtual:sql-hero';
 
 const STORAGE_KEY = 'sql-hero-state';
 const LAYOUT_KEY = 'dockview-layout_' + STORAGE_KEY;
@@ -121,14 +122,11 @@ export function historyUpdate(index: number, query: string): void {
     try {
         if (index < 0) {
             throw new OutOfBoundsError(index);
+        } else if (index >= CHALLENGES.length) {
+            throw new NotFoundError(index);
         }
-
-        const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]') as string[];
-        if (index >= history.length) {
-            history.push(query);
-        } else {
-            history[index] = query;
-        }
+        const history = JSON.parse(localStorage.getItem(HISTORY_KEY)) as string[] ?? new Array<string>(CHALLENGES.length);
+        history[index] = query;
 
         localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
     } catch (err) {
