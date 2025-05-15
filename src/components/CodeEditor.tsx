@@ -11,7 +11,6 @@ import { useEffect, useCallback, useRef, JSX, useMemo, useState } from 'react';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { SqlToken } from '@/lib/token';
 import { historyUpdate } from '@/lib/storage';
-import { useChallengeNumber } from '@/hooks/useChallengeNumber';
 
 /**
  * Props for the CodeEditor component
@@ -56,13 +55,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
     const theme = useMemo(() => heroTheme, [heroTheme]);
     /** Store last value */
     const [lastValue, setLastValue] = useState<string|null>();
-    /** Current challenge number */
-    const challengeNumber = useChallengeNumber();
-    /** Current challenge index */
-    const challengeIndex = challengeNumber - 1;
-
-    /** Global state */
-    // const { state, dispatch } = useAppState();
 
     /**
      * Handles resize events for the editor container
@@ -165,17 +157,22 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
 
             });
 
+            const challengeIndex = () => {
+                const path = window.location.pathname.split('/').pop();
+                return parseInt(path ?? '1', 10) - 1;
+            }
+
             ref!.current.onKeyUp(() => {
                 const newValue = ref!.current?.getValue();
                 if (newValue !== value) {
                     setLastValue(() => {
-                        historyUpdate(challengeIndex, newValue);
+                        historyUpdate(challengeIndex(), newValue);
                         return newValue;
                     });
                 }
             });
         }
-    }, [value, ref, containerRef, challengeIndex]);
+    }, [value, ref, containerRef]);
 
     useEffect(() => {
         // console.log(value, lastValue);
