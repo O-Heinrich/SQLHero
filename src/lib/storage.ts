@@ -125,7 +125,8 @@ export function historyUpdate(index: number, query: string): void {
         } else if (index >= CHALLENGES.length) {
             throw new NotFoundError(index);
         }
-        const history = JSON.parse(localStorage.getItem(HISTORY_KEY)) as string[] ?? new Array<string>(CHALLENGES.length);
+        const serializedHistory = localStorage.getItem(HISTORY_KEY);
+        const history =  serializedHistory ? JSON.parse(serializedHistory) : new Array<string>(CHALLENGES.length);
         history[index] = query;
 
         localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
