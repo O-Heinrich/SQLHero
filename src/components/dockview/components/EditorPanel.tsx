@@ -170,30 +170,6 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
     ]);
 
     /**
-     * Adds a keyup event listener to the window to handle the Ctrl+Enter key combination
-     * for executing the SQL query.
-     * 
-     * @function
-     * @returns {void}
-     */ 
-    React.useEffect(() => {
-        /**
-         * Handles the keyup event for the editor panel
-         * @param {KeyboardEvent} event - The keyboard event
-         * @returns {void}
-         */
-        const handleKeyUp = (event: KeyboardEvent) => {
-            if (event.ctrlKey && event.key === 'Enter') {
-                handleRun();
-            }
-        };
-
-        window.addEventListener('keyup', handleKeyUp);
-
-        return () => window.removeEventListener('keyup', handleKeyUp);
-    }, [handleRun]);
-
-    /**
      * Renders the editor panel with code editor and toolbar controls
      * @returns {JSX.Element} The rendered component
      */
@@ -204,8 +180,9 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
                 <IconButton
                     icon={<PlayIcon className="size-6 text-black/80 dark:text-white/80" />}
                     aria-label="SQL ausführen"
-                    title="SQL ausführen"
+                    title="Ausführen (Alt + X)"
                     variant="primary"
+                    accessKey="x"
                     onClick={handleRun}
                 />
             </Toolbar>

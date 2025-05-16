@@ -26,6 +26,20 @@ export interface CodeEditorProps {
 }
 
 /**
+ * Calculates the zero-based index of the current challenge based on the URL path.
+ *
+ * Extracts the last segment of the current window location's pathname,
+ * parses it as an integer, and returns the value minus one.
+ * If the path segment is not present or cannot be parsed, defaults to 0.
+ *
+ * @returns {number} The zero-based index of the challenge.
+ */
+function challengeIndex(): number {
+    const path = window.location.pathname.split('/').pop();
+    return parseInt(path ?? '1', 10) - 1;
+}
+
+/**
  * CodeEditor component that wraps Monaco Editor using an uncontrolled approach
  * to prevent cursor reset issues and provide better performance.
  * Includes PostgreSQL dialect syntax highlighting.
@@ -157,30 +171,12 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
 
             });
 
-            const challengeIndex = () => {
-                const path = window.location.pathname.split('/').pop();
-                return parseInt(path ?? '1', 10) - 1;
-            }
-
             ref!.current.onKeyUp(() => {
-                const newValue = ref!.current?.getValue();
-                if (newValue !== value) {
-                    setLastValue(() => {
-                        historyUpdate(challengeIndex(), newValue);
-                        return newValue;
-                    });
-                }
+                const value = ref!.current?.getValue();
+                historyUpdate(challengeIndex(), value);
             });
         }
     }, [value, ref, containerRef]);
-
-    useEffect(() => {
-        // console.log(value, lastValue);
-        // if (ref?.current && value !== lastValue) {
-        //     setLastValue(() => value);
-        //     ref.current.setValue(value);
-        // }
-    }, [value, ref, lastValue]);
 
 
     useEffect(() => {
