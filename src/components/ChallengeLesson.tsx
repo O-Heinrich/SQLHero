@@ -55,7 +55,7 @@ export const ChallengeLesson: React.FC<{
                 <span class="float-right inline-block rounded-full px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                     ${dompurify.sanitize(difficulty)}
                 </span>\n
-                ${dompurify.sanitize(lesson)}
+                ${dompurify.sanitize(lesson, { ADD_ATTR: ['target'] })}
                 `
             }}
         />

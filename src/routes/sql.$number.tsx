@@ -40,19 +40,50 @@ const BG_STYLE =
 
 
 /**
- * Fetches challenge data from the API
- * @async
- * @function
- * @param {string} name - Challenge identifier
- * @returns {Promise<Object>} Challenge data object
- * @throws {Error} If challenge not found or fetch fails
+ * Fetches challenge data from the server and processes embedded HTML content.
+ * 
+ * This function performs several important operations:
+ * 1. Retrieves a challenge JSON object from the server based on the provided name
+ * 2. Validates the response and handles potential errors
+ * 3. Processes any HTML description content to ensure safe external links
+ * 
+ * @param {string} name - The unique identifier/name of the challenge to fetch
+ * @returns {Promise<object>} A promise that resolves to the processed challenge object
+ * @throws {Error} If the challenge is not found (non-200 response) or cannot be parsed
+ * 
+ * @example
+ * try {
+ *   const challengeData = await fetchChallenge('intro-puzzle');
+ *   console.log('Challenge loaded:', challengeData.title);
+ * } catch (error) {
+ *   console.error('Failed to load challenge:', error.message);
+ * }
  */
 const fetchChallenge = async (name: string): Promise<object> => {
     const response = await fetch(`/api/challenges/${name}.json`)
     if (!response.ok) {
         throw new Error(`Challenge "${name}" not found (${response.status})`)
     }
-    return response.json()
+    
+    const json = await response.json();
+    if (!json) {
+        throw new Error(`Could not parse challenge "${name}"`)
+    }
+
+    if (json.description) {
+        const content = document.createElement('div');
+        content.innerHTML = json.description;
+        content.querySelectorAll('a').forEach((link: HTMLAnchorElement) => {
+            const href = link.getAttribute('href');
+            if (href && !href.includes(window.location.hostname)) {
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+            }
+        });
+
+        json.description = content.innerHTML;
+    }
+    return json;
 }
 
 /**
@@ -429,27 +460,36 @@ function View() {
     ])
 
     /**
-     * Updates the SQL editor content based on the current challenge attempt.
-     *
-     * This effect:
-     * - Retrieves the latest SQL query attempt for the current challenge.
-     * - Sets the SQL editor content to the latest query attempt.
-     * - When no attempts are available, the editor is cleared.
-     *
-     * @effect
-     * @dependencies challengeIndex, state.challenges
+     * Synchronizes the editor value with challenge history when relevant dependencies change.
+     * 
+     * This effect performs several critical operations in a specific sequence:
+     * 1. Updates the query state using a functional state update
+     * 2. Retrieves the saved history for the current challenge index
+     * 3. Updates the mutable valueRef to maintain the current value
+     * 4. Sets the editor's value directly through its ref interface
+     * 5. Returns the current value to update the query state
+     * 
+     * This synchronization is triggered whenever the challenge changes, the challenges array updates,
+     * the query value changes, or when the API panels configuration is modified.
+     * 
+     * @dependencies {Array} [challengeIndex, state.challenges, query, api?.panels]
+     *   - challengeIndex: The index of the currently selected challenge
+     *   - state.challenges: The array of available challenges
+     *   - query: The current query/code in the editor
+     *   - api?.panels: The panel configuration from the API
+     * 
+     * @sideEffects
+     *   - Updates the query state
+     *   - Modifies the valueRef.current value
+     *   - Sets the editor's value through editorRef
      */
     useEffect(() => {
-        const attempts = state.challenges[challengeIndex]?.attempts.filter(
-            (attempt) => Boolean(attempt.query),
-        );
-
         setQuery(() => {
             valueRef.current = getHistory(challengeIndex) ?? '';
             editorRef.current?.setValue(valueRef.current);
             return valueRef.current;
         });
-    }, [challengeIndex, state.challenges, query, api?.panels])
+    }, [challengeIndex, state.challenges, query, api?.panels]);
 
     /**
      * Handles the ready event for the Dockview component.
