@@ -11,6 +11,7 @@ import { useEffect, useCallback, useRef, JSX, useMemo, useState } from 'react';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { SqlToken } from '@/lib/token';
 import { historyUpdate } from '@/lib/storage';
+import { debounce } from '@/lib/utils';
 
 /**
  * Props for the CodeEditor component
@@ -21,9 +22,11 @@ import { historyUpdate } from '@/lib/storage';
 export interface CodeEditorProps {
     /** The current value to display in the editor */
     value: string;
-
+    /** Monaco Editor reference */
     ref?: React.RefObject<monaco.editor.IStandaloneCodeEditor>;
 }
+
+const DEBOUNCE_DELAY = 1500;
 
 /**
  * Calculates the zero-based index of the current challenge based on the URL path.
@@ -171,10 +174,12 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
 
             });
 
-            ref!.current.onKeyUp(() => {
+            const handleKeyUp = debounce((event: monaco.IKeyboardEvent) => {
                 const value = ref!.current?.getValue();
                 historyUpdate(challengeIndex(), value);
-            });
+            }, DEBOUNCE_DELAY);
+
+            ref!.current.onKeyUp(handleKeyUp);
         }
     }, [value, ref, containerRef]);
 

@@ -26,6 +26,7 @@ import { RightControls } from '@/components/dockview/Controls';
 import { EditorPanel } from '@/components/dockview/components';
 import { PgExecEngineContext } from "@/context/PgExecEngineContext";
 import { loadPanels, savePanels } from '@/lib/storage';
+import { getHistory } from '@/lib/storage';
 import { ERD } from '@/components/ERD';
 
 import '../../node_modules/dockview/dist/styles/dockview.css';
@@ -444,8 +445,7 @@ function View() {
         );
 
         setQuery(() => {
-            const len = attempts?.length ?? 0;
-            valueRef.current = len > 0 ? attempts[len - 1]?.query ?? '' : ''
+            valueRef.current = getHistory(challengeIndex) ?? '';
             editorRef.current?.setValue(valueRef.current);
             return valueRef.current;
         });

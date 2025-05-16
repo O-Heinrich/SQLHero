@@ -498,3 +498,53 @@ export function getStmtType(stmt: string): StatementType|null {
     
     return null;
 }
+
+/**
+ * Creates a debounced version of a function that delays its execution until after
+ * a specified time has elapsed since the last time it was invoked.
+ * 
+ * This is particularly useful for functions that are expensive to run or for limiting
+ * the rate at which a function is executed in response to rapidly firing events,
+ * such as window resizing, scrolling, or input events.
+ * 
+ * @template T - The type of the function being debounced
+ * @param {T} callback - The function to debounce
+ * @param {number} delay - The number of milliseconds to delay execution after the last invocation
+ * @returns {(...args: Parameters<T>) => void} A debounced version of the original function
+ * 
+ * @example
+ * // Create a debounced version of a function that logs a search term
+ * const debouncedSearch = debounce((searchTerm: string) => {
+ *   console.log(`Searching for: ${searchTerm}`);
+ *   // API call would go here
+ * }, 300);
+ * 
+ * // This will only execute once, 300ms after the last call
+ * debouncedSearch("a");
+ * debouncedSearch("ap");
+ * debouncedSearch("app");
+ * debouncedSearch("appl");
+ * debouncedSearch("apple"); // Only this one will trigger the callback
+ */
+export function debounce<T extends (...args: Parameters<T>) => void>(
+    callback: T,
+    delay: number,
+): (...args: Parameters<T>) => void {
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    return function(this: unknown, ...args: Parameters<T>): void {
+        if (timeoutId !== null) {
+            clearTimeout(timeoutId);
+        }
+        /**
+         * The debounced function that wraps the original callback.
+         * Each call resets the timeout, ensuring the callback only executes
+         * after the specified delay has passed without any new invocations.
+         * 
+         * @param {...Parameters<T>} args - The arguments to pass to the original callback
+         * @this {unknown} - Preserves the `this` context from the calling environment
+         */
+        timeoutId = setTimeout(() => {
+            callback.apply(this, args);
+        }, delay);
+    }
+}
