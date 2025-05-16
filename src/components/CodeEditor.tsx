@@ -7,7 +7,7 @@
 
 import { useResizeObserver } from '@/hooks/useResizeObserver';
 import { useTheme } from '@/hooks/useTheme';
-import { useEffect, useCallback, useRef, JSX, useMemo, useState } from 'react';
+import { useEffect, useCallback, useRef, JSX, useMemo } from 'react';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { SqlToken } from '@/lib/token';
 import { historyUpdate } from '@/lib/storage';
@@ -70,8 +70,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
     const resizeOberve = useResizeObserver();
     /** Memorized theme name */
     const theme = useMemo(() => heroTheme, [heroTheme]);
-    /** Store last value */
-    const [lastValue, setLastValue] = useState<string|null>();
 
     /**
      * Handles resize events for the editor container
@@ -174,7 +172,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
 
             });
 
-            const handleKeyUp = debounce((event: monaco.IKeyboardEvent) => {
+            const handleKeyUp = debounce(() => {
                 const value = ref!.current?.getValue();
                 historyUpdate(challengeIndex(), value);
             }, DEBOUNCE_DELAY);
