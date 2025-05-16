@@ -126,8 +126,6 @@ function View() {
     const [, setActiveGroup] = useState<string>();
     const challenge = Route.useLoaderData() as Challenge;
     const valueRef = useRef<string>('');
-    // ToDo: `lessonRef` can be removed
-    const lessonRef = useRef<HTMLDivElement>(null);
     const [query, setQuery] = useState<string>('');
     const isInitialized = useRef<boolean>(false);
     const { state, dispatch } = useAppState();
@@ -173,13 +171,12 @@ function View() {
          * Panel component for displaying challenge instructions and lesson content
          * 
          * @component
-         * @param {IDockviewPanelProps<{description: string, difficulty: string, lessonRef: React.RefObject<HTMLDivElement>}>} props - Panel props
+         * @param {IDockviewPanelProps<{description: string, difficulty: string}>} props - Panel props
          * @returns {JSX.Element} Rendered lesson panel
          */
         lessonPanel: function LessonPanel(props: IDockviewPanelProps<{
             description: string;
             difficulty: 'easy' | 'medium' | 'hard' | 'unknown';
-            lessonRef: React.RefObject<HTMLDivElement>
         }>) {
             const [content, setContent] = useState<string>('');
             useEffect(() => {
@@ -189,7 +186,6 @@ function View() {
                 <ChallengeLesson
                     lesson={content}
                     difficulty={props.params.difficulty}
-                    ref={props.params.lessonRef}
                 />
             </div>;
         },
@@ -358,7 +354,6 @@ function View() {
                     title: 'Aufgabenstellung',
                     description: challenge.description,
                     difficulty: challenge.difficulty,
-                    lessonRef,
                 }
             });
 
