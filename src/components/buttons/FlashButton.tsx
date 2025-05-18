@@ -113,7 +113,7 @@ export const FlashButton: React.FC<FlashButtonProps> = (props: FlashButtonProps)
         className={clsx(
             'primary',
             'group/button',
-            'overflow-hidden',
+            'relative overflow-hidden',
             'flex justify-center items-center',
             'border border-transparent',
             'shadow-sm',
