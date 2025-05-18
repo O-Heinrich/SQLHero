@@ -485,7 +485,13 @@ function View() {
      */
     useEffect(() => {
         setQuery(() => {
-            valueRef.current = getHistory(challengeIndex) ?? '';
+            valueRef.current = getHistory(challengeIndex) ?? (() => {
+                const attempts = state.challenges[challengeIndex]?.attempts.filter(
+                    (attempt) => Boolean(attempt.query),
+                );
+                const len = attempts?.length ?? 0;
+                return len > 0 ? attempts[len - 1]?.query ?? '' : ''
+            })();
             editorRef.current?.setValue(valueRef.current);
             return valueRef.current;
         });
