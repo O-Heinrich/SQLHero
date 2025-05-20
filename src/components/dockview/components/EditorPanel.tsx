@@ -20,6 +20,7 @@ import { ResultSetComparison } from "@/lib/utils";
 import { toast } from "sonner";
 import { TableDiff } from "@/lib/types";
 import { PgExecEngineContext } from "@/context/PgExecEngineContext";
+import { K, xorDecode } from 'virtual:sql-hero';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
 /**
@@ -103,7 +104,7 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
                 !ResultSetComparison.hasSolution(key) &&
                 !ResultSetComparison.hasSolution(`${key}-0`)
             ) {
-                queryResult = await pg.execute(state.currentChallenge?.query ?? '');
+                queryResult = await pg.execute(xorDecode(state.currentChallenge?.query ?? '', K));
                 if (queryResult?.success) {
                     for (let i = 0; i < queryResult.data!.length; i++) {
                         ResultSetComparison.storeSolutionHash(

@@ -14,6 +14,7 @@ import { marked } from 'marked';
 import { JSDOM } from "jsdom";
 import hljs from "highlight.js";
 import { ShortChallenge } from '../src/lib/types';
+import { randomBytes } from 'crypto'; 
 
 /**
  * Interface for Vite plugin configuration
@@ -85,6 +86,85 @@ function highlightCode(markup: string) {
 }
 
 /**
+ * Encodes a string using XOR cipher with the given key. 
+ * 
+ * This function performs the following steps:
+ *  1. Converts the input string to a binary representation
+ *  2. Converts the key to a binary representation
+ *  3. XOR encodes the binary string using the key
+ *  4. Converts the resulting bytes to a base64 string
+ * 
+ * XOR encoding works by applying the bitwise XOR operation between each byte of
+ * the input string and the corresponding byte in the key (cycling the key as needed).
+ * 
+ * @param {string} str - The string to be encoded
+ * @param {string} key - The secret key used for XOR encoding
+ * @returns {string} The base64-encoded string
+ */
+function xorEncode(str: string, key: string): string {
+    const buffer = Buffer.from(str, 'utf-8');
+    const keyBuffer = Buffer.from(key, 'utf-8');
+    const result = Buffer.alloc(buffer.length);
+
+    // XOR encode the buffer using the key
+    for (let i = 0; i < buffer.length; i++) {
+        result[i] = buffer[i] ^ keyBuffer[i % keyBuffer.length];
+    }
+
+    return result.toString('base64');
+}
+
+/**
+ * Decodes a base64-encoded string using XOR cipher with the given key.
+ * 
+ * This function performs the following steps:
+ *  1. Decodes the base64 string to its binary representation
+ *  2. Converts the binary string to a byte array
+ *  3. Decodes the byte array using XOR with a cyclic key
+ *  4. Converts the resulting bytes back to a UTF-8 string
+ * 
+ * XOR decoding works by applying the bitwise XOR operation between each byte of 
+ * the encoded data and the corresponding byte in the key (cycling the key as needed).
+ * Since XOR is a symmetric operation, the same function can be used for both encoding 
+ * and decoding as long as the same key is used.
+ * 
+ * @param {string} base64Encoded - The base64-encoded string to be decoded
+ * @param {string} key - The secret key used for XOR decoding
+ * @returns {string} The decoded UTF-8 string
+ * 
+ * @example
+ * // Decode an encoded message
+ * const encodedData = "SGVsbG8sIFdvcmxkIQ=="; // Example base64-encoded data
+ * const secretKey = "mySecretKey123";
+ * const decodedMessage = xorDecode(encodedData, secretKey);
+ * console.log(decodedMessage); // Original message
+ * 
+ * @throws {Error} If the base64 string is malformed or the resulting data is not valid UTF-8
+ * @security This implements basic XOR encryption which is not cryptographically secure for sensitive data
+ */
+function xorDecode(base64Encoded: string, key: string): string {
+    const binaryString = atob(base64Encoded);
+    const encodedBytes = new Uint8Array(binaryString.length);
+
+    // Convert binary string to byte array
+    for (let i = 0; i < binaryString.length; i++) {
+        encodedBytes[i] = binaryString.charCodeAt(i);
+    }
+
+    const textEncoder = new TextEncoder();
+    const keyBytes = textEncoder.encode(key);
+    const resultBytes = new Uint8Array(encodedBytes.length);
+
+    // XOR decode the byte array using the key
+    for (let i = 0; i < encodedBytes.length; i++) {
+        resultBytes[i] = encodedBytes[i] ^ keyBytes[i % keyBytes.length];
+    }
+
+    const textDecoder = new TextDecoder('utf-8');
+    return textDecoder.decode(resultBytes);
+}
+
+/**
  * Generates a TypeScript constants file with application configuration values.
  * 
  * This function creates a string containing TypeScript code that defines several
@@ -101,6 +181,7 @@ function highlightCode(markup: string) {
  *        Array of breakpoint tuples containing name and pixel width
  * @param {ShortChallenge[]} config.challenges - Array of challenge objects to include in constants
  * @param {number} config.count - Total number of challenges in the application
+ * @param{string} config.key - Unique key for XOR encoding
  * @returns {string} A string containing the generated TypeScript constants code
  * 
  * @example
@@ -119,11 +200,13 @@ function highlightCode(markup: string) {
 function generateConstants({
     breakpoints = [['sm', 640], ['md', 768], ['lg', 1024], ['xl', 1280]],
     challenges,
-    count
+    count,
+    key,
 }: {
     breakpoints?: [string, number][];
     challenges: ShortChallenge[];
     count: number;
+    key: string;
 }): string {
     challenges.sort((a, b) => a.number - b.number);
     const code = [`/**
@@ -150,40 +233,13 @@ export const CHALLENGES = [\n`
     }
 
     code.push('];\n');
+    code.push(`export const K = '${key}';\n`);
+    code.push(`export ${xorDecode.toString()}`);
 
     return code.join('');
 }
 
-/**
- * Creates a Vite plugin that processes SQL challenges from markdown files
- * and generates necessary application constants and challenge files.
- * 
- * The plugin performs the following tasks:
- * 1. Reads markdown files from the specified input path
- * 2. Processes frontmatter and content
- * 3. Generates JSON files for each challenge
- * 4. Creates a virtual module with challenge constants
- * 
- * @param options - Plugin configuration options
- * @param options.path - Directory path containing challenge markdown files
- * @param options.output - Output directory path for processed challenge files
- * @returns VitePlugin instance for processing SQL challenges
- * 
- * @example
- * ```ts
- * // vite.config.ts
- * import createChallenges from './plugins/create-challenges';
- * 
- * export default defineConfig({
- *   plugins: [
- *     createChallenges({
- *       path: './challenges',
- *       output: './dist/challenges'
- *     })
- *   ]
- * });
- * ```
- */
+
 export default function createChallenges({ path, output, breakpoints }: {
     path: string;
     output: string;
@@ -191,6 +247,7 @@ export default function createChallenges({ path, output, breakpoints }: {
 }): VitePlugin {
     const virtualModuleId = 'virtual:sql-hero';
     const resolvedVirtualModuleId = '\0' + virtualModuleId;
+    const key = randomBytes(16).toString('hex');
 
     return {
         name: 'create-challenges',
@@ -215,6 +272,10 @@ export default function createChallenges({ path, output, breakpoints }: {
                     const content = await fs.readFile(`${path}/${file}`, 'utf-8');
                     const { data, markup } = await processFrontmatter(content);
                     data.description = highlightCode(markup);
+                    
+                    if (data.query) {
+                        data.query = xorEncode(data.query, key);
+                    }
 
                     challenges[index++] = {
                         number: data.number,
@@ -230,6 +291,7 @@ export default function createChallenges({ path, output, breakpoints }: {
                 }
 
                 return generateConstants({ 
+                    key,
                     breakpoints, 
                     challenges, 
                     count: files.length,
