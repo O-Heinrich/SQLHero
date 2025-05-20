@@ -39,10 +39,21 @@ export interface VitePlugin {
 }
 
 /**
- * Checks if a file or directory exists at the specified path
- * @param filePath - Path to check for existence
- * @returns Promise resolving to true if the path exists, false otherwise
- * @throws Never throws, returns false on any file system error
+ * Checks if a file exists at the specified path.
+ * 
+ * This utility function attempts to get file statistics and uses the success or
+ * failure of that operation to determine if the file exists, without throwing
+ * errors to the calling code.
+ * 
+ * @param {string} filePath - The path of the file to check
+ * @returns {Promise<boolean>} A promise that resolves to true if the file exists, false otherwise
+ * 
+ * @example
+ * if (await isExisting('./data/challenges/intro.md')) {
+ *   console.log('Challenge file exists!');
+ * } else {
+ *   console.log('Challenge file not found');
+ * }
  */
 const isExisting: (filePath: string) => Promise<boolean> = async (
     filePath: string
@@ -57,9 +68,25 @@ const isExisting: (filePath: string) => Promise<boolean> = async (
 };
 
 /**
- * Processes markdown frontmatter and content
- * @param markdown - Raw markdown content with frontmatter
- * @returns Promise resolving to an object containing parsed frontmatter data and HTML markup
+ * Processes markdown content with frontmatter, separating metadata from content.
+ * 
+ * This function performs two key operations:
+ * 1. Extracts YAML frontmatter data from the markdown using gray-matter
+ * 2. Converts the remaining markdown content to HTML using marked
+ * 
+ * @param {string} markdown - Raw markdown content with frontmatter
+ * @returns {Promise<{data: any, markup: string}>} Object containing extracted frontmatter data and HTML markup
+ * 
+ * @example
+ * const result = await processFrontmatter(`---
+ * title: SQL Joins
+ * difficulty: medium
+ * ---
+ * # SQL Joins Tutorial
+ * This tutorial covers different types of joins.`);
+ * 
+ * console.log(result.data.title); // "SQL Joins"
+ * console.log(result.markup); // "<h1>SQL Joins Tutorial</h1><p>This tutorial covers different types of joins.</p>"
  */
 async function processFrontmatter(markdown: string) {
     const { data, content } = matter(markdown);
@@ -71,11 +98,22 @@ async function processFrontmatter(markdown: string) {
 }
 
 /**
- * Applies syntax highlighting to code blocks in HTML markup
- * @param markup - HTML markup containing code blocks
- * @returns Serialized HTML with highlighted code blocks
+ * Highlights code blocks in HTML markup using highlight.js.
+ * 
+ * This function:
+ *  1. Creates a virtual DOM from the HTML markup
+ *  2. Finds all code blocks within pre tags
+ *  3. Applies syntax highlighting to each code block
+ *  4. Returns the updated HTML with highlighted code
+ * 
+ * @param {string} markup - HTML markup containing code blocks to highlight
+ * @returns {string} HTML markup with syntax-highlighted code blocks
+ * 
+ * @example
+ * const highlightedHTML = highlightCode('<pre><code>SELECT * FROM users;</code></pre>');
+ * // Returns HTML with syntax highlighting classes applied to the SQL code
  */
-function highlightCode(markup: string) {
+function highlightCode(markup: string): string {
     const dom = new JSDOM(markup);
     const codeBlocks = dom.window.document.querySelectorAll('pre code');
     for (const block of codeBlocks) {
@@ -86,20 +124,24 @@ function highlightCode(markup: string) {
 }
 
 /**
- * Encodes a string using XOR cipher with the given key. 
+ * Encodes a string using XOR cipher with the given key and returns the result as base64.
  * 
- * This function performs the following steps:
- *  1. Converts the input string to a binary representation
- *  2. Converts the key to a binary representation
- *  3. XOR encodes the binary string using the key
- *  4. Converts the resulting bytes to a base64 string
+ * The function applies a bitwise XOR operation between each byte of the input string
+ * and the corresponding byte in the key (cycling the key as needed). The resulting
+ * byte array is then base64 encoded.
  * 
- * XOR encoding works by applying the bitwise XOR operation between each byte of
- * the input string and the corresponding byte in the key (cycling the key as needed).
+ * This provides a simple form of encryption suitable for obfuscation but not for
+ * cryptographic security.
  * 
- * @param {string} str - The string to be encoded
+ * @param {string} str - The string to encode
  * @param {string} key - The secret key used for XOR encoding
- * @returns {string} The base64-encoded string
+ * @returns {string} The base64-encoded result of XOR encoding
+ * 
+ * @example
+ * const encoded = xorEncode('SELECT * FROM users', 'secretkey');
+ * // Later decode with: xorDecode(encoded, 'secretkey')
+ * 
+ * @security This implements basic XOR encryption which is not cryptographically secure
  */
 function xorEncode(str: string, key: string): string {
     const buffer = Buffer.from(str, 'utf-8');
@@ -115,32 +157,29 @@ function xorEncode(str: string, key: string): string {
 }
 
 /**
- * Decodes a base64-encoded string using XOR cipher with the given key.
+ * Decodes a base64-encoded string using XOR cipher with the provided key.
  * 
  * This function performs the following steps:
  *  1. Decodes the base64 string to its binary representation
  *  2. Converts the binary string to a byte array
- *  3. Decodes the byte array using XOR with a cyclic key
+ *  3. Decodes the byte array using XOR with a cyclically applied key
  *  4. Converts the resulting bytes back to a UTF-8 string
  * 
- * XOR decoding works by applying the bitwise XOR operation between each byte of 
- * the encoded data and the corresponding byte in the key (cycling the key as needed).
- * Since XOR is a symmetric operation, the same function can be used for both encoding 
- * and decoding as long as the same key is used.
+ * This function is the counterpart to xorEncode and will restore the original text
+ * when provided with the same key that was used for encoding.
  * 
  * @param {string} base64Encoded - The base64-encoded string to be decoded
- * @param {string} key - The secret key used for XOR decoding
+ * @param {string} key - The secret key used for XOR decoding (must match the encoding key)
  * @returns {string} The decoded UTF-8 string
  * 
  * @example
- * // Decode an encoded message
- * const encodedData = "SGVsbG8sIFdvcmxkIQ=="; // Example base64-encoded data
- * const secretKey = "mySecretKey123";
- * const decodedMessage = xorDecode(encodedData, secretKey);
- * console.log(decodedMessage); // Original message
+ * // Decode SQL query that was previously encoded
+ * const encodedQuery = challenge.query; // From challenge JSON data
+ * const decodedQuery = xorDecode(encodedQuery, 'YOUR_SECRET_KEY');
+ * console.log(decodedQuery); // "SELECT * FROM users WHERE id = 1"
  * 
- * @throws {Error} If the base64 string is malformed or the resulting data is not valid UTF-8
- * @security This implements basic XOR encryption which is not cryptographically secure for sensitive data
+ * @security This implements basic XOR encryption which is not cryptographically secure.
+ *           It is suitable for obfuscation but not for protecting highly sensitive data.
  */
 function xorDecode(base64Encoded: string, key: string): string {
     const binaryString = atob(base64Encoded);
@@ -165,37 +204,42 @@ function xorDecode(base64Encoded: string, key: string): string {
 }
 
 /**
- * Generates a TypeScript constants file with application configuration values.
+ * Generates a TypeScript constants file with application configuration and challenge data.
  * 
  * This function creates a string containing TypeScript code that defines several
- * important application constants:
- * - APP_NAME: The name of the application
- * - COUNT_CHALLENGES: The total number of challenges available
- * - BREAKPOINTS: Responsive design breakpoints as key-value pairs
- * - CHALLENGES: An array of challenge objects sorted by their number property
+ * important application constants and utilities:
+ *  - APP_NAME: The name of the application
+ *  - COUNT_CHALLENGES: The total number of challenges available
+ *  - BREAKPOINTS: Responsive design breakpoints as key-value pairs
+ *  - CHALLENGES: An array of challenge objects sorted by their number property
+ *  - K: The encryption key used for XOR encoding/decoding of challenge queries
+ *  - xorDecode: The function for decoding XOR-encoded challenge queries
  * 
- * The generated code is intended to be written to a file as part of a build process.
+ * The generated code is intended to be written to a file and imported as a module
+ * in the SQL Hero application. This ensures that challenge data and the decoding
+ * functionality are available throughout the application.
  * 
  * @param {Object} config - Configuration options for constant generation
  * @param {[string, number][]} [config.breakpoints=[['sm', 640], ['md', 768], ['lg', 1024], ['xl', 1280]]] - 
  *        Array of breakpoint tuples containing name and pixel width
  * @param {ShortChallenge[]} config.challenges - Array of challenge objects to include in constants
  * @param {number} config.count - Total number of challenges in the application
- * @param{string} config.key - Unique key for XOR encoding
+ * @param {string} config.key - Encryption key used for XOR encoding/decoding of challenge queries
  * @returns {string} A string containing the generated TypeScript constants code
  * 
  * @example
  * const constants = generateConstants({
  *   breakpoints: [['mobile', 480], ['tablet', 768], ['desktop', 1024]],
  *   challenges: [
- *     { id: 'intro', name: 'Introduction', number: 1 },
- *     { id: 'joins', name: 'SQL Joins', number: 2 }
+ *     { number: 1, title: 'SELECT Basics', difficulty: 'easy', schema: 'users' },
+ *     { number: 2, title: 'JOIN Operations', difficulty: 'medium', schema: 'blog' }
  *   ],
- *   count: 2
+ *   count: 2,
+ *   key: 'f8e7d6c5b4a3210f8e7d6c5b4a32109'
  * });
  * 
- * // Write to file system
- * fs.writeFileSync('./src/constants.ts', constants);
+ * // This would typically be written to a file by the Vite plugin
+ * // The resulting module would export constants and the xorDecode function
  */
 function generateConstants({
     breakpoints = [['sm', 640], ['md', 768], ['lg', 1024], ['xl', 1280]],
@@ -239,7 +283,38 @@ export const CHALLENGES = [\n`
     return code.join('');
 }
 
-
+/**
+ * Creates a Vite plugin for processing SQL challenge files.
+ * 
+ * This plugin:
+ *  1. Reads markdown files from a specified directory
+ *  2. Processes frontmatter and content for each file
+ *  3. Highlights code blocks in the content
+ *  4. Obfuscates query solutions using XOR encoding
+ *  5. Generates constants including challenge metadata
+ *  6. Writes processed challenge data to JSON files
+ * 
+ * @param {Object} options - Plugin configuration options
+ * @param {string} options.path - Directory path containing markdown challenge files
+ * @param {string} options.output - Directory path for output JSON files
+ * @param {[string, number][]} [options.breakpoints] - Optional array of breakpoint name/width tuples
+ * @returns {VitePlugin} A Vite plugin object with resolveId and load methods
+ * 
+ * @example
+ * // In vite.config.ts
+ * import { defineConfig } from 'vite';
+ * import createChallenges from './challenge-processor';
+ * 
+ * export default defineConfig({
+ *   plugins: [
+ *     createChallenges({
+ *       path: './challenges',
+ *       output: './public/api/challenges',
+ *       breakpoints: [['mobile', 480], ['desktop', 1024]]
+ *     })
+ *   ]
+ * });
+ */
 export default function createChallenges({ path, output, breakpoints }: {
     path: string;
     output: string;
