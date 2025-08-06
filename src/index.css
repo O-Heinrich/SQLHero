@@ -202,7 +202,7 @@ body {
 
 
 header.top-header {
-    @apply mix-blend-hard-light dark:mix-blend-color-normal;
+    @apply mix-blend-hard-light dark:mix-blend-normal;
 }
 
 article h1 {
