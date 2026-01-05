@@ -9,18 +9,16 @@
  * @module lib/storage
  */
 
+import React from 'react';
 import * as monaco from 'monaco-editor';
 import { toast } from 'sonner';
 import { AppState, Challenge } from "@/lib/types";
 import { DockviewApi } from 'dockview-react';
-import React from 'react';
 import { CHALLENGES } from 'virtual:sql-hero';
 
 const STORAGE_KEY = 'sql-hero-state';
 const LAYOUT_KEY = 'dockview-layout_' + STORAGE_KEY;
 const HISTORY_KEY = 'editor-history_' + STORAGE_KEY;
-
-
 
 /**
  * Represents an error that occurs when an index is out of the valid bounds.
