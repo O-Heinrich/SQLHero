@@ -30,6 +30,7 @@ import { getHistory } from '@/lib/storage';
 import { ERD } from '@/components/ERD';
 
 import '../../node_modules/dockview/dist/styles/dockview.css';
+import { BASE_PATH } from 'virtual:sql-hero';
 
 /**
  * Background style for the challenge workspace
@@ -60,7 +61,7 @@ const BG_STYLE =
  * }
  */
 const fetchChallenge = async (name: string): Promise<object> => {
-    const response = await fetch(`/sqlhero/api/challenges/${name}.json`)
+    const response = await fetch(`${BASE_PATH}/api/challenges/${name}.json`)
     if (!response.ok) {
         throw new Error(`Challenge "${name}" not found (${response.status})`)
     }
@@ -83,9 +84,16 @@ const fetchChallenge = async (name: string): Promise<object> => {
 
         json.description = content.innerHTML;
     }
+
     if (json.schema) {
-        json.schema = `/sqlhero${json.schema}`;
+        json.schema = `${BASE_PATH.substring(0, BASE_PATH.length - 1)}${json.schema}`;
+        json.erd = json.schema.replace('.sql', '.svg');
     }
+
+    if (json.pdf) {
+        json.pdf = `${BASE_PATH.substring(0, BASE_PATH.length - 1)}${json.pdf}`;
+    }
+    
     return json;
 }
 
@@ -332,7 +340,7 @@ function View() {
                         panel.params?.ref.current?.setValue(valueRef.current);
                         break;
                     case PanelTypes.ERD:
-                        panel.api.updateParameters({ src: challenge.schema?.replace('.sql', '.svg') });
+                        panel.api.updateParameters({ src: challenge.erd });
                         break;
                     case PanelTypes.LESSON:
                         panel.api.updateParameters({ description: challenge.description, difficulty: challenge.difficulty });
@@ -415,7 +423,7 @@ function View() {
                 component: 'erdPanel',
                 params: {
                     title: 'ER Diagram',
-                    src: challenge.schema.replace('.sql', '.svg'),
+                    src: challenge.erd,
                 }
             });
 
@@ -430,7 +438,7 @@ function View() {
                     title: 'SQL Editor',
                     query: valueRef.current,
                     ref: editorRef,
-                    erdSrc: challenge.schema.replace('.sql', '.svg'),
+                    erdSrc: challenge.erd,
                 },
             });
 
@@ -515,7 +523,7 @@ function View() {
         <>
             <title>SQL Hero - Challenges</title>
             <DockviewReact
-                popoutUrl="/sqlhero/popout.html"
+                popoutUrl={`${BASE_PATH}popout.html`}
                 components={components}
                 onReady={onReady}
                 className={theme === 'dark' ? 'dockview-theme-abyss' : 'dockview-theme-light'}

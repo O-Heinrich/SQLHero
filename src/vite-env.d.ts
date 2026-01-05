@@ -7,8 +7,9 @@
 declare module 'virtual:sql-hero' {
     export const K: string;
     export const APP_NAME: string;
+    export const BASE_PATH: string;
     export const COUNT_CHALLENGES: number;
     export const CHALLENGES: ShortChallenge[];
-    export const BREAKPOINTS: Reacord<string, number>;
+    export const BREAKPOINTS: Record<string, number>;
     export function xorDecode(data: string, key: string): string;
 }

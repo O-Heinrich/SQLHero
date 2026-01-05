@@ -2,11 +2,12 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { routeTree } from '@/routeTree.gen';
+import { BASE_PATH } from 'virtual:sql-hero';
 import '@/hooks/useWorker';
-
-const router = createRouter({ routeTree, basepath: '/sqlhero' });
-
 import '@/index.css';
+
+// Create the router instance with the route tree and base path
+const router = createRouter({ routeTree, basepath: BASE_PATH });
 
 // Register the router instance for type safety
 declare module '@tanstack/react-router' {

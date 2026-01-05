@@ -223,6 +223,7 @@ function xorDecode(base64Encoded: string, key: string): string {
  * @param {[string, number][]} [config.breakpoints=[['sm', 640], ['md', 768], ['lg', 1024], ['xl', 1280]]] - 
  *        Array of breakpoint tuples containing name and pixel width
  * @param {ShortChallenge[]} config.challenges - Array of challenge objects to include in constants
+ * @param {string} [config.base] - Optional base path for the application
  * @param {number} config.count - Total number of challenges in the application
  * @param {string} config.key - Encryption key used for XOR encoding/decoding of challenge queries
  * @returns {string} A string containing the generated TypeScript constants code
@@ -244,11 +245,13 @@ function xorDecode(base64Encoded: string, key: string): string {
 function generateConstants({
     breakpoints = [['sm', 640], ['md', 768], ['lg', 1024], ['xl', 1280]],
     challenges,
+    base,
     count,
     key,
 }: {
     breakpoints?: [string, number][];
     challenges: ShortChallenge[];
+    base?: string;
     count: number;
     key: string;
 }): string {
@@ -259,6 +262,7 @@ function generateConstants({
 * DO NOT MODIFY
 */
 export const APP_NAME = 'SQL Hero';
+export const BASE_PATH = '${base ?? ''}';\n
 export const COUNT_CHALLENGES = ${count};\n
 export const BREAKPOINTS = {\n`,
     ];
@@ -297,6 +301,7 @@ export const CHALLENGES = [\n`
  * @param {Object} options - Plugin configuration options
  * @param {string} options.path - Directory path containing markdown challenge files
  * @param {string} options.output - Directory path for output JSON files
+ * @param {string} [options.base] - Optional base path for the application
  * @param {[string, number][]} [options.breakpoints] - Optional array of breakpoint name/width tuples
  * @returns {VitePlugin} A Vite plugin object with resolveId and load methods
  * 
@@ -315,9 +320,10 @@ export const CHALLENGES = [\n`
  *   ]
  * });
  */
-export default function createChallenges({ path, output, breakpoints }: {
+export default function createChallenges({ path, output, base, breakpoints }: {
     path: string;
     output: string;
+    base?: string;
     breakpoints?: [string, number][];
 }): VitePlugin {
     const virtualModuleId = 'virtual:sql-hero';
@@ -368,6 +374,7 @@ export default function createChallenges({ path, output, breakpoints }: {
                 return generateConstants({ 
                     key,
                     breakpoints, 
+                    base,
                     challenges, 
                     count: files.length,
                 });

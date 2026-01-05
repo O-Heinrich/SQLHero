@@ -9,6 +9,7 @@ import React from "react";
 import { Wrapper } from "@/components/Wrapper";
 import { useTheme } from "@/hooks/useTheme";
 import { isFirefox } from "@/lib/agents";
+import { BASE_PATH } from "virtual:sql-hero";
 
 /**
  * Footer component displaying a logo with theme-dependent image
@@ -54,7 +55,7 @@ export const Footer: React.FC = (): React.ReactElement => {
                         &copy; 2025 - {new Date().getFullYear()} Berlin Beta Work INklusiv
                     </span>
                     <img
-                        src={isDarkMode ? '/drk-rki-bbw-3-dark-b.png' : '/drk-rki-bbw-3.png'}
+                        src={isDarkMode ? `${BASE_PATH}drk-rki-bbw-3-dark-b.png` : `${BASE_PATH}drk-rki-bbw-3.png`}
                         alt="Logo Berlin Beta Work INklusiv"
                         className="max-h-16 inline-block"
                     />
