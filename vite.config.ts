@@ -7,10 +7,12 @@ import createChallenges from './tools/vite-create-challenges-plugin';
 
 // https://vite.dev/config/
 export default defineConfig({
-    plugins: [
+    base: '/sqlhero/',
+    plugins: [        
         tailwindcss(),
         tanstackRouter({
-            target: 'react',
+            target: 'react', 
+            autoCodeSplitting: true,
         }),
         react(),
         createChallenges({

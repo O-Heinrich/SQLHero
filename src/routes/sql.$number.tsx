@@ -60,7 +60,7 @@ const BG_STYLE =
  * }
  */
 const fetchChallenge = async (name: string): Promise<object> => {
-    const response = await fetch(`/api/challenges/${name}.json`)
+    const response = await fetch(`/sqlhero/api/challenges/${name}.json`)
     if (!response.ok) {
         throw new Error(`Challenge "${name}" not found (${response.status})`)
     }
@@ -82,6 +82,9 @@ const fetchChallenge = async (name: string): Promise<object> => {
         });
 
         json.description = content.innerHTML;
+    }
+    if (json.schema) {
+        json.schema = `/sqlhero${json.schema}`;
     }
     return json;
 }
@@ -512,7 +515,7 @@ function View() {
         <>
             <title>SQL Hero - Challenges</title>
             <DockviewReact
-                popoutUrl="/popout.html"
+                popoutUrl="/sqlhero/popout.html"
                 components={components}
                 onReady={onReady}
                 className={theme === 'dark' ? 'dockview-theme-abyss' : 'dockview-theme-light'}
