@@ -7,7 +7,7 @@ import createChallenges from './tools/vite-create-challenges-plugin';
 
 // https://vite.dev/config/
 export default defineConfig({
-    base: '/sqlhero/', // Set the base path for the application
+    base: '', // Set the base path for the application
     plugins: [        
         tailwindcss(),
         tanstackRouter({
@@ -17,8 +17,8 @@ export default defineConfig({
         react(),
         createChallenges({
             path: 'challenges',
-            base: '/sqlhero/', // Ensure the base path matches the Vite config base
-            output: 'public/sqlhero/api/challenges', // Output directory for generated challenges. Should be inside 'public' folder and match the base path.
+            base: '', // Ensure the base path matches the Vite config base
+            output: 'public/api/challenges', // Output directory for generated challenges. Should be inside 'public' folder and match the base path.
         })
     ],
     resolve: {
