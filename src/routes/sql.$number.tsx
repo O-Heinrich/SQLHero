@@ -187,7 +187,8 @@ function View() {
      */
     useEffect(() => {
         dispatch({ type: 'INIT_CHALLENGE', payload: { index: challengeIndex } });
-        const notCompleted = isNaN(challengeIndex) ? true : !state.challenges[challengeIndex].completed;
+        const completed = state.challenges[challengeIndex] ? state.challenges[challengeIndex]?.completed : false;
+        const notCompleted = isNaN(challengeIndex) ? true : !completed;
         toggleHeaderSuccess(notCompleted, state.headerElement);
         api?.getPanel('lessonPanel')?.api.setActive();
     }, [challengeIndex, dispatch, state.challenges, state.headerElement, api]);
@@ -307,12 +308,14 @@ function View() {
     useEffect(() => {
         if (!api) {
             return;
-        } else if (isInitialized.current) {
+        }
+
+        const updatePanelsForChallenge = () => {
             api.panels.forEach((panel) => {
                 const [type] = PANEL_TYPES.filter(type => type === panel.id.split('-')[0] as PanelTypes);
                 switch (type) {
                     case PanelTypes.EDITOR:
-                        panel.params?.ref.current.setValue(valueRef.current);
+                        panel.params?.ref.current?.setValue(valueRef.current);
                         break;
                     case PanelTypes.ERD:
                         panel.api.updateParameters({ src: challenge.schema?.replace('.sql', '.svg') });
@@ -323,8 +326,11 @@ function View() {
                     default:
                         break;
                 }
-
             });
+        };
+        
+        if (isInitialized.current) {
+            updatePanelsForChallenge();
             return;
         }
 
@@ -374,6 +380,7 @@ function View() {
         ];
 
         if (loadPanels(api, editorRef)) {
+            updatePanelsForChallenge();
             const resultPanels = api.panels.filter((panel) => panel.id.startsWith(PanelTypes.RESULT));
             if (resultPanels.length > 0) {
                 setId(resultPanels.length);
@@ -384,8 +391,8 @@ function View() {
                 component: 'lessonPanel',
                 params: {
                     title: 'Aufgabenstellung',
-                    description: challenge.description,
-                    difficulty: challenge.difficulty,
+                    description: state.currentChallenge?.description,
+                    difficulty: state.currentChallenge?.difficulty,
                 }
             });
 
@@ -421,7 +428,7 @@ function View() {
         return () => {
             disposables.forEach((disposable) => disposable?.dispose());
         };
-    }, [api, challenge, challengeIndex, challengeNumber, dispatch, query, theme, valueRef]);
+    }, [api, challenge, challengeIndex, challengeNumber, dispatch, query, theme, valueRef, state]);
 
     /**
      * Loads the challenge query and schema into the database.
@@ -434,8 +441,13 @@ function View() {
      * @dependencies db, challenge.schema, updateSchema
      */
     useEffect(() => {
+        const controller = new AbortController();
+
         if (db !== challenge.schema) {
-            fetch(challenge.schema).then(async (response) => {
+            fetch(challenge.schema, { signal: controller.signal }).then(async (response) => {
+                if (!response.ok) {
+                    throw new Error(response.statusText);
+                }
                 try {
                     const sql = await response.text();
                     await updateSchema(sql);
@@ -447,8 +459,19 @@ function View() {
                         description: errMsg,
                     })
                 }
-            })
+            }).catch((error) => {
+                if (error.name === 'AbortError') {
+                    return;
+                }
+                const errMsg =
+                    typeof error === 'string' ? error : (error as Error).message
+                toast.error('Failed to load schema', {
+                    description: errMsg,
+                })
+            });
         }
+
+        return () => controller.abort();
     }, [
         db,
         challenge.schema,
@@ -456,7 +479,7 @@ function View() {
         updateSchema,
         state.challenges,
         challengeIndex,
-    ])
+    ]);
 
     /**
      * Synchronizes the editor value with challenge history when relevant dependencies change.
