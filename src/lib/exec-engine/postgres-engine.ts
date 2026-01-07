@@ -154,14 +154,16 @@ export class PostgresExecutionEngine extends ExecutionEngine {
      * @returns Promise resolving to an array of query results
      */
     private async batchExecution(transaction: Transaction): Promise<QueryResult[]> {
-        const result = await Promise.all(this.statements.map(
-            async (stmt) => (await transaction.query(stmt)) as QueryResult)
-        );
+        const results = new Array<QueryResult>(this.statements.length);
+        
+        for (let i = 0; i < this.statements.length; i++) {
+            results[i] = (await transaction.query(this.statements[i])) as QueryResult;
+        }
 
         transaction.rollback();
         this.statements = [];
 
-        return result;
+        return results;
     }
 
     /**
