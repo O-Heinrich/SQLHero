@@ -434,19 +434,18 @@ function View() {
      * @dependencies db, challenge.schema, updateSchema
      */
     useEffect(() => {
-        if (db !== challenge.schema && challenge.schema !== undefined) {
+        if (db !== challenge.schema) {
             fetch(challenge.schema).then(async (response) => {
                 try {
-                    const sql = await response.text()
-                    await updateSchema(sql)
+                    const sql = await response.text();
+                    await updateSchema(sql);
+                    setDb(() => challenge.schema)
                 } catch (error) {
                     const errMsg =
                         typeof error === 'string' ? error : (error as Error).message
                     toast.error('Failed to load schema', {
                         description: errMsg,
                     })
-                } finally {
-                    setDb(() => challenge.schema)
                 }
             })
         }
