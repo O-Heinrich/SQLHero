@@ -152,7 +152,7 @@ export function getHistory(index: number): string | undefined {
 
         const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]') as string[];
         if (index >= history.length) {
-            throw new NotFoundError(index);
+            return undefined;
         }
 
         return history[index];
