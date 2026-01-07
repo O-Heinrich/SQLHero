@@ -2,7 +2,7 @@ import path from 'node:path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import tailwindcss from '@tailwindcss/vite';
-import { tanstackRouter  } from '@tanstack/router-plugin/vite';
+import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import createChallenges from './tools/vite-create-challenges-plugin';
 
 // https://vite.dev/config/
@@ -16,8 +16,9 @@ export default defineConfig({
         }),
         react(),
         createChallenges({
+            base: '/sqlhero/',
             path: 'challenges',
-            output: 'public/api/challenges',
+            output: 'public/sqlhero/api/challenges',
         })
     ],
     resolve: {
