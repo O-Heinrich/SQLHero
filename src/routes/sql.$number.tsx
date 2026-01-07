@@ -315,7 +315,7 @@ function View() {
                         panel.params?.ref.current.setValue(valueRef.current);
                         break;
                     case PanelTypes.ERD:
-                        panel.api.updateParameters({ src: challenge.schema.replace('.sql', '.svg') });
+                        panel.api.updateParameters({ src: challenge.schema?.replace('.sql', '.svg') });
                         break;
                     case PanelTypes.LESSON:
                         panel.api.updateParameters({ description: challenge.description, difficulty: challenge.difficulty });
@@ -434,7 +434,7 @@ function View() {
      * @dependencies db, challenge.schema, updateSchema
      */
     useEffect(() => {
-        if (db !== challenge.schema) {
+        if (db !== challenge.schema && challenge.schema !== undefined) {
             fetch(challenge.schema).then(async (response) => {
                 try {
                     const sql = await response.text()
