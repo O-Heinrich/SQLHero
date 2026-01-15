@@ -70,6 +70,22 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
     const resizeOberve = useResizeObserver();
     /** Memorized theme name */
     const theme = useMemo(() => heroTheme, [heroTheme]);
+    /** Reference to capture the challenge index at keypress time */
+    const currentIndexRef = useRef<number>(challengeIndex());
+
+    /**
+     * A debounced version of the save function that updates the challenge history.
+     * This prevents excessive calls to the state update logic by waiting for the 
+     * {@link DEBOUNCE_DELAY} to pass since the last invocation. It retrieves the 
+     * current editor/input value from the ref and saves it at the current index.
+     * 
+     * @function debouncedSave
+     * @returns {void}
+     */
+    const debouncedSave = useCallback(debounce(() => {
+        const value = ref!.current?.getValue();
+        historyUpdate(currentIndexRef.current, value);
+    }, DEBOUNCE_DELAY), []);
 
     /**
      * Handles resize events for the editor container
@@ -82,7 +98,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
             const { width, height } = entries[0].contentRect;
             ref!.current.layout({ width, height });
         }
-    }, [ref]);
+    }, []);
 
     /**
      * Set up resize observer to handle container size changes
@@ -172,14 +188,12 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
 
             });
 
-            const handleKeyUp = debounce(() => {
-                const value = ref!.current?.getValue();
-                historyUpdate(challengeIndex(), value);
-            }, DEBOUNCE_DELAY);
-
-            ref!.current.onKeyUp(handleKeyUp);
+            ref!.current.onKeyUp(() => {
+                currentIndexRef.current = challengeIndex();
+                debouncedSave();
+            });
         }
-    }, [value, ref, containerRef]);
+    }, [value, containerRef, debouncedSave]);
 
 
     useEffect(() => {

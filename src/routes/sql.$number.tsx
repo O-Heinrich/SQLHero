@@ -298,6 +298,7 @@ function View() {
      * Manages the dockview layout initialization and panel updates
      * 
      * This effect:
+     * - Loads the editor history of the selected challenge
      * - Sets up event listeners for panel and group changes
      * - Creates the initial dockview layout with editor, ERD, and lesson panels
      * - Updates panel content when challenge data changes
@@ -309,6 +310,16 @@ function View() {
         if (!api) {
             return;
         }
+
+        valueRef.current = getHistory(challengeIndex) ?? (() => {
+            const attempts = state.challenges[challengeIndex]?.attempts.filter(
+                (attempt) => Boolean(attempt.query),
+            );
+            const len = attempts?.length ?? 0;
+            return len > 0 ? attempts[len - 1]?.query ?? '' : ''
+        })();
+
+        setQuery(valueRef.current);
 
         const updatePanelsForChallenge = () => {
             api.panels.forEach((panel) => {
@@ -428,7 +439,7 @@ function View() {
         return () => {
             disposables.forEach((disposable) => disposable?.dispose());
         };
-    }, [api, challenge, challengeIndex, challengeNumber, dispatch, query, theme, valueRef, state]);
+    }, [api, challenge, challengeIndex, challengeNumber, dispatch, query, theme, state]);
 
     /**
      * Loads the challenge query and schema into the database.
@@ -480,44 +491,6 @@ function View() {
         state.challenges,
         challengeIndex,
     ]);
-
-    /**
-     * Synchronizes the editor value with challenge history when relevant dependencies change.
-     * 
-     * This effect performs several critical operations in a specific sequence:
-     * 1. Updates the query state using a functional state update
-     * 2. Retrieves the saved history for the current challenge index
-     * 3. Updates the mutable valueRef to maintain the current value
-     * 4. Sets the editor's value directly through its ref interface
-     * 5. Returns the current value to update the query state
-     * 
-     * This synchronization is triggered whenever the challenge changes, the challenges array updates,
-     * the query value changes, or when the API panels configuration is modified.
-     * 
-     * @dependencies {Array} [challengeIndex, state.challenges, query, api?.panels]
-     *   - challengeIndex: The index of the currently selected challenge
-     *   - state.challenges: The array of available challenges
-     *   - query: The current query/code in the editor
-     *   - api?.panels: The panel configuration from the API
-     * 
-     * @sideEffects
-     *   - Updates the query state
-     *   - Modifies the valueRef.current value
-     *   - Sets the editor's value through editorRef
-     */
-    useEffect(() => {
-        setQuery(() => {
-            valueRef.current = getHistory(challengeIndex) ?? (() => {
-                const attempts = state.challenges[challengeIndex]?.attempts.filter(
-                    (attempt) => Boolean(attempt.query),
-                );
-                const len = attempts?.length ?? 0;
-                return len > 0 ? attempts[len - 1]?.query ?? '' : ''
-            })();
-            editorRef.current?.setValue(valueRef.current);
-            return valueRef.current;
-        });
-    }, [challengeIndex, state.challenges, query, api?.panels]);
 
     /**
      * Handles the ready event for the Dockview component.
