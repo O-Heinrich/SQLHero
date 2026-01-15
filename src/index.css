@@ -233,11 +233,15 @@ ol {
     @apply list-decimal list-outside md:pl-4 pl-8;
 }
 
-ul, ol {
-    @apply list-disc list-outside md:ml-12 ml-6;
+ul {
+    @apply list-disc;
 }
 
-ol li {
+ul, ol {
+    @apply list-outside md:ml-12 ml-6;
+}
+
+ol li, ul li {
     @apply text-lg text-black/85 dark:text-white/85;
 }
 
