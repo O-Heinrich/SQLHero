@@ -237,12 +237,8 @@ ul {
     @apply list-disc list-outside md:ml-12 ml-6;
 }
 
-ul li {
-    @apply mb-1 text-lg text-black/85 dark:text-white/85 ml-0;
-}
-
 ol li {
-    @apply mb-2 text-lg text-black/85 dark:text-white/85 mt-6 ml-0;
+    @apply text-lg text-black/85 dark:text-white/85;
 }
 
 hr {
