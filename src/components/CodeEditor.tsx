@@ -86,7 +86,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
         const value = ref!.current?.getValue();
         historyUpdate(currentIndexRef.current, value);
     }, DEBOUNCE_DELAY);
-)
 
     /**
      * Handles resize events for the editor container
@@ -197,7 +196,11 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
     }, [value, containerRef, debouncedSave, ref]);
 )
 
+
     useEffect(() => {
+        monaco.editor.setTheme(theme);
+    }, [theme]);
+
     return (
         <div id="editor" ref={containerRef} className="w-full h-full pt-[30px]" />
     );
