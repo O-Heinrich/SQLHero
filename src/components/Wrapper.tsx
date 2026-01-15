@@ -38,7 +38,7 @@ export const Wrapper: React.FC<WrapperProps> = ({ children, className }: Wrapper
     const classes: string[] = React.useMemo(() => className?.split(' ') || [], [className]);
 
     return (
-        <div className={clsx('w-full', 'max-w-6xl', 'lg:px-2', 'px-4', 'mx-auto', ...classes)}>
+        <div className={clsx('w-full', 'max-w-7xl', 'lg:px-2', 'px-4', 'mx-auto', ...classes)}>
             {children}
         </div>
     );
