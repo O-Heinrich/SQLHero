@@ -302,23 +302,23 @@ const Introduction = (): JSX.Element => {
                 {/* Fehlerbehandlung Section */}
                 <section className="bg-gray-100/30 dark:bg-blue-400/10 p-6 rounded-xl mt-8 shadow shadow-gray-400/25 dark:shadow-gray-800/30">
                     <h3 className="text-2xl font-semibold">Fehlerbehandlung und Tipps</h3>
-                    <div className="items-center flex flex-col md:flex-row gap-4">
-                        <div className="bg-white/20 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm flex-1">	
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <div className="flex flex-col bg-white/20 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm flex-1">	
                             <h4 className="font-semibold text-red-600 dark:text-red-400">Fachliche Fehler</h4>
-                            <div className='flex items-center justify-between'>
+                            <div className='flex flex-1 flex-col items-start justify-between'>
                                 <p className="dark:text-gray-300">
                                     Das SQL ist syntaktisch korrekt, liefert aber nicht das erwartete Ergebnis.
                                 </p>
-                                <Button id="logic" onClick={handleExampleClick} style={{fontSize: '1.2rem', padding: '0.75rem'}}>Beispiel</Button>
+                                <Button id="logic" className="self-end" onClick={handleExampleClick} style={{fontSize: '1.2rem', padding: '0.75rem'}}>Beispiel</Button>
                             </div>
                         </div>
-                        <div className="bg-white/20 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm flex-1">
+                        <div className="flex flex-col bg-white/20 dark:bg-gray-300/5 p-4 rounded-xl shadow-sm flex-1">
                             <h4 className="font-semibold text-red-600 dark:text-red-400">Technische Fehler</h4>
-                            <div className='flex items-center justify-between'>
+                            <div className='flex flex-1 flex-col items-start justify-between'>
                                 <p className="dark:text-gray-300">
                                     Der SQL-Befehl kann nicht ausgeführt werden.
                                 </p>
-                                <Button id="syntax" onClick={handleExampleClick} style={{fontSize: '1.2rem', padding: '0.75rem'}}>Beispiel</Button>
+                                <Button id="syntax" className="self-end" onClick={handleExampleClick} style={{fontSize: '1.2rem', padding: '0.75rem'}}>Beispiel</Button>
                             </div>
                         </div>
                     </div>
