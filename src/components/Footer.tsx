@@ -51,7 +51,7 @@ export const Footer: React.FC = (): React.ReactElement => {
             <div className="w-full py-2 z-20" style={{boxShadow: isDarkMode ? '0 -2px 2px var(--footer-shadow), 0 0 0.4em rgb(5 5 5)' : '0 -2px 2px var(--footer-shadow), 0 0 0.2em rgb(0 0 0 / 59%)'}}>
                 <Wrapper className="flex justify-between items-center max-w-400 z-20">
                     <span className="text-sm/4 self-end ml-2 text-gray-500 dark:text-gray-400">
-                        &copy; {new Date().getFullYear()} Berlin Beta Works Inklusiv
+                        &copy; 2025 - {new Date().getFullYear()} Berlin Beta Works Inklusiv
                     </span>
                     <img
                         src={isDarkMode ? '/drk-rki-bbw-3-dark-b.png' : '/drk-rki-bbw-3.png'}
