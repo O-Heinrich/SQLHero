@@ -82,10 +82,10 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
      * @function debouncedSave
      * @returns {void}
      */
-    const debouncedSave = useCallback(debounce(() => {
+    const debouncedSave = debounce(() => {
         const value = ref!.current?.getValue();
         historyUpdate(currentIndexRef.current, value);
-    }, DEBOUNCE_DELAY), []);
+    }, DEBOUNCE_DELAY);
 
     /**
      * Handles resize events for the editor container
@@ -98,7 +98,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
             const { width, height } = entries[0].contentRect;
             ref!.current.layout({ width, height });
         }
-    }, []);
+    }, [ref]);
 
     /**
      * Set up resize observer to handle container size changes
@@ -193,7 +193,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, ref }: CodeEditor
                 debouncedSave();
             });
         }
-    }, [value, containerRef, debouncedSave]);
+    }, [value, containerRef, debouncedSave, ref]);
 
 
     useEffect(() => {
