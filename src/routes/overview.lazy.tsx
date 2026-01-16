@@ -458,7 +458,7 @@ function RouteComponent(): React.ReactElement {
                 <p className="text-lg text-gray-700 dark:text-gray-300">
                     Wähle eine Herausforderung, um deine SQL-Fähigkeiten zu testen.
                 </p>
-                <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4 py-4">
+                <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-4 py-4">
                     {state.challenges.map(({
                         number,
                         title,
