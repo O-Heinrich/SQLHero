@@ -5,9 +5,15 @@ import tailwindcss from '@tailwindcss/vite';
 import { tanstackRouter  } from '@tanstack/router-plugin/vite';
 import createChallenges from './tools/vite-create-challenges-plugin';
 
+if (process.loadEnvFile) {
+    process.loadEnvFile('./.env');
+}
+
+const BASE_PATH = process.env.BASE_PATH || '';
+
 // https://vite.dev/config/
 export default defineConfig({
-    base: '', // Set the base path for the application
+    base: BASE_PATH, // Set the base path for the application
     plugins: [        
         tailwindcss(),
         tanstackRouter({
@@ -17,8 +23,8 @@ export default defineConfig({
         react(),
         createChallenges({
             path: 'challenges',
-            base: '', // Ensure the base path matches the Vite config base
-            output: 'public/api/challenges', // Output directory for generated challenges. Should be inside 'public' folder and match the base path.
+            base: BASE_PATH, // Ensure the base path matches the Vite config base
+            output: `public${BASE_PATH.length > 0 ? BASE_PATH : '/'}api/challenges`, // Output directory for generated challenges. Should be inside 'public' folder and match the base path.
         })
     ],
     resolve: {
