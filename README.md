@@ -16,12 +16,17 @@ Each exercise provides a clear task description, validates solutions against exp
 ```bash
 git clone https://gitea.it.bbwi/michaelis.m/SQLHero.git
 cd SQLHero
-npm install
+bun install
+```
+
+## Run
+```bash
+bun dev
 ```
 
 ## Build
 ```bash
-npm run build
+bun run build
 ```
 
 To host from a subdirectory, set `BASE_PATH` in `.env`:
