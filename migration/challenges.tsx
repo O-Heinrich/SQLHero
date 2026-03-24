@@ -684,12 +684,6 @@ export const challenges: Record<string, Database> = {
                 'titel': "Räume mit Deutschunterricht 2",
                 'aufgabe': "Eine Liste, in der alle Räume aufgeführt sind. Zu jedem Raum soll in einer Spalte angegeben werden, wie viele Stunden Deutsch dort unterrichtet wird und in einer zweiten Spalte, wie viele Stunden Englisch. Hinweis: 2 innere Abfragen.",
                 'solution': "SELECT deutsch.raum, deutsch.stunden, englisch.stunden FROM ( SELECT r.nummer AS raum, SUM(u.stunden) AS stunden FROM raum r JOIN unterricht u ON r.id = u.raum_id WHERE u.fach = 'deutsch' UNION SELECT r.nummer AS raum, 0 AS stunden FROM raum r WHERE r.id NOT IN ( SELECT u.raum_id FROM unterricht u WHERE u.fach = 'deutsch')) AS deutsch , ( SELECT r.nummer AS raum, SUM(u.stunden) AS stunden FROM raum r LEFT JOIN unterricht u ON r.id = u.raum_id WHERE u.fach = 'englisch' UNION SELECT r.nummer AS raum, 0 AS stunden FROM raum r WHERE r.id NOT IN ( SELECT u.raum_id FROM unterricht u WHERE u.fach = 'englisch' ) ) AS englisch where deutsch.raum = englisch.raum"
-            },
-            {
-                'nr': 82,
-                'titel': "Filmarchiv erstellen",
-                'aufgabe': "Erstelle die Tabelle Filmarchiv, welche bis auf das Attribut Preis alle Attribute der Tabelle Film enthält. Übertrage alle Einträge aus der Tabelle Film, bei denen das Jahr vor 1950 ist, in die Tabelle Filmarchiv und lösche anschließend alle übertragenenen Daten.",
-                'solution': "CREATE TABLE Filmarchiv AS SELECT FilmID, Titel, Jahr, SpieldauerMinuten FROM Film WHERE Jahr < 1950; DELETE FROM Film WHERE Jahr < 1950;"
             }]
     }
 };

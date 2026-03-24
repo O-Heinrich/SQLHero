@@ -6,7 +6,8 @@
  */
 
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { editor as monacoEditor } from 'monaco-editor/esm/vs/editor/editor.api';
+//import { editor as monacoEditor } from 'monaco-editor/esm/vs/editor/editor.api';
+import { editor as monacoEditor } from 'monaco-editor';
 import { DockviewApi, DockviewReact, DockviewReadyEvent, IDockviewPanelHeaderProps, IDockviewPanelProps } from 'dockview-react';
 import { clsx } from 'clsx';
 import { XMarkIcon } from '@heroicons/react/24/solid';

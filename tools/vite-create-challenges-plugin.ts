@@ -357,6 +357,9 @@ export default function createChallenges({ path, output, base, breakpoints }: {
                     if (data.query) {
                         data.query = xorEncode(data.query, key);
                     }
+                    if (data.checkQuery) {
+                        data.checkQuery = xorEncode(data.checkQuery, key);
+                    }
 
                     challenges[index++] = {
                         number: data.number,

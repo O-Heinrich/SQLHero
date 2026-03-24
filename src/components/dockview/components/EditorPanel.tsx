@@ -21,7 +21,8 @@ import { toast } from "sonner";
 import { TableDiff } from "@/lib/types";
 import { PgExecEngineContext } from "@/context/PgExecEngineContext";
 import { K, xorDecode } from 'virtual:sql-hero';
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+//import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import * as monaco from 'monaco-editor';
 
 /**
  * Props for the EditorPanel component
@@ -92,7 +93,7 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
 
         try {
             const key = challengeNumber.toString() // Create a key for the current challenge.
-            result = await pg.execute(props.params.ref.current.getValue() ?? ''); // Execute the SQL query.
+            result = await pg.execute(props.params.ref.current.getValue() ?? '', xorDecode(state.currentChallenge?.checkQuery ?? '', K)); // Execute the SQL query.
 
             if (!result.success) {
                 throw new Error(
@@ -104,12 +105,18 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
                 !ResultSetComparison.hasSolution(key) &&
                 !ResultSetComparison.hasSolution(`${key}-0`)
             ) {
-                queryResult = await pg.execute(xorDecode(state.currentChallenge?.query ?? '', K));
+                queryResult = await pg.execute(xorDecode(state.currentChallenge?.query ?? '', K), xorDecode(state.currentChallenge?.checkQuery ?? '', K));
                 if (queryResult?.success) {
                     for (let i = 0; i < queryResult.data!.length; i++) {
                         ResultSetComparison.storeSolutionHash(
                             `${key}-${i}`,
                             queryResult.data![i],
+                        );
+                    }
+                    for (let i = 0; i < queryResult.checkData!.length; i++) {
+                        ResultSetComparison.storeSolutionHash(
+                            `${key}:${i}`,
+                            queryResult.checkData![i],
                         );
                     }
                 } else {
@@ -124,8 +131,11 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
 
             if (isCorrect) {
                 for (let i = 0; i < result.data!.length; i++) {
-                    const key = `${challengeNumber.toString()}-${i}`;
-                    await ResultSetComparison.compareWithSolution(key, result.data![i]);
+                    await ResultSetComparison.compareWithSolution(`${key}-${i}`, result.data![i]);
+                }
+                for (let i = 0; i < result.checkData!.length; i++) {
+                    console.log("Checking " + `${key}:${i}`);
+                    await ResultSetComparison.compareWithSolution(`${key}:${i}`, result.checkData![i]);
                 }
             }
 

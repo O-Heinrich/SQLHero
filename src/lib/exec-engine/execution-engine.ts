@@ -44,6 +44,8 @@ export interface ExecutionResult<T = unknown> {
      * The structure depends on the generic type parameter T.
      */
     data: T;
+
+    checkData: T;
  }
 
 /**

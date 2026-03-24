@@ -126,6 +126,11 @@ export interface ChallengeData {
      */
     query: string;
     /**
+     * @property {string} checkQuery
+     * @description One or multipole SELECT queries to be executed after the query, to check non-DQL queries.
+     */
+    checkQuery: string;
+    /**
      * @property {string} hashedResult
      * @description A hashed representation of the expected result of the challenge.
      * This is used to verify the correctness of the user's solution.
@@ -225,6 +230,7 @@ export class Challenge implements IChallenge, ChallengeData {
     schema: string;
     description: string;
     query: string;
+    checkQuery: string;
     hashedResult: string;
     hints: string[];
     erd?: string | undefined;
@@ -246,6 +252,7 @@ export class Challenge implements IChallenge, ChallengeData {
         this.schema = '';
         this.description = '';
         this.query = '';
+        this.checkQuery = '';
         this.hashedResult = '';
         this.hints = [];
     }
@@ -279,6 +286,7 @@ export class Challenge implements IChallenge, ChallengeData {
         challenge.difficulty = obj.difficulty as 'easy' | 'medium' | 'hard';
         challenge.schema = obj.schema as string;
         challenge.attempts = (obj.attempts as Record<string, unknown>[]).map(Attempt.fromObject) as Attempt[];
+
         return challenge;
     }
 

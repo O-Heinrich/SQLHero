@@ -66,6 +66,8 @@ export class PostgresExecutionEngine extends ExecutionEngine {
     /** Collection of SQL statements to be executed in batch */
     private statements: string[];
 
+    private checkStatements: string[];
+
     /**
      * Private constructor to enforce creation through factory method.
      */
@@ -73,6 +75,7 @@ export class PostgresExecutionEngine extends ExecutionEngine {
         super();
         this.pg = undefined;
         this.statements = [];
+        this.checkStatements = [];
     }
 
     /**
@@ -122,17 +125,19 @@ export class PostgresExecutionEngine extends ExecutionEngine {
      * 
      * @throws NotInitializedError if the engine hasn't been initialized
      */
-    async execute(code: string): Promise<SqlExecutionResult> {
+    async execute(code: string, extra_checks?: string): Promise<SqlExecutionResult> {
         if (!this.pg) {
             throw new NotInitializedError(PostgresExecutionEngine.name);
         }
 
         try {
-            this.statements = code.split(';').map(s => s.trim()).filter(Boolean);
-            const result = await this.pg.transaction<QueryResult[]>(this.batchExecution.bind(this));
+            this.statements = this.createStatements(code, false);
+            if (extra_checks) this.checkStatements = this.createStatements(extra_checks, true);
+            const result = await this.pg.transaction<{results: QueryResult[]; checkData: QueryResult[]}>(this.batchExecution.bind(this));
             return {
                 success: true,
-                data: result,
+                data: result.results,
+                checkData: result.checkData
             };
         } catch (error) {
             const msg = error instanceof Error
@@ -143,7 +148,23 @@ export class PostgresExecutionEngine extends ExecutionEngine {
                 success: false,
                 error: msg,
                 data: [],
+                checkData: [],
             };
+        }
+    }
+
+    private createStatements(code: string, onlySelects: boolean): string[] {
+        const commentReg: RegExp = /-- .*\n/g
+        const noComments: string = code.replaceAll(commentReg, "");
+        if (onlySelects) {
+            let all: string[] = [];
+            for (const match of noComments.matchAll(/SELECT .*?;/gis)) {
+                all.push(match[0]);
+            }
+            return all;
+        }
+        else {
+            return noComments.split(';').map(s => s.trim()).filter(Boolean);
         }
     }
 
@@ -153,17 +174,23 @@ export class PostgresExecutionEngine extends ExecutionEngine {
      * @param transaction - The transaction object provided by PGlite
      * @returns Promise resolving to an array of query results
      */
-    private async batchExecution(transaction: Transaction): Promise<QueryResult[]> {
+    private async batchExecution(transaction: Transaction): Promise<{results: QueryResult[]; checkData: QueryResult[]}> {
         const results = new Array<QueryResult>(this.statements.length);
-        
         for (let i = 0; i < this.statements.length; i++) {
             results[i] = (await transaction.query(this.statements[i])) as QueryResult;
         }
 
+        const checkData = new Array<QueryResult>(this.checkStatements.length);
+        for (let i = 0; i < this.checkStatements.length; i++) {
+            console.log("Trying " + this.checkStatements[i]);
+            checkData[i] = (await transaction.query(this.checkStatements[i])) as QueryResult;
+        }
+
         transaction.rollback();
         this.statements = [];
+        this.checkStatements = [];
 
-        return results;
+        return {results, checkData,};
     }
 
     /**

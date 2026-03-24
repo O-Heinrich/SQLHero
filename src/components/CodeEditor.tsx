@@ -8,7 +8,8 @@
 import { useResizeObserver } from '@/hooks/useResizeObserver';
 import { useTheme } from '@/hooks/useTheme';
 import { useEffect, useCallback, useRef, JSX, useMemo } from 'react';
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+//import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import * as monaco from 'monaco-editor';
 import { SqlToken } from '@/lib/token';
 import { historyUpdate } from '@/lib/storage';
 import { debounce } from '@/lib/utils';
