@@ -45,6 +45,10 @@ export interface ExecutionResult<T = unknown> {
      */
     data: T;
 
+    /**
+     * The data returned by executing the "checkQuery"
+     * The structure ist the same as data
+     */
     checkData: T;
  }
 

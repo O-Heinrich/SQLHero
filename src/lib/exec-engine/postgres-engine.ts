@@ -65,7 +65,7 @@ export class PostgresExecutionEngine extends ExecutionEngine {
     private schema?: string;
     /** Collection of SQL statements to be executed in batch */
     private statements: string[];
-
+    /** Collection of SQL SELECT statements to be executed in batch for comparison of database state */
     private checkStatements: string[];
 
     /**
