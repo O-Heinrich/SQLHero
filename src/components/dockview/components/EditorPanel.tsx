@@ -134,7 +134,7 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
                     await ResultSetComparison.compareWithSolution(`${key}-${i}`, result.data![i]);
                 }
                 for (let i = 0; i < result.checkData!.length; i++) {
-                    console.log("Checking " + `${key}:${i}`);
+                    //console.log("Checking " + `${key}:${i}`);
                     await ResultSetComparison.compareWithSolution(`${key}:${i}`, result.checkData![i]);
                 }
             }

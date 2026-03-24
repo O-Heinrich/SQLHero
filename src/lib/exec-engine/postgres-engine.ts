@@ -182,7 +182,7 @@ export class PostgresExecutionEngine extends ExecutionEngine {
 
         const checkData = new Array<QueryResult>(this.checkStatements.length);
         for (let i = 0; i < this.checkStatements.length; i++) {
-            console.log("Trying " + this.checkStatements[i]);
+            //console.log("Trying " + this.checkStatements[i]);
             checkData[i] = (await transaction.query(this.checkStatements[i])) as QueryResult;
         }
 

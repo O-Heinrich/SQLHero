@@ -341,6 +341,7 @@ export class ResultSetComparison {
         }
 
         const serialized = queryResultToStringArray(result);
+        //console.log(exerciseId + " " + serialized.rows.length);
         for await (const [i, hash] of this.hash(serialized)) {
             if (solutionHash[i] !== hash) {
                 throw new Error(`Result does not match solution for Record: ${exerciseId}`);
