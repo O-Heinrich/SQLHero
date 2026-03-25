@@ -12,6 +12,10 @@ Interactive SQL learning through hands-on exercises—from `SELECT` basics to `G
 
 Each exercise provides a clear task description, validates solutions against expected output, and distinguishes between logical errors (wrong results) and technical errors (syntax issues, missing tables).
 
+### PGLite
+
+For testing SQL-Queries [PGLite](https://pglite.dev/repl/) is a useful tool to simulate Queries in PostgreSQL the same way they work here. Useful to find and resolve errors related to the SQL-Queries.
+
 ## Setup
 ```bash
 git clone https://gitea.it.bbwi/michaelis.m/SQLHero.git
@@ -21,12 +25,7 @@ bun install
 
 ## Run
 ```bash
-bun dev
-```
-
-## Build
-```bash
-bun run build
+bun run dev
 ```
 
 To host from a subdirectory, set `BASE_PATH` in `.env`:
@@ -108,3 +107,11 @@ Initialize this assistant with:
 - **Priority:** Clarity > Brevity  
 
 Confirm readiness with your exact Gold Standard template before proceeding."  
+
+## Troubleshooting
+
+### Delete Local Storage
+
+Changes to exercises might not always update properly. To resolve this the local storage can be reset:
+`F12` -> Application -> Storage -> Local storage -> Right click sql-hero-state -> Delete
+![Screenshot showing where to delete Local storage](./assets/screenshot_delete_localstorage.png)

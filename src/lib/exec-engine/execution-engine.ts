@@ -47,7 +47,7 @@ export interface ExecutionResult<T = unknown> {
 
     /**
      * The data returned by executing the "checkQuery"
-     * The structure ist the same as data
+     * The structure is the same as data
      */
     checkData: T;
  }
