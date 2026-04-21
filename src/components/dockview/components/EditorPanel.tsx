@@ -108,6 +108,9 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
                 queryResult = await pg.execute(xorDecode(state.currentChallenge?.query ?? '', K), xorDecode(state.currentChallenge?.checkQuery ?? '', K));
                 if (queryResult?.success) {
                     for (let i = 0; i < queryResult.data!.length; i++) {
+                        if (queryResult.data![i].rows.length != result.data![i].rows.length) {
+                            throw new Error('Result has length of ' + result.data![i].rows.length + ', expected ' + queryResult.data![i].rows.length);
+                        }
                         ResultSetComparison.storeSolutionHash(
                             `${key}-${i}`,
                             queryResult.data![i],
