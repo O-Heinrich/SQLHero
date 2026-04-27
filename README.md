@@ -50,7 +50,7 @@ BASE_PATH=/sqlhero/
 
 2. **Task Documentation**  
    ```markdown
-   ## [Verbesseter Deutscher Titel]
+   ## [Verbesserter Deutscher Titel]
    
    **Aufgabe:**  
    • [Kernanforderung 1]  
