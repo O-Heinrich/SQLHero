@@ -170,7 +170,7 @@ export const EditorPanel: React.FunctionComponent<EditorPanelProps> = (props) =>
                 description: errMsg,
             });
         } finally {
-            if (props.params.onExecuted && result && result.data?.length > 0) {
+            if (props.params.onExecuted && result?.data && result.data?.length > 0) {
                 props.params.onExecuted(result.data[result.data?.length - 1]);
             }
         }

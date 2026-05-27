@@ -171,14 +171,13 @@ export class JavaScriptExecutionEngine extends ExecutionEngine {
                     resolve({
                         success: true,
                         data: event.data.result,
-                        testResults: event.data.testResults
+                        testResults: event.data.testResults,
                     });
                 } else {
                     resolve({
                         success: false,
                         error: event.data.error,
                         testResults: event.data.testResults,
-                        data: {} as T
                     });
                 }
             };

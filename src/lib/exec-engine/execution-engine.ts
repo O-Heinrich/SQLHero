@@ -43,13 +43,13 @@ export interface ExecutionResult<T = unknown> {
      * The data returned by the execution.
      * The structure depends on the generic type parameter T.
      */
-    data: T;
+    data?: T;
 
     /**
      * The data returned by executing the "checkQuery"
      * The structure is the same as data
      */
-    checkData: T;
+    checkData?: T;
  }
 
 /**
