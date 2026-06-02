@@ -16,6 +16,10 @@ Each exercise provides a clear task description, validates solutions against exp
 
 For testing SQL-Queries [PGLite](https://pglite.dev/repl/) is a useful tool to simulate Queries in PostgreSQL the same way they work here. Useful to find and resolve errors related to the SQL-Queries.
 
+### ER-Diagrams
+
+The ER-Diagrams are created using the MySQL-Workbench. Export the ERD's as svg and ensure that they work in both normal and dark mode. For that, open the svg in a text editor and replace `stroke="rgb(0%, 0%, 0%)"` with `stroke="currentColor"`.
+
 ## Setup
 ```bash
 git clone https://gitea.it.bbwi/michaelis.m/SQLHero.git
