@@ -24,7 +24,7 @@ export default defineConfig({
         createChallenges({
             path: 'challenges',
             base: BASE_PATH, // Ensure the base path matches the Vite config base
-            output: `public${BASE_PATH.length > 0 ? BASE_PATH : '/'}api/challenges`, // Output directory for generated challenges. Should be inside 'public' folder and match the base path.
+            output: 'public/api/challenges', 
         })
     ],
     resolve: {
